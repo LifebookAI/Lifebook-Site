@@ -1,42 +1,38 @@
 // app/layout.tsx
 import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+const geistSans = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist-sans",
+});
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+});
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://uselifebook.ai"),
-  title: "Lifebook.AI — Turn long recordings into clean notes, clips, and searchable archives",
+  title: "Lifebook.AI",
   description:
-    "Founders get a badge + first month of Pro free. Upload audio or video; get accurate transcripts, chaptered summaries with timestamps, and auto-highlighted clips.",
-  alternates: { canonical: "/" },
-  openGraph: {
-    title: "Lifebook.AI",
-    description:
-      "Turn long recordings into clean notes, clips, and a searchable archive.",
-    url: "https://uselifebook.ai/",
-    siteName: "Lifebook.AI",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Lifebook.AI preview" }],
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Lifebook.AI",
-    description:
-      "Turn long recordings into clean notes, clips, and a searchable archive.",
-    images: ["/og.png"],
-  },
-  icons: {
-    icon: "/favicon.png",
-    shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
-  },
+    "Turn long recordings into clean notes, clips, and searchable archives.",
+  // Used by Next for absolute URLs (sitemap/OG). Falls back to your live domain.
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://uselifebook.ai"
+  ),
+  // “Stealth” mode: live but ask search engines not to index yet.
+  robots: { index: false, follow: true },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body className="antialiased">{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        {children}
+      </body>
     </html>
   );
 }
-robots: { index: false, follow: true },
