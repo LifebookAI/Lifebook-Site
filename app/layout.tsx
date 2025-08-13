@@ -4,33 +4,46 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
-  subsets: ["latin"],
   variable: "--font-geist-sans",
-});
-
-const geistMono = Geist_Mono({
   subsets: ["latin"],
+});
+const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
   title: "Lifebook.AI",
   description:
     "Turn long recordings into clean notes, clips, and searchable archives.",
-  // Used by Next for absolute URLs (sitemap/OG). Falls back to your live domain.
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://uselifebook.ai"
-  ),
-  // “Stealth” mode: live but ask search engines not to index yet.
-  robots: { index: false, follow: true },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://uselifebook.ai"),
+  openGraph: {
+    title: "Lifebook.AI",
+    description:
+      "Turn long recordings into clean notes, clips, and searchable archives.",
+    url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://uselifebook.ai",
+    siteName: "Lifebook.AI",
+    images: ["/og.png"],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Lifebook.AI",
+    description:
+      "Turn long recordings into clean notes, clips, and searchable archives.",
+    images: ["/og.png"],
+  },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className="antialiased min-h-screen bg-[#0b1220] text-white">
         {children}
       </body>
     </html>
