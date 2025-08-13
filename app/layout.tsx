@@ -7,23 +7,35 @@ const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
+
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
+const baseUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://uselifebook.ai";
+
 export const metadata: Metadata = {
-  title: "Lifebook.AI",
+  metadataBase: new URL(baseUrl),
+  title: {
+    default: "Lifebook.AI",
+    template: "%s | Lifebook.AI",
+  },
   description:
-    "Turn long recordings into clean notes, clips, and searchable archives.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://uselifebook.ai"),
+    "Turn long recordings into clean notes, clips, and a searchable archive.",
+  // STEALTH: block search engines while we’re in private/ perks-only mode
+  robots: {
+    index: false,
+    follow: false,
+  },
   openGraph: {
     title: "Lifebook.AI",
     description:
-      "Turn long recordings into clean notes, clips, and searchable archives.",
-    url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://uselifebook.ai",
+      "Turn long recordings into clean notes, clips, and a searchable archive.",
+    url: "/",
     siteName: "Lifebook.AI",
-    images: ["/og.png"],
+    images: [{ url: "/og.png", width: 1200, height: 630 }],
     locale: "en_US",
     type: "website",
   },
@@ -31,8 +43,12 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Lifebook.AI",
     description:
-      "Turn long recordings into clean notes, clips, and searchable archives.",
+      "Turn long recordings into clean notes, clips, and a searchable archive.",
     images: ["/og.png"],
+  },
+  icons: {
+    icon: "/favicon.png",
+    apple: "/apple-touch-icon.png",
   },
 };
 
@@ -42,8 +58,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className="antialiased min-h-screen bg-[#0b1220] text-white">
+    <html lang="en">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>
     </html>
