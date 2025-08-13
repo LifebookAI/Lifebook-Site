@@ -1,154 +1,183 @@
-"use client";
-
-import Image from "next/image";
+// app/page.tsx
 import Link from "next/link";
-import { FormEvent, useState } from "react";
 
 export default function Home() {
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "sending" | "ok" | "err">(
-    "idle"
-  );
-
-  async function join(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setStatus("sending");
-    try {
-      const fd = new FormData(e.currentTarget);
-      // TODO: replace YOUR_FORMSPREE_ID with your real one from formspree.io
-      const resp = await fetch("https://formspree.io/f/mvgqlzvn", {
-        method: "POST",
-        headers: { Accept: "application/json" },
-        body: fd,
-      });
-      if (resp.ok) {
-        setStatus("ok");
-        setEmail("");
-      } else {
-        setStatus("err");
-      }
-    } catch {
-      setStatus("err");
-    }
-  }
-
   return (
-    <main className="min-h-screen bg-[#0B1220] text-white">
-      {/* Top nav */}
+    <main className="min-h-screen bg-gradient-to-b from-black via-zinc-900 to-black text-white">
+      {/* Header */}
       <header className="mx-auto max-w-6xl px-6 py-6 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo-mark.png" alt="Lifebook AI" width={32} height={32} />
-          <span className="font-semibold">
-            Lifebook<span className="text-cyan-300">.AI</span>
-          </span>
+        <Link href="/" className="flex items-center gap-3">
+          <img
+            src="/logo-mark.png" // Put a logo file named logo-mark.png in /public (see Step 5)
+            alt="Lifebook.AI"
+            className="h-8 w-8 rounded-md"
+          />
+          <span className="font-semibold tracking-tight">Lifebook.AI</span>
         </Link>
-        <nav className="flex gap-6 text-sm">
-          <a href="#features" className="hover:opacity-80">Features</a>
-          <a href="#pricing" className="hover:opacity-80">Pricing</a>
-          <a href="#contact" className="hover:opacity-80">Contact</a>
+        <nav className="hidden sm:flex items-center gap-6 text-sm text-white/70">
+          <a href="#features" className="hover:text-white">Features</a>
+          <a href="#how-it-works" className="hover:text-white">How it works</a>
+          <a href="#faq" className="hover:text-white">FAQ</a>
         </nav>
       </header>
 
       {/* Hero */}
-      <section className="mx-auto max-w-6xl px-6 grid md:grid-cols-2 gap-10 items-center">
-        <div>
-          <h1 className="text-4xl md:text-5xl font-bold leading-tight">
-            Turn long recordings into{" "}
-            <span className="text-cyan-300">clean notes, clips</span>, and
-            searchable archives.
-          </h1>
-          <p className="mt-4 text-gray-300">
-            Upload audio or video → accurate transcripts, chaptered summaries,
-            and auto-detected highlight clips in minutes.
-          </p>
+      <section className="mx-auto max-w-3xl px-6 pt-8 pb-10 text-center">
+        <h1 className="text-4xl sm:text-5xl font-semibold leading-tight tracking-tight">
+          Turn long recordings into <span className="text-cyan-400">clean notes</span>,{" "}
+          <span className="text-cyan-400">clips</span>, and a{" "}
+          <span className="text-cyan-400">searchable archive</span>.
+        </h1>
+        <p className="mt-4 text-white/70">
+          Upload audio or video. Get accurate transcripts, chaptered summaries with
+          timestamps, and auto-detected highlight clips—ready to share.
+        </p>
 
-          {/* Waitlist form */}
-          <form onSubmit={join} className="mt-6 flex gap-3 max-w-md">
+        {/* Founder offer */}
+        <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-sm text-white/90 ring-1 ring-white/20">
+          <span className="h-2 w-2 rounded-full bg-cyan-400" />
+          <span className="uppercase tracking-wide text-xs text-white/70">Early Access</span>
+          <span className="text-white/60">•</span>
+          <span>Founders get a badge + first month of <b>Pro</b> free.</span>
+        </div>
+        <p className="mt-2 text-xs text-white/60">
+          Limited to the first 150 activations. New customers only. Card required; cancel anytime.
+        </p>
+
+        {/* Waitlist form */}
+        <div className="mt-6">
+          {/* Replace YOUR_FORM_ID with your actual Formspree form ID (keep https) */}
+          <form
+            action="https://formspree.io/f/YOUR_FORM_ID"
+            method="POST"
+            className="mx-auto flex max-w-xl items-center gap-2"
+          >
             <input
               type="email"
               name="email"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@company.com"
-              className="flex-1 rounded-lg border border-white/20 bg-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-cyan-400"
+              placeholder="you@example.com"
+              className="w-full rounded-lg bg-white/5 px-4 py-3 ring-1 ring-white/15 placeholder:text-white/40 focus:outline-none focus:ring-white/30"
             />
             <button
-              disabled={status === "sending"}
-              className="rounded-lg px-4 py-3 bg-cyan-400 text-[#0B1220] font-medium disabled:opacity-60"
+              type="submit"
+              className="shrink-0 rounded-lg bg-cyan-500 px-4 py-3 font-medium text-black hover:bg-cyan-400 transition"
             >
-              {status === "sending" ? "Sending..." : "Join waitlist"}
+              Join waitlist
             </button>
-            <input type="hidden" name="_subject" value="New waitlist signup" />
-            <input type="hidden" name="source" value="landing" />
           </form>
-          {status === "ok" && (
-            <p className="mt-2 text-sm text-green-400">
-              Thanks! Check your inbox.
-            </p>
-          )}
-          {status === "err" && (
-            <p className="mt-2 text-sm text-red-400">
-              Something went wrong. Try again.
-            </p>
-          )}
-        </div>
+          <p className="mt-2 text-xs text-white/50">
+            We’ll only email you about launch and early access. No spam.
+          </p>
 
-        <div className="rounded-2xl bg-white/5 p-8 ring-1 ring-white/10">
-          <Image
-            src="/wordmark.png"
-            alt="Lifebook AI"
-            width={900}
-            height={500}
-            className="w-full h-auto"
-            priority
-          />
+          <div className="mt-4 flex items-center justify-center gap-4 text-sm">
+            <a href="#features" className="text-white/80 hover:text-white underline underline-offset-4">
+              See what’s included
+            </a>
+            <span className="text-white/30">•</span>
+            <Link href="/privacy" className="text-white/60 hover:text-white underline underline-offset-4">
+              Privacy
+            </Link>
+            <span className="text-white/30">•</span>
+            <Link href="/terms" className="text-white/60 hover:text-white underline underline-offset-4">
+              Terms
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Features */}
-      <section id="features" className="mx-auto max-w-6xl px-6 mt-10 grid sm:grid-cols-2 gap-4">
-        {[
-          ["Fast, accurate transcripts", "Whisper + GPT-5 routing for quality and speed."],
-          ["Smart summaries", "Bullet points & chaptered notes with timestamps."],
-          ["Auto clips", "Find engaging moments; export MP4 (720p/1080p)."],
-          ["Searchable archive", "Find anything by keyword, chapter, or tag."],
-        ].map(([title, copy]) => (
-          <div key={title} className="rounded-xl bg-white/5 p-4 ring-1 ring-white/10">
-            <h3 className="font-semibold">{title}</h3>
-            <p className="text-gray-300 text-sm mt-2">{copy}</p>
-          </div>
-        ))}
-      </section>
-
-      {/* Pricing (placeholder) */}
-      <section id="pricing" className="mx-auto max-w-6xl px-6 mt-14">
-        <div className="rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
-          <h2 className="text-2xl font-semibold">Early pricing</h2>
-          <p className="text-gray-300 mt-2">
-            Founding users get 3 months free. Paid plans from $0 while in private beta.
-          </p>
+      <section id="features" className="mx-auto max-w-6xl px-6 py-12">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {[
+            {
+              title: "High-accuracy transcription",
+              desc: "Upload audio/video and get clean text you can trust.",
+            },
+            {
+              title: "Chaptered summaries",
+              desc: "Bullet summaries with timestamps for fast scanning.",
+            },
+            {
+              title: "Auto highlight clips",
+              desc: "We pick the most engaging moments ready for sharing.",
+            },
+            {
+              title: "Searchable archive",
+              desc: "Find moments by keyword, chapter, or tag across projects.",
+            },
+            {
+              title: "One-click exports",
+              desc: "TXT, DOCX, PDF, and MP4 (720p/1080p by plan).",
+            },
+            {
+              title: "Works with your tools",
+              desc: "Import from Drive; export to Notion; share to Slack.",
+            },
+          ].map((f) => (
+            <div
+              key={f.title}
+              className="rounded-2xl border border-white/10 bg-white/5 p-5"
+            >
+              <h3 className="font-medium">{f.title}</h3>
+              <p className="mt-2 text-sm text-white/70">{f.desc}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Footer / Contact */}
-      <footer id="contact" className="mx-auto max-w-6xl px-6 mt-16 mb-12">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-gray-400">
-            © {new Date().getFullYear()} Lifebook.AI
-          </p>
-          <div className="flex gap-6 text-sm">
-            <a href="mailto:founder@lifebook.ai" className="hover:underline">
-              founder@lifebook.ai
-            </a>
-            <a
-              href="https://x.com/yourhandle"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:underline"
-            >
-              X/Twitter
-            </a>
+      {/* How it works */}
+      <section id="how-it-works" className="mx-auto max-w-5xl px-6 pb-12">
+        <h2 className="text-2xl font-semibold">How it works</h2>
+        <ol className="mt-4 grid gap-4 sm:grid-cols-3">
+          {[
+            { n: 1, t: "Upload", d: "Drag in audio or video—big files welcome." },
+            { n: 2, t: "Process", d: "We transcribe, summarize, and pick highlights." },
+            { n: 3, t: "Export", d: "Copy notes or export clips to share anywhere." },
+          ].map((s) => (
+            <li key={s.n} className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <div className="text-cyan-400 text-sm">Step {s.n}</div>
+              <div className="mt-1 font-medium">{s.t}</div>
+              <p className="mt-1 text-sm text-white/70">{s.d}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* FAQ (short) */}
+      <section id="faq" className="mx-auto max-w-4xl px-6 pb-16">
+        <h2 className="text-2xl font-semibold">FAQ</h2>
+        <div className="mt-4 space-y-4">
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+            <div className="font-medium">What does the Founder offer include?</div>
+            <p className="mt-2 text-sm text-white/70">
+              Founders receive a special badge in the app and their first month of Pro free.
+              Limited to the first 150 activations. Card required; cancel anytime.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+            <div className="font-medium">When can I redeem it?</div>
+            <p className="mt-2 text-sm text-white/70">
+              At public launch. Join the waitlist and we’ll email instructions.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+            <div className="font-medium">Will pricing include overages?</div>
+            <p className="mt-2 text-sm text-white/70">
+              No overages. Plans include monthly minutes; optional minute packs never auto-renew.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-white/10">
+        <div className="mx-auto max-w-6xl px-6 py-8 text-sm text-white/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div>© {new Date().getFullYear()} Lifebook.AI</div>
+          <div className="flex items-center gap-4">
+            <a href="mailto:support@uselifebook.ai" className="hover:text-white">support@uselifebook.ai</a>
+            <Link href="/privacy" className="hover:text-white">Privacy</Link>
+            <Link href="/terms" className="hover:text-white">Terms</Link>
           </div>
         </div>
       </footer>
