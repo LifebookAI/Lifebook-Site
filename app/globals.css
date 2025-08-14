@@ -3,32 +3,18 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body, :root { height: 100%; }
+/* Keep it simple & safe */
 :root { color-scheme: dark; }
+html, body, :root { height: 100%; }
 
-/* Match landing background everywhere */
+/* Site-wide background + readable default text */
 html, body {
-  background:
-    radial-gradient(1000px 600px at 20% -10%, rgba(56, 189, 248, 0.08), transparent 40%),
-    radial-gradient(900px 500px at 80% -10%,  rgba(59, 130, 246, 0.08), transparent 38%),
-    #0b1220;
-  color: #e5e7eb;
+  background: #0b1220;
+  color: #e5e7eb; /* gray-200 */
 }
 
-/* Readable text & links */
-h1, h2, h3, h4, h5, h6 { color: #fff; }
-p, li, dd, dt { color: #e5e7eb; }
-small, .muted { color: #9ca3af; }
-a { color: rgb(56 189 248); text-decoration: underline; }
-a:hover { color: rgb(125 211 252); }
+/* Headings a bit brighter */
+h1, h2, h3, h4, h5, h6 { color: #ffffff; }
 
-/* Keep header/nav transparent (no white stripe) */
-header, nav { background: transparent !important; box-shadow: none !important; }
-
-/* If you use .card anywhere, style it without @apply */
-.card {
-  border-radius: 1rem;           /* ~ rounded-2xl */
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.05);
-  padding: 1.5rem;               /* ~ p-6 */
-}
+/* IMPORTANT: no global borders, no global link overrides,
+   no custom .card class here. We'll style per-component. */
