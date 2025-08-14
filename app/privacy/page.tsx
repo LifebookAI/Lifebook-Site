@@ -1,47 +1,48 @@
 // app/privacy/page.tsx
-export const metadata = { title: "Privacy Policy — Lifebook.AI" };
+import Link from "next/link";
+
+export const metadata = {
+  title: "Privacy Policy — Lifebook.AI",
+  robots: { index: true, follow: true },
+};
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen px-6 py-16">
-      <div className="mx-auto max-w-3xl leading-relaxed">
-        <h1 className="text-3xl font-semibold text-white">Privacy Policy</h1>
+    <main className="mx-auto max-w-3xl px-4 py-16 text-gray-100">
+      <h1 className="text-3xl font-semibold tracking-tight text-white">
+        Privacy Policy
+      </h1>
 
-        <p className="mt-4 text-gray-100">
-          We keep things simple: we only collect what’s needed to run the waitlist and
-          improve the product. No sale of personal data.
-        </p>
+      <p className="mt-4 text-gray-300">
+        We keep things simple: we only collect what’s needed to run the waitlist
+        and improve the product. No sale of personal data.
+      </p>
 
-        <h2 className="mt-10 text-xl font-semibold text-white">What we collect</h2>
-        <ul className="mt-3 list-disc pl-5 space-y-1 text-gray-100 marker:text-gray-300">
-          <li>Email (waitlist)</li>
-          <li>Basic site analytics (aggregate)</li>
-        </ul>
+      <h2 className="mt-10 text-xl font-medium text-white">What we collect</h2>
+      <ul className="mt-4 list-disc space-y-2 pl-6 text-gray-200 marker:text-sky-400">
+        <li>Email (waitlist)</li>
+        <li>Basic site analytics (aggregate)</li>
+      </ul>
 
-        <h2 className="mt-8 text-xl font-semibold text-white">How you control your data</h2>
-        <ul className="mt-3 list-disc pl-5 space-y-1 text-gray-100 marker:text-gray-300">
-          <li>Unsubscribe from emails anytime (link in every email).</li>
-          <li>
-            <span className="font-medium text-white">Before public launch:</span>{" "}
-            request data deletion by emailing{" "}
-            <a className="underline text-sky-300 hover:text-sky-200" href="mailto:support@uselifebook.ai">
-              support@uselifebook.ai
-            </a>.
-          </li>
-          <li>
-            <span className="font-medium text-white">After launch:</span> you’ll be able to
-            delete your account and all associated data yourself from <em>Settings → Account</em>.
-          </li>
-        </ul>
+      <h2 className="mt-10 text-xl font-medium text-white">Your choices</h2>
+      <ul className="mt-4 list-disc space-y-2 pl-6 text-gray-200 marker:text-sky-400">
+        <li>Unsubscribe from emails anytime.</li>
+        <li>
+          Delete your data in-app (when available). Until then, you can request
+          deletion by emailing{" "}
+          <a
+            href="mailto:support@uselifebook.ai"
+            className="text-sky-400 underline hover:text-sky-300"
+          >
+            support@uselifebook.ai
+          </a>
+          .
+        </li>
+      </ul>
 
-        <h2 className="mt-8 text-xl font-semibold text-white">Deletion timelines</h2>
-        <p className="mt-3 text-gray-100">
-          When you delete or request deletion, we remove active records promptly and purge
-          logs/backups within ~30 days, including at our processors.
-        </p>
-
-        <p className="mt-12 text-sm text-gray-300">Last updated: 8/14/2025</p>
-      </div>
+      <p className="mt-12 text-sm text-gray-400">
+        Last updated: {new Date().toISOString().slice(0, 10)}
+      </p>
     </main>
   );
 }

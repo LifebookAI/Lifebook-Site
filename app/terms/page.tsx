@@ -1,42 +1,62 @@
 // app/terms/page.tsx
-export const metadata = { title: "Terms of Service — Lifebook.AI" };
+import Link from "next/link";
+
+export const metadata = {
+  title: "Terms of Service — Lifebook.AI",
+  robots: { index: true, follow: true },
+};
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen px-6 py-16">
-      <div className="mx-auto max-w-3xl leading-relaxed">
-        <h1 className="text-3xl font-semibold text-white">Terms of Service</h1>
+    <main className="mx-auto max-w-3xl px-4 py-16 text-gray-100">
+      <h1 className="text-3xl font-semibold tracking-tight text-white">
+        Terms of Service
+      </h1>
 
-        <p className="mt-4 text-gray-100">
-          By using Lifebook.AI, you agree to these terms. We may update them from time to time.
-        </p>
+      <p className="mt-4 text-gray-300">
+        By using Lifebook.AI you agree to these terms.
+      </p>
 
-        <h2 className="mt-10 text-xl font-semibold text-white">Beta / early access</h2>
-        <p className="mt-3 text-gray-100">
-          The service is in active development and provided “as is.” Expect changes and occasional downtime.
-        </p>
+      <h2 className="mt-10 text-xl font-medium text-white">Use of service</h2>
+      <ul className="mt-4 list-disc space-y-2 pl-6 text-gray-200 marker:text-sky-400">
+        <li>Be respectful of copyright. Upload content you have rights to use.</li>
+        <li>No harmful, unlawful, or abusive activity.</li>
+        <li>Service is provided “as-is”; we may modify or suspend features.</li>
+      </ul>
 
-        <h2 className="mt-8 text-xl font-semibold text-white">Acceptable use</h2>
-        <p className="mt-3 text-gray-100">
-          Don’t upload unlawful content or violate others’ rights. You’re responsible for permission to upload third-party media.
-        </p>
+      <h2 className="mt-10 text-xl font-medium text-white">Accounts & email</h2>
+      <p className="mt-4 text-gray-200">
+        You agree to receive essential emails (e.g., waitlist updates). You can
+        unsubscribe from marketing at any time.
+      </p>
 
-        <h2 className="mt-8 text-xl font-semibold text-white">Your data & deletion</h2>
-        <p className="mt-3 text-gray-100">
-          Before public launch, request deletion via{" "}
-          <a className="underline text-sky-300 hover:text-sky-200" href="mailto:support@uselifebook.ai">
-            support@uselifebook.ai
-          </a>. After launch, you can delete your account and data yourself from <em>Settings → Account</em>.
-          Deletions remove active records promptly; logs/backups purge within ~30 days.
-        </p>
+      <h2 className="mt-10 text-xl font-medium text-white">Privacy</h2>
+      <p className="mt-4 text-gray-200">
+        See our{" "}
+        <Link
+          href="/privacy"
+          className="text-sky-400 underline hover:text-sky-300"
+        >
+          Privacy Policy
+        </Link>
+        .
+      </p>
 
-        <h2 className="mt-8 text-xl font-semibold text-white">Privacy</h2>
-        <p className="mt-3 text-gray-100">
-          See our <a className="underline text-sky-300 hover:text-sky-200" href="/privacy">Privacy Policy</a>.
-        </p>
+      <h2 className="mt-10 text-xl font-medium text-white">Contact</h2>
+      <p className="mt-4 text-gray-200">
+        Questions? Email{" "}
+        <a
+          href="mailto:support@uselifebook.ai"
+          className="text-sky-400 underline hover:text-sky-300"
+        >
+          support@uselifebook.ai
+        </a>
+        .
+      </p>
 
-        <p className="mt-12 text-sm text-gray-300">Last updated: 8/14/2025</p>
-      </div>
+      <p className="mt-12 text-sm text-gray-400">
+        Last updated: {new Date().toISOString().slice(0, 10)}
+      </p>
     </main>
   );
 }
