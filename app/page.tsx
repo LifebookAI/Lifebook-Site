@@ -31,17 +31,11 @@ export default function Page() {
         </Link>
 
         <nav className="flex items-center gap-3 sm:gap-6 text-sm text-gray-300">
-          <a href="#features" className="hover:text-white">
-            Features
-          </a>
-          <a href="#how" className="hover:text-white">
-            How it works
-          </a>
-          <a href="#faq" className="hover:text-white">
-            FAQ
-          </a>
+          <a href="#features" className="hover:text-white">Features</a>
+          <a href="#how" className="hover:text-white">How it works</a>
+          <a href="#faq" className="hover:text-white">FAQ</a>
 
-          {/* X (Twitter) button — VERY VISIBLE */}
+          {/* X (Twitter) button */}
           <a
             href="https://x.com/UseLifebookAi"
             target="_blank"
@@ -54,9 +48,7 @@ export default function Page() {
           </a>
 
           {/* Contact goes straight to email */}
-          <a href="mailto:support@uselifebook.ai" className="hover:text-white">
-            Contact
-          </a>
+          <a href="mailto:support@uselifebook.ai" className="hover:text-white">Contact</a>
         </nav>
       </header>
 
@@ -77,12 +69,13 @@ export default function Page() {
           <span className="text-gray-400">(Limited to first 150 activations.)</span>
         </div>
 
-        {/* waitlist form (Formspree) */}
+        {/* waitlist form (Formspree + redirect + honeypot) */}
         <form
-          action="https://formspree.io/f/mvgqlzvn" // your Formspree endpoint
+          action="https://formspree.io/f/mvgqlzvn"
           method="POST"
-          className="mt-6 flex w-full max-w-md gap-2"
+          className="mt-6 flex w-full max-w-md items-center gap-2"
         >
+          {/* Email input */}
           <input
             required
             type="email"
@@ -90,6 +83,20 @@ export default function Page() {
             placeholder="you@example.com"
             className="h-11 flex-1 rounded-lg border border-white/10 bg-white/5 px-4 outline-none focus:ring-2 focus:ring-cyan-500"
           />
+
+          {/* Redirect to /thanks after successful submit */}
+          <input type="hidden" name="_redirect" value="https://uselifebook.ai/thanks" />
+
+          {/* Simple spam honeypot (hidden to humans) */}
+          <input
+            type="text"
+            name="_gotcha"
+            className="hidden"
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+          />
+
           <button
             type="submit"
             className="h-11 rounded-lg bg-cyan-500 px-4 font-medium text-black hover:bg-cyan-400"
@@ -100,63 +107,37 @@ export default function Page() {
 
         <p className="mt-2 text-xs text-gray-400">
           No spam. We’ll only email you about launch and early access.{" "}
-          <Link href="#whats-included" className="underline hover:no-underline">
-            See what’s included
-          </Link>{" "}
-          ·{" "}
-          <Link href="/privacy" className="underline hover:no-underline">
-            Privacy
-          </Link>{" "}
-          ·{" "}
-          <Link href="/terms" className="underline hover:no-underline">
-            Terms
-          </Link>{" "}
-          ·{" "}
-          <a
-            href="mailto:support@uselifebook.ai"
-            className="underline hover:no-underline"
-          >
-            support@uselifebook.ai
-          </a>
+          <Link href="#whats-included" className="underline hover:no-underline">See what’s included</Link>{" "}
+          · <Link href="/privacy" className="underline hover:no-underline">Privacy</Link>{" "}
+          · <Link href="/terms" className="underline hover:no-underline">Terms</Link>{" "}
+          · <a href="mailto:support@uselifebook.ai" className="underline hover:no-underline">support@uselifebook.ai</a>
         </p>
 
         {/* feature cards */}
         <div id="features" className="mt-10 grid gap-4 sm:grid-cols-3">
           <div className="rounded-xl border border-white/10 bg-white/5 p-4">
             <h3 className="font-medium">High-accuracy transcription</h3>
-            <p className="mt-1 text-sm text-gray-400">
-              Upload audio/video and get clean text you can trust.
-            </p>
+            <p className="mt-1 text-sm text-gray-400">Upload audio/video and get clean text you can trust.</p>
           </div>
           <div className="rounded-xl border border-white/10 bg-white/5 p-4">
             <h3 className="font-medium">Chaptered summaries</h3>
-            <p className="mt-1 text-sm text-gray-400">
-              Bullet summaries with timestamps for fast scanning.
-            </p>
+            <p className="mt-1 text-sm text-gray-400">Bullet summaries with timestamps for fast scanning.</p>
           </div>
           <div className="rounded-xl border border-white/10 bg-white/5 p-4">
             <h3 className="font-medium">Auto highlight clips</h3>
-            <p className="mt-1 text-sm text-gray-400">
-              We pick the most engaging moments ready for sharing.
-            </p>
+            <p className="mt-1 text-sm text-gray-400">We pick the most engaging moments ready for sharing.</p>
           </div>
           <div className="rounded-xl border border-white/10 bg-white/5 p-4">
             <h3 className="font-medium">Searchable archive</h3>
-            <p className="mt-1 text-sm text-gray-400">
-              Find moments by keyword, chapter, or tag across projects.
-            </p>
+            <p className="mt-1 text-sm text-gray-400">Find moments by keyword, chapter, or tag across projects.</p>
           </div>
           <div className="rounded-xl border border-white/10 bg-white/5 p-4">
             <h3 className="font-medium">One-click exports</h3>
-            <p className="mt-1 text-sm text-gray-400">
-              TXT, DOCX, PDF, and MP4 (720p/1080p by plan).
-            </p>
+            <p className="mt-1 text-sm text-gray-400">TXT, DOCX, PDF, and MP4 (720p/1080p by plan).</p>
           </div>
           <div className="rounded-xl border border-white/10 bg-white/5 p-4">
             <h3 className="font-medium">Works with your tools</h3>
-            <p className="mt-1 text-sm text-gray-400">
-              Import from Drive; export to Notion; share to Slack.
-            </p>
+            <p className="mt-1 text-sm text-gray-400">Import from Drive; export to Notion; share to Slack.</p>
           </div>
         </div>
 
@@ -166,21 +147,15 @@ export default function Page() {
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="rounded-xl border border-white/10 bg-white/5 p-4">
               <h3 className="font-medium">Step 1</h3>
-              <p className="mt-1 text-sm text-gray-400">
-                Upload: drag in audio or video—big files welcome.
-              </p>
+              <p className="mt-1 text-sm text-gray-400">Upload: drag in audio or video—big files welcome.</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/5 p-4">
               <h3 className="font-medium">Step 2</h3>
-              <p className="mt-1 text-sm text-gray-400">
-                Process: we transcribe, summarize, and pick highlights.
-              </p>
+              <p className="mt-1 text-sm text-gray-400">Process: we transcribe, summarize, and pick highlights.</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/5 p-4">
               <h3 className="font-medium">Step 3</h3>
-              <p className="mt-1 text-sm text-gray-400">
-                Export: copy notes or download clips to share anywhere.
-              </p>
+              <p className="mt-1 text-sm text-gray-400">Export: copy notes or download clips to share anywhere.</p>
             </div>
           </div>
         </section>
@@ -192,9 +167,8 @@ export default function Page() {
           <div className="rounded-xl border border-white/10 bg-white/5 p-4">
             <h3 className="font-medium">What does the Founder offer include?</h3>
             <p className="mt-1 text-sm text-gray-400">
-              Founders receive a special badge in the app and their first month
-              of Pro free. Limited to the first 150 activations. Card required;
-              cancel anytime.
+              Founders receive a special badge in the app and their first month of Pro free.
+              Limited to the first 150 activations. Card required; cancel anytime.
             </p>
           </div>
 
@@ -208,8 +182,7 @@ export default function Page() {
           <div className="mt-3 rounded-xl border border-white/10 bg-white/5 p-4">
             <h3 className="font-medium">Will pricing include overages?</h3>
             <p className="mt-1 text-sm text-gray-400">
-              No overages. Plans include monthly minutes; optional minute packs
-              never auto-renew.
+              No overages. Plans include monthly minutes; optional minute packs never auto-renew.
             </p>
           </div>
         </section>
@@ -220,19 +193,11 @@ export default function Page() {
         <div className="mx-auto w-full max-w-6xl px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-gray-400">
           <p>© {new Date().getFullYear()} Lifebook.AI</p>
           <div className="flex items-center gap-4">
-            <Link href="/privacy" className="hover:text-white">
-              Privacy
-            </Link>
-            <Link href="/terms" className="hover:text-white">
-              Terms
-            </Link>
-            <a
-              href="mailto:support@uselifebook.ai"
-              className="hover:text-white"
-            >
+            <Link href="/privacy" className="hover:text-white">Privacy</Link>
+            <Link href="/terms" className="hover:text-white">Terms</Link>
+            <a href="mailto:support@uselifebook.ai" className="hover:text-white">
               support@uselifebook.ai
             </a>
-            {/* BIG, CLEAR X BUTTON */}
             <a
               href="https://x.com/UseLifebookAi"
               target="_blank"
