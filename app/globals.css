@@ -6,29 +6,29 @@
 html, body, :root { height: 100%; }
 :root { color-scheme: dark; }
 
-/* Make both html and body the dark landing background */
+/* Match landing background everywhere */
 html, body {
   background:
     radial-gradient(1000px 600px at 20% -10%, rgba(56, 189, 248, 0.08), transparent 40%),
     radial-gradient(900px 500px at 80% -10%,  rgba(59, 130, 246, 0.08), transparent 38%),
     #0b1220;
-  color: #e5e7eb; /* base readable */
+  color: #e5e7eb;
 }
 
-/* Headings & links for contrast */
+/* Readable text & links */
 h1, h2, h3, h4, h5, h6 { color: #fff; }
+p, li, dd, dt { color: #e5e7eb; }
+small, .muted { color: #9ca3af; }
 a { color: rgb(56 189 248); text-decoration: underline; }
 a:hover { color: rgb(125 211 252); }
 
-/* Header/nav must stay transparent (no light strip) */
-header, nav {
-  background: transparent !important;
-  box-shadow: none !important;
+/* Keep header/nav transparent (no white stripe) */
+header, nav { background: transparent !important; box-shadow: none !important; }
+
+/* If you use .card anywhere, style it without @apply */
+.card {
+  border-radius: 1rem;           /* ~ rounded-2xl */
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.05);
+  padding: 1.5rem;               /* ~ p-6 */
 }
-
-/* Card style used across pages */
-.card { @apply rounded-2xl border border-white/10 bg-white/5 p-6; }
-
-/* Ensure normal text is bright enough everywhere */
-p, li, dd, dt { color: #e5e7eb; }
-small, .muted { color: #9ca3af; } /* gray-400 */

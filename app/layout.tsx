@@ -1,5 +1,6 @@
 // app/layout.tsx
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -23,31 +24,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-[#0b1220] text-gray-200 antialiased`}
       >
-        {/* Site header, shared on every page */}
+        {/* Shared header (no white bar) */}
         <header className="sticky top-0 z-50">
-          {/* Soft dark fade under the nav (no white bar) */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 to-transparent"></div>
-
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 to-transparent" />
           <nav className="relative mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
-            <a href="/" className="text-white font-semibold">
+            <Link href="/" className="text-white font-semibold">
               Lifebook.<span className="text-sky-400">AI</span>
-            </a>
+            </Link>
 
             <ul className="flex items-center gap-6 text-sm">
               <li>
-                <a href="#features" className="text-gray-300 hover:text-white">
+                <Link href="#features" className="text-gray-300 hover:text-white">
                   Features
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#how" className="text-gray-300 hover:text-white">
+                <Link href="#how" className="text-gray-300 hover:text-white">
                   How it works
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#faq" className="text-gray-300 hover:text-white">
+                <Link href="#faq" className="text-gray-300 hover:text-white">
                   FAQ
-                </a>
+                </Link>
               </li>
               <li>
                 <a
@@ -60,9 +59,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </a>
               </li>
               <li>
-                <a href="/contact" className="text-gray-300 hover:text-white">
+                <Link href="/contact" className="text-gray-300 hover:text-white">
                   Contact
-                </a>
+                </Link>
               </li>
             </ul>
           </nav>
@@ -74,12 +73,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-8 text-sm text-gray-400">
             <p>© {new Date().getFullYear()} Lifebook.AI</p>
             <div className="flex items-center gap-5">
-              <a href="/privacy" className="hover:text-white">
+              <Link href="/privacy" className="hover:text-white">
                 Privacy
-              </a>
-              <a href="/terms" className="hover:text-white">
+              </Link>
+              <Link href="/terms" className="hover:text-white">
                 Terms
-              </a>
+              </Link>
               <a href="mailto:support@uselifebook.ai" className="hover:text-white">
                 support@uselifebook.ai
               </a>
