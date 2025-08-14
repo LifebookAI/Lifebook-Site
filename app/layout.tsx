@@ -1,53 +1,53 @@
 // app/layout.tsx
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import type { Metadata } from "next";
+import { Geist as GeistSans, Geist_Mono as GeistMono } from "next/font/google";
 
-const geistSans = Geist({
+const geistSans = GeistSans({
+  subsets: ["latin"],
   variable: "--font-geist-sans",
-  subsets: ["latin"],
 });
-
-const geistMono = Geist_Mono({
+const geistMono = GeistMono({
+  subsets: ["latin"],
   variable: "--font-geist-mono",
-  subsets: ["latin"],
 });
-
-const baseUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://uselifebook.ai";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(baseUrl),
-  title: {
-    default: "Lifebook.AI",
-    template: "%s | Lifebook.AI",
-  },
+  metadataBase: new URL("https://uselifebook.ai"),
+  title:
+    "Lifebook.AI — Turn long recordings into clean notes, clips, and a searchable archive.",
   description:
-    "Turn long recordings into clean notes, clips, and a searchable archive.",
-  // STEALTH: block search engines while we’re in private/ perks-only mode
-  robots: {
-    index: false,
-    follow: false,
-  },
+    "Upload audio or video. Get accurate transcripts, chaptered summaries with timestamps, and auto-detected highlight clips—ready to share.",
   openGraph: {
-    title: "Lifebook.AI",
-    description:
-      "Turn long recordings into clean notes, clips, and a searchable archive.",
-    url: "/",
-    siteName: "Lifebook.AI",
-    images: [{ url: "/og.png", width: 1200, height: 630 }],
-    locale: "en_US",
     type: "website",
+    url: "https://uselifebook.ai",
+    siteName: "Lifebook.AI",
+    title:
+      "Lifebook.AI — Turn long recordings into clean notes, clips, and a searchable archive.",
+    description:
+      "Upload audio or video. Get accurate transcripts, chaptered summaries with timestamps, and auto-detected highlight clips—ready to share.",
+    images: [
+      {
+        url: "/og.png", // already in /public
+        width: 1200,
+        height: 630,
+        alt: "Lifebook.AI",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Lifebook.AI",
+    site: "@UseLifebookAi",
+    creator: "@UseLifebookAi",
+    title:
+      "Lifebook.AI — Turn long recordings into clean notes, clips, and a searchable archive.",
     description:
-      "Turn long recordings into clean notes, clips, and a searchable archive.",
+      "Upload audio or video. Get accurate transcripts, chaptered summaries with timestamps, and auto-detected highlight clips—ready to share.",
     images: ["/og.png"],
   },
+  robots: { index: true, follow: true },
   icons: {
-    icon: "/favicon.png",
+    shortcut: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
 };
@@ -59,7 +59,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         {children}
       </body>
     </html>
