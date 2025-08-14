@@ -1,7 +1,8 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Lifebook.AI — Turn long recordings into clean notes, clips, and a searchable archive.",
+  title:
+    "Lifebook.AI — Turn long recordings into clean notes, clips, and a searchable archive.",
   description:
     "Upload audio or video. Get accurate transcripts, chaptered summaries, and auto-detected highlight clips—ready to share.",
 };
@@ -13,23 +14,35 @@ export default function Page() {
       <header className="mx-auto w-full max-w-6xl px-6 py-6 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-cyan-400" />
-          <span className="font-semibold">Lifebook.<span className="text-cyan-400">AI</span></span>
+          <span className="font-semibold">
+            Lifebook.<span className="text-cyan-400">AI</span>
+          </span>
         </Link>
 
         <nav className="flex items-center gap-6 text-sm text-gray-300">
-          <a href="#features" className="hover:text-white">Features</a>
-          <a href="#how" className="hover:text-white">How it works</a>
-          <a href="#faq" className="hover:text-white">FAQ</a>
+          <a href="#features" className="hover:text-white">
+            Features
+          </a>
+          <a href="#how" className="hover:text-white">
+            How it works
+          </a>
+          <a href="#faq" className="hover:text-white">
+            FAQ
+          </a>
           {/* Contact goes straight to email */}
-          <a href="mailto:support@uselifebook.ai" className="hover:text-white">Contact</a>
+          <a href="mailto:support@uselifebook.ai" className="hover:text-white">
+            Contact
+          </a>
         </nav>
       </header>
 
       {/* hero */}
       <section className="mx-auto w-full max-w-6xl px-6 pt-4 pb-12">
         <h1 className="max-w-3xl text-4xl sm:text-5xl font-bold leading-tight">
-          Turn long recordings into <span className="text-cyan-400">clean</span><span> notes, </span>
-          <span className="text-cyan-400">clips</span>, and a <span className="text-cyan-400">searchable</span> archive.
+          Turn long recordings into <span className="text-cyan-400">clean</span>
+          <span> notes, </span>
+          <span className="text-cyan-400">clips</span>, and a{" "}
+          <span className="text-cyan-400">searchable</span> archive.
         </h1>
 
         {/* founder promo */}
@@ -42,7 +55,7 @@ export default function Page() {
 
         {/* waitlist form (Formspree) */}
         <form
-          action="https://formspree.io/f/mvgqlzvn" /* <- your Formspree endpoint */
+          action="https://formspree.io/f/mvgqlzvn" // your Formspree endpoint
           method="POST"
           className="mt-6 flex w-full max-w-md gap-2"
         >
@@ -63,11 +76,24 @@ export default function Page() {
 
         <p className="mt-2 text-xs text-gray-400">
           No spam. We’ll only email you about launch and early access.{" "}
-          <Link href="#whats-included" className="underline hover:no-underline">See what’s included</Link>{" "}
-          · <Link href="/privacy" className="underline hover:no-underline">Privacy</Link>{" "}
-          · <Link href="/terms" className="underline hover:no-underline">Terms</Link>{" "}
-          · {/* clickable email */}
-          <a href="mailto:support@uselifebook.ai" className="underline hover:no-underline">support@uselifebook.ai</a>
+          <Link href="#whats-included" className="underline hover:no-underline">
+            See what’s included
+          </Link>{" "}
+          ·{" "}
+          <Link href="/privacy" className="underline hover:no-underline">
+            Privacy
+          </Link>{" "}
+          ·{" "}
+          <Link href="/terms" className="underline hover:no-underline">
+            Terms
+          </Link>{" "}
+          ·{" "}
+          <a
+            href="mailto:support@uselifebook.ai"
+            className="underline hover:no-underline"
+          >
+            support@uselifebook.ai
+          </a>
         </p>
 
         {/* feature cards */}
@@ -142,8 +168,9 @@ export default function Page() {
           <div className="rounded-xl border border-white/10 bg-white/5 p-4">
             <h3 className="font-medium">What does the Founder offer include?</h3>
             <p className="mt-1 text-sm text-gray-400">
-              Founders receive a special badge in the app and their first month of Pro free.
-              Limited to the first 150 activations. Card required; cancel anytime.
+              Founders receive a special badge in the app and their first month
+              of Pro free. Limited to the first 150 activations. Card required;
+              cancel anytime.
             </p>
           </div>
 
@@ -157,7 +184,8 @@ export default function Page() {
           <div className="mt-3 rounded-xl border border-white/10 bg-white/5 p-4">
             <h3 className="font-medium">Will pricing include overages?</h3>
             <p className="mt-1 text-sm text-gray-400">
-              No overages. Plans include monthly minutes; optional minute packs never auto-renew.
+              No overages. Plans include monthly minutes; optional minute packs
+              never auto-renew.
             </p>
           </div>
         </section>
@@ -168,10 +196,26 @@ export default function Page() {
         <div className="mx-auto w-full max-w-6xl px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-gray-400">
           <p>© {new Date().getFullYear()} Lifebook.AI</p>
           <div className="flex items-center gap-4">
-            <Link href="/privacy" className="hover:text-white">Privacy</Link>
-            <Link href="/terms" className="hover:text-white">Terms</Link>
-            <a href="mailto:support@uselifebook.ai" className="hover:text-white">
+            <Link href="/privacy" className="hover:text-white">
+              Privacy
+            </Link>
+            <Link href="/terms" className="hover:text-white">
+              Terms
+            </Link>
+            <a
+              href="mailto:support@uselifebook.ai"
+              className="hover:text-white"
+            >
               support@uselifebook.ai
+            </a>
+            {/* X (Twitter) link */}
+            <a
+              href="https://x.com/UseLifebookAi"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white"
+            >
+              <span className="sr-only">X (Twitter)</span> X
             </a>
           </div>
         </div>
