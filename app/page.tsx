@@ -7,6 +7,17 @@ export const metadata = {
     "Upload audio or video. Get accurate transcripts, chaptered summaries, and auto-detected highlight clips—ready to share.",
 };
 
+function IconX(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
+      <path
+        fill="currentColor"
+        d="M18.9 2H22l-7.1 8.1L23.3 22h-6.4l-5-6.6L5.9 22H2.8l7.6-8.7L1.7 2h6.5l4.6 6.1L18.9 2zM17.8 20h1.8L8.4 4H6.6l11.2 16z"
+      />
+    </svg>
+  );
+}
+
 export default function Page() {
   return (
     <main className="min-h-screen bg-[#0b1020] text-white">
@@ -19,7 +30,7 @@ export default function Page() {
           </span>
         </Link>
 
-        <nav className="flex items-center gap-6 text-sm text-gray-300">
+        <nav className="flex items-center gap-3 sm:gap-6 text-sm text-gray-300">
           <a href="#features" className="hover:text-white">
             Features
           </a>
@@ -29,6 +40,19 @@ export default function Page() {
           <a href="#faq" className="hover:text-white">
             FAQ
           </a>
+
+          {/* X (Twitter) button — VERY VISIBLE */}
+          <a
+            href="https://x.com/UseLifebookAi"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 hover:bg-white/10 transition"
+            aria-label="Follow on X (Twitter)"
+          >
+            <IconX className="h-4 w-4" />
+            <span>Follow on X</span>
+          </a>
+
           {/* Contact goes straight to email */}
           <a href="mailto:support@uselifebook.ai" className="hover:text-white">
             Contact
@@ -208,14 +232,16 @@ export default function Page() {
             >
               support@uselifebook.ai
             </a>
-            {/* X (Twitter) link */}
+            {/* BIG, CLEAR X BUTTON */}
             <a
               href="https://x.com/UseLifebookAi"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-white"
+              className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 hover:bg-white/10 transition"
+              aria-label="Follow us on X (Twitter)"
             >
-              <span className="sr-only">X (Twitter)</span> X
+              <IconX className="h-4 w-4" />
+              <span>Follow on X</span>
             </a>
           </div>
         </div>
