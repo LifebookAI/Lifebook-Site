@@ -1,79 +1,88 @@
 // app/layout.tsx
-import "./globals.css";
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Lifebook.AI",
+  title: {
+    default: "Lifebook.AI",
+    template: "%s | Lifebook.AI",
+  },
   description:
     "Turn long recordings into clean notes, clips, and a searchable archive.",
-  metadataBase: new URL("https://uselifebook.ai"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://uselifebook.ai"),
   robots: { index: true, follow: true },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-[#0b1220] text-gray-100 antialiased">
-        {/* Header – dark, no gray bar */}
-        <header className="sticky top-0 z-50 border-b border-white/5 bg-black/30 backdrop-blur-md">
-          <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-            <Link href="/" className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-sky-400" />
-              <span className="font-semibold text-white">Lifebook</span>
-              <span className="text-sky-400">.AI</span>
-            </Link>
+    <html lang="en" className="h-full">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-[#0b1220] text-gray-200 antialiased`}
+      >
+        {/* Site header, shared on every page */}
+        <header className="sticky top-0 z-50">
+          {/* Soft dark fade under the nav (no white bar) */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 to-transparent"></div>
 
-            <div className="flex items-center gap-5 text-sm">
-              <Link href="/#features" className="text-gray-200 hover:text-white">
-                Features
-              </Link>
-              <Link href="/#how-it-works" className="text-gray-200 hover:text-white">
-                How it works
-              </Link>
-              <Link href="/#faq" className="text-gray-200 hover:text-white">
-                FAQ
-              </Link>
-              <a
-                className="rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-gray-100 hover:bg-white/10"
-                href="https://x.com/UseLifebookAi"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Follow on X
-              </a>
-              <Link href="/contact" className="text-gray-200 hover:text-white">
-                Contact
-              </Link>
-            </div>
+          <nav className="relative mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
+            <a href="/" className="text-white font-semibold">
+              Lifebook.<span className="text-sky-400">AI</span>
+            </a>
+
+            <ul className="flex items-center gap-6 text-sm">
+              <li>
+                <a href="#features" className="text-gray-300 hover:text-white">
+                  Features
+                </a>
+              </li>
+              <li>
+                <a href="#how" className="text-gray-300 hover:text-white">
+                  How it works
+                </a>
+              </li>
+              <li>
+                <a href="#faq" className="text-gray-300 hover:text-white">
+                  FAQ
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://x.com/UseLifebookAi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-xl border border-white/10 bg-white/5 px-3 py-1 text-gray-200 hover:bg-white/10"
+                >
+                  Follow on X
+                </a>
+              </li>
+              <li>
+                <a href="/contact" className="text-gray-300 hover:text-white">
+                  Contact
+                </a>
+              </li>
+            </ul>
           </nav>
         </header>
 
-        {/* Page content */}
-        <div className="min-h-[calc(100vh-56px)]">{children}</div>
+        <main className="relative">{children}</main>
 
-        {/* Footer */}
-        <footer className="border-t border-white/5 bg-black/20">
-          <div className="mx-auto max-w-6xl px-4 py-10 text-sm text-gray-400">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div>
-                © {new Date().getFullYear()} Lifebook.AI
-              </div>
-              <div className="flex items-center gap-4">
-                <Link href="/privacy" className="hover:text-white">
-                  Privacy
-                </Link>
-                <Link href="/terms" className="hover:text-white">
-                  Terms
-                </Link>
-                <a href="mailto:support@uselifebook.ai" className="hover:text-white">
-                  support@uselifebook.ai
-                </a>
-              </div>
+        <footer className="mt-20 border-t border-white/10 bg-white/[0.02]">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-8 text-sm text-gray-400">
+            <p>© {new Date().getFullYear()} Lifebook.AI</p>
+            <div className="flex items-center gap-5">
+              <a href="/privacy" className="hover:text-white">
+                Privacy
+              </a>
+              <a href="/terms" className="hover:text-white">
+                Terms
+              </a>
+              <a href="mailto:support@uselifebook.ai" className="hover:text-white">
+                support@uselifebook.ai
+              </a>
             </div>
           </div>
         </footer>

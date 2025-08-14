@@ -3,22 +3,32 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Make sure the page fills the viewport */
 html, body, :root { height: 100%; }
-
-/* Use dark color scheme for form controls, etc. */
 :root { color-scheme: dark; }
 
-/* Landing-style dark background with soft accent glows */
-body {
+/* Make both html and body the dark landing background */
+html, body {
   background:
     radial-gradient(1000px 600px at 20% -10%, rgba(56, 189, 248, 0.08), transparent 40%),
     radial-gradient(900px 500px at 80% -10%,  rgba(59, 130, 246, 0.08), transparent 38%),
     #0b1220;
-  color: #e5e7eb; /* Tailwind gray-200 for readable default text */
+  color: #e5e7eb; /* base readable */
 }
 
-/* High-contrast headings and links on dark */
-h1, h2, h3, h4, h5, h6 { color: #ffffff; }
-a { color: rgb(56 189 248); text-decoration: underline; }      /* sky-400 */
-a:hover { color: rgb(125 211 252); }                            /* sky-300 */
+/* Headings & links for contrast */
+h1, h2, h3, h4, h5, h6 { color: #fff; }
+a { color: rgb(56 189 248); text-decoration: underline; }
+a:hover { color: rgb(125 211 252); }
+
+/* Header/nav must stay transparent (no light strip) */
+header, nav {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Card style used across pages */
+.card { @apply rounded-2xl border border-white/10 bg-white/5 p-6; }
+
+/* Ensure normal text is bright enough everywhere */
+p, li, dd, dt { color: #e5e7eb; }
+small, .muted { color: #9ca3af; } /* gray-400 */
