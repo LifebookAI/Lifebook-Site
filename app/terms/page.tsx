@@ -1,39 +1,34 @@
 // app/terms/page.tsx
-export const metadata = {
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
   title: "Terms of Service — Lifebook.AI",
-  description:
-    "The terms that govern your use of Lifebook.AI.",
+  description: "The terms for using Lifebook.AI.",
 };
 
-export default function Page() {
+export default function TermsPage() {
   return (
-    <main className="min-h-[70vh] bg-[#0b1220] text-white">
-      <div className="mx-auto max-w-3xl px-4 py-16">
-        <h1 className="text-3xl font-semibold">Terms of Service</h1>
-        <p className="mt-2 text-gray-300">Last updated: August 2025</p>
+    <main className="min-h-screen px-6 py-16">
+      <div className="mx-auto max-w-3xl">
+        <h1 className="text-3xl font-bold">Terms of Service</h1>
+        <p className="mt-4 text-gray-300">
+          By using this site and joining the waitlist, you agree to be contacted about early access and launch updates.
+          The service is provided “as is” during pre-launch. For any questions, email{" "}
+          <a href="mailto:support@uselifebook.ai" className="underline">support@uselifebook.ai</a>.
+        </p>
 
-        <div className="mt-8 space-y-6 text-gray-200">
-          <p>
-            By using Lifebook.AI, you agree to these terms. If you don’t agree, please don’t use the service.
-          </p>
+        <h2 className="mt-8 text-xl font-semibold">Founders offer</h2>
+        <p className="mt-2 text-gray-300">
+          The founder badge + first month of Pro free is limited to the first 150 activations at public launch.
+          Card required; you can cancel anytime. We may modify or end the offer before launch.
+        </p>
 
-          <h2 className="text-xl font-semibold text-white">Use of the service</h2>
-          <ul className="list-disc pl-6 space-y-2">
-            <li>You’re responsible for uploaded content and having rights to it.</li>
-            <li>Don’t misuse the service or break the law.</li>
-          </ul>
+        <h2 className="mt-8 text-xl font-semibold">Acceptable use</h2>
+        <p className="mt-2 text-gray-300">
+          Don’t upload illegal or abusive content. We may remove content or restrict access to protect the service.
+        </p>
 
-          <h2 className="text-xl font-semibold text-white">Disclaimer</h2>
-          <p>
-            The service is provided “as is” without warranties. We limit liability to the maximum
-            extent permitted by law.
-          </p>
-
-          <h2 className="text-xl font-semibold text-white">Contact</h2>
-          <p>
-            Questions? <a className="underline" href="mailto:support@uselifebook.ai">support@uselifebook.ai</a>.
-          </p>
-        </div>
+        <p className="mt-8 text-sm text-gray-400">Last updated: {new Date().toLocaleDateString()}</p>
       </div>
     </main>
   );
