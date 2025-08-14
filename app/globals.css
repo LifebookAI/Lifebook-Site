@@ -1,26 +1,24 @@
-@import "tailwindcss";
+/* app/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* Make sure the page fills the viewport */
+html, body, :root { height: 100%; }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* Use dark color scheme for form controls, etc. */
+:root { color-scheme: dark; }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Landing-style dark background with soft accent glows */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(1000px 600px at 20% -10%, rgba(56, 189, 248, 0.08), transparent 40%),
+    radial-gradient(900px 500px at 80% -10%,  rgba(59, 130, 246, 0.08), transparent 38%),
+    #0b1220;
+  color: #e5e7eb; /* Tailwind gray-200 for readable default text */
 }
+
+/* High-contrast headings and links on dark */
+h1, h2, h3, h4, h5, h6 { color: #ffffff; }
+a { color: rgb(56 189 248); text-decoration: underline; }      /* sky-400 */
+a:hover { color: rgb(125 211 252); }                            /* sky-300 */
