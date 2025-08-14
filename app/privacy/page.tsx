@@ -3,7 +3,7 @@ export const metadata = { title: "Privacy Policy — Lifebook.AI" };
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen px-6 py-16 opacity-100">
+    <main className="min-h-screen px-6 py-16">
       <div className="mx-auto max-w-3xl leading-relaxed">
         <h1 className="text-3xl font-semibold text-white">Privacy Policy</h1>
 
@@ -24,26 +24,20 @@ export default function PrivacyPage() {
           <li>
             <span className="font-medium text-white">Before public launch:</span>{" "}
             request data deletion by emailing{" "}
-            <a
-              className="underline text-sky-300 hover:text-sky-200"
-              href="mailto:support@uselifebook.ai"
-            >
+            <a className="underline text-sky-300 hover:text-sky-200" href="mailto:support@uselifebook.ai">
               support@uselifebook.ai
             </a>.
           </li>
           <li>
-            <span className="font-medium text-white">After launch:</span> you’ll be able
-            to delete your account and all associated data yourself from{" "}
-            <span className="italic">Settings → Account</span> in the app. We’ll also
-            offer a one-click data export.
+            <span className="font-medium text-white">After launch:</span> you’ll be able to
+            delete your account and all associated data yourself from <em>Settings → Account</em>.
           </li>
         </ul>
 
         <h2 className="mt-8 text-xl font-semibold text-white">Deletion timelines</h2>
         <p className="mt-3 text-gray-100">
-          When you delete or request deletion, we remove active records promptly and
-          purge logs/backups within ~30 days. Where we use third-party processors (e.g.,
-          email, hosting), we propagate the deletion there as well.
+          When you delete or request deletion, we remove active records promptly and purge
+          logs/backups within ~30 days, including at our processors.
         </p>
 
         <p className="mt-12 text-sm text-gray-300">Last updated: 8/14/2025</p>
