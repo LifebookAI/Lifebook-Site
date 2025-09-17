@@ -1,28 +1,47 @@
 name: Upload smoke
-
 on:
-  workflow_dispatch: {}   # enables the "Run workflow" button
+  workflow_dispatch:
 
 jobs:
   presign_and_upload:
     runs-on: windows-latest
+
+    # Map repo Secrets/Variables into env (no secrets printed)
+    env:
+      PRESIGN_API_BASE:      ${{ secrets.PRESIGN_API_BASE }}       # e.g. https://api.uselifebook.ai/presign  OR your /prod/presign
+      PRESIGN_API_KEY:       ${{ secrets.PRESIGN_API_KEY }}
+      PRESIGN_HMAC_SECRET:   ${{ secrets.PRESIGN_HMAC_SECRET }}
+
+      LIFEBOOK_UPLOAD_PREFIX: ${{ vars.LIFEBOOK_UPLOAD_PREFIX }}    # sources/
+      CLOUDFRONT_DOMAIN:      ${{ vars.CLOUDFRONT_DOMAIN }}         # files.uselifebook.ai
+      PRESIGN_TS_STYLE:       ${{ vars.PRESIGN_TS_STYLE }}          # epoch
+      PRESIGN_SIG_PATTERN:    ${{ vars.PRESIGN_SIG_PATTERN }}       # ts.body
+      PRESIGN_SIG_ENCODING:   ${{ vars.PRESIGN_SIG_ENCODING }}      # hex
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Presign + Upload (PowerShell script)
+      - name: Sanity-check inputs (masked)
         shell: pwsh
-        env:
-          PRESIGN_API_BASE:      ${{ secrets.PRESIGN_API_BASE }}
-          PRESIGN_API_KEY:       ${{ secrets.PRESIGN_API_KEY }}
-          PRESIGN_HMAC_SECRET:   ${{ secrets.PRESIGN_HMAC_SECRET }}
-
-          # repo variables (or make them secrets too if you prefer)
-          LIFEBOOK_UPLOAD_PREFIX:  ${{ vars.LIFEBOOK_UPLOAD_PREFIX }}
-          CLOUDFRONT_DOMAIN:       ${{ vars.CLOUDFRONT_DOMAIN }}
-          PRESIGN_TS_STYLE:        ${{ vars.PRESIGN_TS_STYLE }}
-          PRESIGN_SIG_PATTERN:     ${{ vars.PRESIGN_SIG_PATTERN }}
-          PRESIGN_SIG_ENCODING:    ${{ vars.PRESIGN_SIG_ENCODING }}
         run: |
-          # Run our script that does presign + PUT + verify
-          ./.github/workflows/scripts/presign-smoke.ps1
+          $hasBase   = -not [string]::IsNullOrWhiteSpace($env:PRESIGN_API_BASE)
+          $hasKey    = -not [string]::IsNullOrWhiteSpace($env:PRESIGN_API_KEY)
+          $hasSecret = -not [string]::IsNullOrWhiteSpace($env:PRESIGN_HMAC_SECRET)
+          Write-Host "Have PRESIGN_API_BASE?  $hasBase"
+          Write-Host "Have PRESIGN_API_KEY?   $hasKey"
+          Write-Host "Have PRESIGN_HMAC_SECRET? $hasSecret"
+          Write-Host "Vars: prefix=$env:LIFEBOOK_UPLOAD_PREFIX cf=$env:CLOUDFRONT_DOMAIN ts=$env:PRESIGN_TS_STYLE pat=$env:PRESIGN_SIG_PATTERN enc=$env:PRESIGN_SIG_ENCODING"
+
+      - name: Presign and upload
+        shell: pwsh
+        run: .github/workflows/scripts/presign-smoke.ps1
+
+      - name: Show generated URL (if any)
+        if: always()
+        shell: pwsh
+        run: |
+          if (Test-Path env:_PUBLIC_URL) {
+            Write-Host "Public URL: $env:_PUBLIC_URL"
+          } else {
+            Write-Host "No public URL captured."
+          }
