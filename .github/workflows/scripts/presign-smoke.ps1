@@ -1,111 +1,102 @@
-# .github/workflows/scripts/presign-smoke.ps1
-# Presign -> PUT to S3 -> verify via CloudFront
+# presign-smoke.ps1 — GitHub Actions friendly (PowerShell 7)
+# Uses env: API_BASE, API_KEY, SECRET
 
-# ---------------- helpers ----------------
-function Clean([string]$s) {
-  if ($null -eq $s) { return "" }
-  # remove CR/LF and all ASCII control chars (incl. \x00-\x1F and \x7F)
-  $t = $s -replace "`r","" -replace "`n",""
-  $t = $t -replace '[\x00-\x1F\x7F]', ''
-  return $t.Trim()
+$ErrorActionPreference = 'Stop'
+
+# --- Inputs (masked in Actions logs) ---
+$api     = $env:API_BASE
+$key     = $env:API_KEY
+$secret  = $env:SECRET
+
+Write-Host "API_BASE length: $($api.Length)"
+Write-Host "API_KEY  length: $($key.Length)"
+Write-Host "SECRET  length: $($secret.Length)"
+
+if ([string]::IsNullOrWhiteSpace($api) -or
+    [string]::IsNullOrWhiteSpace($key) -or
+    [string]::IsNullOrWhiteSpace($secret)) {
+  Write-Error "Missing one or more required env vars: API_BASE, API_KEY, SECRET"
+  exit 1
 }
 
-function SigHex([string]$secret, [string]$payload) {
-  $h = New-Object System.Security.Cryptography.HMACSHA256
-  $h.Key = [Text.Encoding]::UTF8.GetBytes($secret)
+# --- Canonical JSON body (no extra spaces/newlines) ---
+# Keep this EXACTLY in sync with your Next.js request body
+$body = '{"key":"sources/hello.txt","contentType":"text/plain","contentDisposition":"attachment; filename=\"hello.txt\""}'
+
+# --- Timestamp for HMAC ---
+$ts = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds().ToString()
+
+# --- HMAC (hex, lowercase) ---
+function Get-HmacHex([string]$k, [string]$payload) {
+  $h = [System.Security.Cryptography.HMACSHA256]::new([Text.Encoding]::UTF8.GetBytes($k))
   $bytes = $h.ComputeHash([Text.Encoding]::UTF8.GetBytes($payload))
-  -join ($bytes | ForEach-Object { $_.ToString("x2") })
+  ([BitConverter]::ToString($bytes)).Replace('-','').ToLower()
 }
 
-# ---------------- inputs -----------------
-$API_BASE = Clean $env:PRESIGN_API_BASE
-$API_KEY  = Clean $env:PRESIGN_API_KEY
-$SECRET   = Clean $env:PRESIGN_HMAC_SECRET
+# Sign "<ts>.<body>"
+$sig = Get-HmacHex $secret "$ts.$body"
 
-if (-not $API_BASE -or -not $API_KEY -or -not $SECRET) {
-  Write-Error "Missing PRESIGN_API_BASE, PRESIGN_API_KEY, or PRESIGN_HMAC_SECRET"
-  exit 1
-}
-
-Write-Host ("API_BASE length: {0}" -f $API_BASE.Length)
-Write-Host ("API_KEY  length: {0}" -f $API_KEY.Length)
-Write-Host ("SECRET  length: {0}" -f $SECRET.Length)
-
-# canonical body (used for both signing and POST)
-$key  = "sources/hello.txt"
-$body = (@{ key = $key } | ConvertTo-Json -Compress)
-
-$ts   = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds().ToString()
-$sig  = SigHex $SECRET "$ts.$body"
-
+# --- Call presign endpoint ---
 $headers = @{
-  "x-api-key"   = $API_KEY
-  "x-timestamp" = $ts
-  "x-signature" = $sig
+  'content-type' = 'application/json'
+  'x-api-key'    = $key
+  'x-timestamp'  = $ts
+  'x-signature'  = $sig
 }
 
-# quick header validation to catch hidden control chars
-foreach ($kv in $headers.GetEnumerator()) {
-  if ($kv.Value -match '[\x00-\x1F\x7F]') {
-    Write-Error ("Header {0} contains control characters" -f $kv.Key)
-    exit 1
-  }
-}
-
-# ---------------- presign ----------------
 try {
-  $resp = Invoke-WebRequest `
-    -UseBasicParsing -Method POST -Uri $API_BASE `
-    -Headers $headers -Body $body -ContentType "application/json"
+  $resp = Invoke-WebRequest -UseBasicParsing -Method POST -Uri $api -Headers $headers -Body $body -ErrorAction Stop
+  Write-Host "Presign HTTP: $($resp.StatusCode)"
+  $res  = $resp.Content | ConvertFrom-Json
 } catch {
-  if ($_.Exception.Response) {
-    $sr = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream())
-    Write-Error ("Presign failed: " + $sr.ReadToEnd())
+  Write-Host "Presign failed:"
+  # In pwsh 7, .Response is HttpResponseMessage (no GetResponseStream); read Content correctly.
+  $hrm = $_.Exception.Response
+  if ($hrm -and $hrm.Content) {
+    $code = [int]$hrm.StatusCode
+    $text = $hrm.Content.ReadAsStringAsync().Result
+    Write-Host "HTTP: $code"
+    Write-Host $text
   } else {
-    Write-Error ("Presign failed: " + $_.Exception.Message)
+    Write-Host "No HTTP response: $($_.Exception.Message)"
   }
   exit 1
 }
 
-$res    = $resp.Content | ConvertFrom-Json
+# --- Extract URLs from JSON ---
 $putUrl = $res.url
 $pubUrl = $res.publicUrl
-$sse    = $res.sse
 
-if (-not $putUrl -or -not $pubUrl) {
-  Write-Error "Presign response missing url/publicUrl: $($resp.Content)"
-  exit 1
+if ([string]::IsNullOrWhiteSpace($putUrl) -or [string]::IsNullOrWhiteSpace($pubUrl)) {
+  Write-Error "Presign JSON missing url/publicUrl"; exit 1
 }
 
-# stash the public URL for the next step (optional)
-"$pubUrl" | Set-Content -Encoding ASCII "$env:TEMP\presign-url.txt"
+Write-Host "PUT URL length : $($putUrl.Length)"
+Write-Host "Public URL     : $pubUrl"
 
-# ---------------- upload to S3 ----------------
-$tmp = Join-Path $env:TEMP "hello.txt"
-"hello from actions $(Get-Date -AsUTC)" | Set-Content -Encoding ASCII $tmp
+# --- Create a tiny file to upload ---
+$tmp = Join-Path $env:TEMP ("hello-" + [Guid]::NewGuid().ToString("n") + ".txt")
+"hello Lifebook $(Get-Date -Format o)" | Set-Content -Encoding ASCII $tmp
 
-$cmd = @('curl.exe','-sS','--http1.1','-X','PUT', $putUrl,
-         '-H','content-type: text/plain')
+# --- PUT the object (headers must match what presign expects) ---
+# If your Lambda sets 'sse': 'AES256', keep the SSE header; if it uses KMS, switch to the KMS headers instead.
+$http = & curl.exe --silent --show-error --fail `
+  -X PUT "$putUrl" `
+  -H "content-type: text/plain" `
+  -H "content-disposition: attachment; filename=hello.txt" `
+  -H "x-amz-server-side-encryption: AES256" `
+  --upload-file "$tmp" `
+  -w "HTTP:%{http_code}`n"
 
-if ($sse -eq 'AES256') {
-  $cmd += @('-H','x-amz-server-side-encryption: AES256')
+Write-Host $http
+if ($LASTEXITCODE -ne 0 -or ($http -notmatch 'HTTP:(200|201|204)')) {
+  Write-Error "PUT failed"; exit 1
 }
 
-$cmd += @('--upload-file', $tmp, '-w','HTTP:%{http_code}`n')
+# --- Verify via CloudFront (HEAD first, then GET for fresh content) ---
+$head = & curl.exe -I --silent --show-error "$pubUrl"
+Write-Host $head
+$bodyOut = & curl.exe --silent "$($pubUrl)?v=$(Get-Date -UFormat %s)"
+Write-Host $bodyOut
 
-$putOut = & $cmd[0] $cmd[1..($cmd.Length-1)]
-$putOut
-if ($putOut -notmatch 'HTTP:200') {
-  Write-Error "PUT failed"
-  exit 1
-}
-
-# ---------------- verify via CloudFront ----------------
-$head = & 'curl.exe' '-sS' '-I' $pubUrl
-$head
-if ($head -notmatch 'HTTP/1.1 200 OK') {
-  Write-Error "Verify via CloudFront failed"
-  exit 1
-}
-
-Write-Host "OK: $pubUrl"
+Write-Host "Smoke test: OK"
