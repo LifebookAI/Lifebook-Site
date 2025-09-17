@@ -1,4 +1,5 @@
 name: Upload smoke
+
 on:
   workflow_dispatch:
 
@@ -6,39 +7,29 @@ jobs:
   presign_and_upload:
     runs-on: windows-latest
 
+    # Map GitHub Secrets -> environment variables the script expects
+    env:
+      API_BASE: ${{ secrets.PRESIGN_API_BASE }}
+      API_KEY:  ${{ secrets.PRESIGN_API_KEY }}
+      SECRET:   ${{ secrets.PRESIGN_HMAC_SECRET }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Normalize secrets -> env (strip CR/LF and trim)
       - name: Sanity-check inputs (masked)
         shell: pwsh
         run: |
-          $envPath = $env:GITHUB_ENV
+          Write-Host "API_BASE length: $(${env:API_BASE}.Length)"
+          Write-Host "API_KEY  length: $(${env:API_KEY}.Length)"
+          Write-Host "SECRET  length: $(${env:SECRET}.Length)"
 
-          $apiBase = "${{ secrets.PRESIGN_API_BASE }}".Trim()
-          $apiKey  = "${{ secrets.PRESIGN_API_KEY }}".Replace("`r","").Replace("`n","").Trim()
-          $secret  = "${{ secrets.PRESIGN_HMAC_SECRET }}".Replace("`r","").Replace("`n","").Trim()
-
-          # Write sanitized values for later steps
-          "PRESIGN_API_BASE=$apiBase" | Out-File -FilePath $envPath -Encoding utf8 -Append
-          "PRESIGN_API_KEY=$apiKey"   | Out-File -FilePath $envPath -Encoding utf8 -Append
-          "PRESIGN_HMAC_SECRET=$secret" | Out-File -FilePath $envPath -Encoding utf8 -Append
-
-          Write-Host ("API_BASE length: {0}" -f $apiBase.Length)
-          Write-Host ("API_KEY  length: {0}" -f $apiKey.Length)
-          Write-Host ("SECRET  length: {0}" -f $secret.Length)
-
-      - name: Presign and upload
+      - name: Presign + upload
         shell: pwsh
         run: .github/workflows/scripts/presign-smoke.ps1
 
       - name: Show generated URL (if any)
-        if: success() || failure()
+        if: always()
         shell: pwsh
         run: |
-          if (Test-Path $env:TEMP\presign-url.txt) {
-            Get-Content $env:TEMP\presign-url.txt
-          } else {
-            Write-Host "No URL file produced."
-          }
+          Write-Host "Done."
