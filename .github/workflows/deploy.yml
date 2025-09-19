@@ -1,0 +1,47 @@
+name: deploy
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'lambda/presign/**'
+      - '.github/workflows/deploy.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      ROLE_ARN:   ${{ secrets.AWS_OIDC_ROLE_ARN }}
+      FUNCTION_NAME: lifebookai-presign        # change if your function name differs
+      LAMBDA_DIR: lambda/presign
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS creds via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install deps
+        working-directory: ${{ env.LAMBDA_DIR }}
+        run: |
+          if [ -f package-lock.json ]; then npm ci --ignore-scripts; fi
+
+      - name: Zip Lambda (index.js + package.json + lock + node_modules)
+        working-directory: ${{ env.LAMBDA_DIR }}
+        run: |
+          rm -f presign.zip
+          zip -r9 presign.zip index.js package.json package-lock.json node_modules 2>/dev/null || true
+          ls -lh presign.zip
+
+      - name: Update Lambda function code
+        run: |
+          aws lambda update-function-code \
+            --function-name $FUNCTION_NAME \
+            --zip-file fileb://$GITHUB_WORKSPACE/$LAMBDA_DIR/presign.zip \
+            --publish

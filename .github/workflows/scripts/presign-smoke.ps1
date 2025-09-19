@@ -1,86 +1,58 @@
-# Requires: PRESIGN_API_BASE or PRESIGN_ENDPOINT, HMAC_SECRET, optional API_KEY, CF_BASE_URL
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = 'Stop'
 
-function Assert-Env([string]$name) {
-  if (-not $env:$name -or $env:$name.Trim().Length -eq 0) {
-    throw "Missing env var: $name"
-  }
+$API_BASE = $env:PRESIGN_API_BASE
+$ENDPOINT = $env:PRESIGN_ENDPOINT
+$API_KEY  = $env:PRESIGN_API_KEY
+$SECRET   = $env:PRESIGN_HMAC_SECRET
+
+if (-not $API_BASE -or -not $ENDPOINT -or -not $SECRET) {
+  throw "Missing one or more required env vars: PRESIGN_API_BASE, PRESIGN_ENDPOINT, PRESIGN_HMAC_SECRET"
 }
 
-# Choose endpoint
-$endpoint = $env:PRESIGN_ENDPOINT
-if (-not $endpoint) {
-  Assert-Env "PRESIGN_API_BASE"
-  $endpoint = ($env:PRESIGN_API_BASE.TrimEnd('/')) + "/presign"
-}
-
-Assert-Env "HMAC_SECRET"
-
-# Prepare a tiny test file
-$tmp = Join-Path $env:TEMP "hello.txt"
-"hello from smoke $(Get-Date -AsUTC)" | Set-Content -Encoding UTF8 $tmp
-
-# Build request body
-$key = "sources/hello.txt"
 $bodyObj = @{
-  key                = $key
-  contentType        = "text/plain"
-  contentDisposition = "attachment; filename=`"hello.txt`""
-  sse                = "AES256"
+  key = "sources/hello.txt"
+  contentType = "text/plain"
+  contentDisposition = 'attachment; filename="hello.txt"'
+  sse = "AES256"
+  checksum = "crc32"
 }
-$bodyJson = $bodyObj | ConvertTo-Json -Compress
-$ts = [int][double]::Parse((Get-Date -UFormat %s))  # Unix seconds
+$body = ($bodyObj | ConvertTo-Json -Depth 5 -Compress)
 
-# HMAC(sig) = hex(HMAC-SHA256(secret, ts + "." + bodyJson))
-$secretBytes = [Convert]::FromHexString($env:HMAC_SECRET.Trim())
-$hmac = New-Object System.Security.Cryptography.HMACSHA256 ($secretBytes)
-$bytes = [Text.Encoding]::UTF8.GetBytes("$ts.$bodyJson")
-$sigBytes = $hmac.ComputeHash($bytes)
-$sigHex = ($sigBytes | ForEach-Object { $_.ToString("x2") }) -join ""
-
-# Headers
-$headers = @{
-  "x-presign-ts"   = "$ts"
-  "x-presign-sig"  = $sigHex
-  "content-type"   = "application/json"
+function ToHexLower([byte[]]$bytes) { -join ($bytes | ForEach-Object { $_.ToString('x2') }) }
+function HmacHexLower([string]$secret, [string]$message) {
+  $key = [Text.Encoding]::UTF8.GetBytes($secret)
+  $hmac = New-Object System.Security.Cryptography.HMACSHA256($key)
+  $bytes = [Text.Encoding]::UTF8.GetBytes($message)
+  ToHexLower ($hmac.ComputeHash($bytes))
 }
-if ($env:API_KEY) { $headers["x-api-key"] = $env:API_KEY }
+
+$ts = [Math]::Floor((Get-Date -AsUTC -UFormat %s))
+$stringToSign = "$ts`n$body"
+$sig = HmacHexLower $SECRET $stringToSign
 
 Write-Host "`n--- Presign request debug ---"
 Write-Host "ts: $ts"
-Write-Host "body: $bodyJson"
-Write-Host "sig(hex): $sigHex"
+Write-Host "body: $body"
+Write-Host "sig(hex): $sig"
+Write-Host ""
 
-# Request presign
+$headers = @{
+  "content-type" = "application/json"
+  "x-ts" = "$ts"
+  "x-sig" = $sig
+}
+if ($API_KEY) { $headers["x-api-key"] = $API_KEY }
+
+$uri = "$API_BASE/$ENDPOINT"
 try {
-  $resp = Invoke-WebRequest -UseBasicParsing -Method POST -Uri $endpoint -Headers $headers -Body $bodyJson
+  $resp = Invoke-WebRequest -UseBasicParsing -Method POST -Uri $uri -Headers $headers -Body $body
 } catch {
-  if ($_.Exception.Response -and $_.Exception.Response.StatusCode.value__ -eq 502) {
-    Start-Sleep -Seconds 2
-    $resp = Invoke-WebRequest -UseBasicParsing -Method POST -Uri $endpoint -Headers $headers -Body $bodyJson
-  } else { throw }
+  if ($_.Exception.Response -and $_.Exception.Response.StatusCode.Value__) {
+    $code = $_.Exception.Response.StatusCode.Value__
+    throw "Presign HTTP $code"
+  }
+  throw
 }
 
-if ($resp.StatusCode -lt 200 -or $resp.StatusCode -gt 299) {
-  throw "Presign HTTP $($resp.StatusCode)"
-}
-
-$presign = ($resp.Content | ConvertFrom-Json)
-$putUrl  = $presign.url
-if (-not $putUrl) { throw "No presign URL returned." }
-
-# Upload the file using the presigned URL
-$bytesToSend = [System.IO.File]::ReadAllBytes($tmp)
-$putHeaders = @{ "content-type" = "text/plain" }
-# If your Lambda includes checksum headers in the URL, S3 will validate automatically.
-
-$putResp = Invoke-WebRequest -UseBasicParsing -Method PUT -Uri $putUrl -Headers $putHeaders -Body $bytesToSend
-if ($putResp.StatusCode -lt 200 -or $putResp.StatusCode -gt 299) {
-  throw "PUT HTTP $($putResp.StatusCode)"
-}
-
-# Compose public URL via CloudFront (optional)
-$out = "Uploaded as: " + $(if ($env:CF_BASE_URL) { ($env:CF_BASE_URL.TrimEnd('/')) + "/" + $key } else { "CF_BASE_URL not set" })
-$outPath = ".github/workflows/scripts/smoke-output.txt"
-$out | Set-Content $outPath
-Write-Host "`n" $out
+Write-Host "Presign OK"
+Write-Host $resp.Content
