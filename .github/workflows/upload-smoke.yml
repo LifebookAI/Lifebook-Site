@@ -6,12 +6,17 @@ on:
 jobs:
   presign_and_upload:
     runs-on: windows-latest
+    permissions:
+      id-token: write
+      contents: read
 
-    # Map GitHub Secrets -> environment variables the script expects
     env:
-      API_BASE: ${{ secrets.PRESIGN_API_BASE }}
-      API_KEY:  ${{ secrets.PRESIGN_API_KEY }}
-      SECRET:   ${{ secrets.PRESIGN_HMAC_SECRET }}
+      # choose ONE of these patterns based on what you set
+      PRESIGN_API_BASE: ${{ secrets.PRESIGN_API_BASE }}
+      PRESIGN_ENDPOINT: ${{ secrets.PRESIGN_ENDPOINT }}
+      CF_BASE_URL:      ${{ secrets.CF_BASE_URL }}
+      HMAC_SECRET:      ${{ secrets.PRESIGN_HMAC_SECRET }}
+      API_KEY:          ${{ secrets.PRESIGN_API_KEY }}
 
     steps:
       - name: Checkout
@@ -20,16 +25,15 @@ jobs:
       - name: Sanity-check inputs (masked)
         shell: pwsh
         run: |
-          Write-Host "API_BASE length: $(${env:API_BASE}.Length)"
-          Write-Host "API_KEY  length: $(${env:API_KEY}.Length)"
-          Write-Host "SECRET  length: $(${env:SECRET}.Length)"
+          Write-Host "API_BASE length: " $env:PRESIGN_API_BASE.Length
+          Write-Host "ENDPOINT length: " $env:PRESIGN_ENDPOINT.Length
+          Write-Host "HMAC length: "     $env:HMAC_SECRET.Length
 
-      - name: Presign + upload
+      - name: Run presign + upload (PowerShell script)
         shell: pwsh
         run: .github/workflows/scripts/presign-smoke.ps1
 
       - name: Show generated URL (if any)
         if: always()
         shell: pwsh
-        run: |
-          Write-Host "Done."
+        run: Get-Content .github/workflows/scripts/smoke-output.txt -ErrorAction SilentlyContinue
