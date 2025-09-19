@@ -1,0 +1,38 @@
+name: Deploy presign Lambda
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'lambda/presign/**'
+      - '.github/workflows/deploy-presign.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # required for GitHub OIDC
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS creds via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Zip Lambda (index.js + package.json + lock + node_modules)
+        working-directory: lambda/presign
+        run: |
+          rm -f presign.zip
+          zip -r presign.zip index.js package.json package-lock.json node_modules
+
+      - name: Update Lambda function code
+        run: |
+          aws lambda update-function-code \
+            --function-name "${{ secrets.AWS_LAMBDA_FUNCTION_NAME }}" \
+            --zip-file fileb://lambda/presign/presign.zip
