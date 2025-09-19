@@ -1,58 +1,123 @@
-$ErrorActionPreference = 'Stop'
+param()
 
+# --- Read env vars expected from workflow env mapping ---
 $API_BASE = $env:PRESIGN_API_BASE
 $ENDPOINT = $env:PRESIGN_ENDPOINT
-$API_KEY  = $env:PRESIGN_API_KEY
 $SECRET   = $env:PRESIGN_HMAC_SECRET
+$API_KEY  = $env:PRESIGN_API_KEY
+$CF_BASE  = $env:CF_BASE_URL
 
-if (-not $API_BASE -or -not $ENDPOINT -or -not $SECRET) {
-  throw "Missing one or more required env vars: PRESIGN_API_BASE, PRESIGN_ENDPOINT, PRESIGN_HMAC_SECRET"
+$missing = @()
+if (-not $API_BASE) { $missing += 'PRESIGN_API_BASE' }
+if (-not $ENDPOINT) { $missing += 'PRESIGN_ENDPOINT' }
+if (-not $SECRET)   { $missing += 'PRESIGN_HMAC_SECRET' }
+if ($missing.Count -gt 0) {
+  throw "Missing one or more required env vars: $([string]::Join(', ', $missing))"
 }
 
-$bodyObj = @{
-  key = "sources/hello.txt"
-  contentType = "text/plain"
-  contentDisposition = 'attachment; filename="hello.txt"'
-  sse = "AES256"
-  checksum = "crc32"
-}
-$body = ($bodyObj | ConvertTo-Json -Depth 5 -Compress)
+Write-Host ""
+Write-Host "API_BASE length: $($API_BASE.Length)"
+Write-Host "API_KEY  length: $($API_KEY.Length)"
+Write-Host "SECRET  length: $($SECRET.Length)"
+Write-Host ""
 
-function ToHexLower([byte[]]$bytes) { -join ($bytes | ForEach-Object { $_.ToString('x2') }) }
-function HmacHexLower([string]$secret, [string]$message) {
-  $key = [Text.Encoding]::UTF8.GetBytes($secret)
-  $hmac = New-Object System.Security.Cryptography.HMACSHA256($key)
-  $bytes = [Text.Encoding]::UTF8.GetBytes($message)
-  ToHexLower ($hmac.ComputeHash($bytes))
-}
+# --- Prepare tiny test object we will upload ---
+$filename = "hello.txt"
+$bodyText = "hello from GitHub Actions at $(Get-Date -AsUTC -Format o)"
+$bytes    = [System.Text.Encoding]::UTF8.GetBytes($bodyText)
 
-$ts = [Math]::Floor((Get-Date -AsUTC -UFormat %s))
-$stringToSign = "$ts`n$body"
-$sig = HmacHexLower $SECRET $stringToSign
+# CRC32 (requires .NET 6+ which GitHub runners have)
+$crcBytes = [System.IO.Hashing.Crc32]::Hash($bytes)
+$crcHex   = ([System.BitConverter]::ToString($crcBytes)).Replace('-', '').ToLowerInvariant()
+
+# Key in S3
+$key = "sources/$filename"
+$ts  = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+# HMAC over "ts.key.crc32hex"
+$toSign = "$ts.$key.$crcHex"
+$hmac   = New-Object System.Security.Cryptography.HMACSHA256 ([System.Text.Encoding]::UTF8.GetBytes($SECRET))
+$sigHex = ([System.BitConverter]::ToString($hmac.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($toSign)))).Replace('-', '').ToLowerInvariant()
+
+# --- Call presign API ---
+$uri = ($API_BASE.TrimEnd('/') + '/' + $ENDPOINT.TrimStart('/'))
+$payload = [ordered]@{
+  key                = $key
+  contentDisposition = "attachment; filename=`"$filename`""
+  contentType        = "text/plain"
+  sse                = "AES256"
+  checksum           = "crc32"
+}
+$payloadJson = $payload | ConvertTo-Json -Depth 4
 
 Write-Host "`n--- Presign request debug ---"
 Write-Host "ts: $ts"
-Write-Host "body: $body"
-Write-Host "sig(hex): $sig"
+Write-Host "body: $payloadJson"
+Write-Host "sig(hex): $sigHex"
 Write-Host ""
 
 $headers = @{
-  "content-type" = "application/json"
-  "x-ts" = "$ts"
-  "x-sig" = $sig
+  "x-lb-ts"  = "$ts"
+  "x-lb-sig" = "$sigHex"
 }
 if ($API_KEY) { $headers["x-api-key"] = $API_KEY }
 
-$uri = "$API_BASE/$ENDPOINT"
-try {
-  $resp = Invoke-WebRequest -UseBasicParsing -Method POST -Uri $uri -Headers $headers -Body $body
-} catch {
-  if ($_.Exception.Response -and $_.Exception.Response.StatusCode.Value__) {
-    $code = $_.Exception.Response.StatusCode.Value__
-    throw "Presign HTTP $code"
+$handler = New-Object System.Net.Http.HttpClientHandler
+$client  = New-Object System.Net.Http.HttpClient($handler)
+$req     = New-Object System.Net.Http.HttpRequestMessage([System.Net.Http.HttpMethod]::Post, $uri)
+$req.Content = New-Object System.Net.Http.StringContent($payloadJson, [System.Text.Encoding]::UTF8, "application/json")
+foreach ($k in $headers.Keys) { $null = $req.Headers.TryAddWithoutValidation($k, $headers[$k]) }
+
+$res = $client.Send($req)
+if (-not $res.IsSuccessStatusCode) {
+  $body = $res.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+  Write-Host "Presign failed:"
+  Write-Host $body
+  $code = [int]$res.StatusCode
+  throw "Presign HTTP $code"
+}
+$respJson = $res.Content.ReadAsStringAsync().GetAwaiter().GetResult() | ConvertFrom-Json
+
+# Expected presign response shape:
+# {
+#   "url": "https://s3.../bucket/key?...",
+#   "headers": { "x-amz-server-side-encryption": "...", "x-amz-checksum-crc32": "..." },
+#   "publicUrl": "https://files.uselifebook.ai/sources/hello.txt"
+# }
+
+$putUrl  = $respJson.url
+$putHdrs = $respJson.headers
+$public  = $respJson.publicUrl
+
+# --- PUT to S3 using the presigned URL ---
+$putReq = New-Object System.Net.Http.HttpRequestMessage([System.Net.Http.HttpMethod]::Put, $putUrl)
+$putReq.Content = New-Object System.Net.Http.ByteArrayContent($bytes)
+# Add any required headers from presign (case-insensitive)
+if ($putHdrs) {
+  $dict = $putHdrs | ConvertTo-Json -Depth 5 | ConvertFrom-Json
+  foreach ($p in $dict.PSObject.Properties) {
+    $name = [string]$p.Name
+    $val  = [string]$p.Value
+    if ($name -ieq 'content-type') {
+      $null = $putReq.Content.Headers.TryAddWithoutValidation('content-type', $val)
+    } else {
+      $null = $putReq.Headers.TryAddWithoutValidation($name, $val)
+    }
   }
-  throw
+}
+$putRes = $client.Send($putReq)
+if (-not $putRes.IsSuccessStatusCode) {
+  $code = [int]$putRes.StatusCode
+  $err  = $putRes.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+  Write-Host "Upload failed [$code]"
+  Write-Host $err
+  throw "Upload HTTP $code"
 }
 
-Write-Host "Presign OK"
-Write-Host $resp.Content
+# --- Save/print public URL if returned ---
+if ($public) {
+  Set-Content -Path ./public-url.txt -Value $public -Encoding UTF8
+  Write-Host "`nPublic URL:"
+  Write-Host $public
+} else {
+  Write-Host "No public URL in response."
+}

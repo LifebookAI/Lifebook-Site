@@ -5,18 +5,14 @@ on:
 
 jobs:
   presign_and_upload:
-    runs-on: windows-latest
-    permissions:
-      id-token: write
-      contents: read
-
+    runs-on: ubuntu-latest
+    # Export repo secrets into env that the script expects
     env:
-      # choose ONE of these patterns based on what you set
       PRESIGN_API_BASE: ${{ secrets.PRESIGN_API_BASE }}
-      PRESIGN_ENDPOINT: ${{ secrets.PRESIGN_ENDPOINT }}
-      CF_BASE_URL:      ${{ secrets.CF_BASE_URL }}
-      HMAC_SECRET:      ${{ secrets.PRESIGN_HMAC_SECRET }}
-      API_KEY:          ${{ secrets.PRESIGN_API_KEY }}
+      PRESIGN_ENDPOINT:  ${{ secrets.PRESIGN_ENDPOINT }}
+      PRESIGN_HMAC_SECRET: ${{ secrets.PRESIGN_HMAC_SECRET }}
+      PRESIGN_API_KEY:   ${{ secrets.PRESIGN_API_KEY }}   # if your API needs it
+      CF_BASE_URL:       ${{ secrets.CF_BASE_URL }}
 
     steps:
       - name: Checkout
@@ -25,15 +21,18 @@ jobs:
       - name: Sanity-check inputs (masked)
         shell: pwsh
         run: |
-          Write-Host "API_BASE length: " $env:PRESIGN_API_BASE.Length
-          Write-Host "ENDPOINT length: " $env:PRESIGN_ENDPOINT.Length
-          Write-Host "HMAC length: "     $env:HMAC_SECRET.Length
+          Write-Host "API_BASE length: $(${env:PRESIGN_API_BASE}.Length)"
+          Write-Host "ENDPOINT  length: $(${env:PRESIGN_ENDPOINT}.Length)"
+          Write-Host "SECRET    length: $(${env:PRESIGN_HMAC_SECRET}.Length)"
+          Write-Host "API_KEY   length: $(${env:PRESIGN_API_KEY}.Length)"
+          Write-Host "CF_BASE   length: $(${env:CF_BASE_URL}.Length)"
 
-      - name: Run presign + upload (PowerShell script)
+      - name: Presign + upload (PowerShell)
         shell: pwsh
         run: .github/workflows/scripts/presign-smoke.ps1
 
       - name: Show generated URL (if any)
         if: always()
         shell: pwsh
-        run: Get-Content .github/workflows/scripts/smoke-output.txt -ErrorAction SilentlyContinue
+        run: |
+          if (Test-Path ./public-url.txt) { Get-Content ./public-url.txt }
