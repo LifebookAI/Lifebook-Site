@@ -6,9 +6,9 @@ $ErrorActionPreference = 'Stop'
 function Clean([string]$s) {
   if ($null -eq $s) { return '' }
   $t = $s.Trim()
-  $t = ($t -replace '^[\"'']|[\"'']$','')             # drop surrounding quotes
+  $t = ($t -replace '^[\"'']|[\"'']$','')
   $bytes = [Text.Encoding]::UTF8.GetBytes($t)
-  $bytes = $bytes | Where-Object { $_ -notin 0,10,13 } # strip NUL/LF/CR
+  $bytes = $bytes | Where-Object { $_ -notin 0,10,13 }
   [Text.Encoding]::UTF8.GetString([byte[]]$bytes)
 }
 
@@ -42,7 +42,6 @@ Write-Host "`n--- Presign request debug ---"
 Write-Host "URI: $uri"
 Write-Host "Body: $bodyJson"
 
-# Build headers AFTER sanitizing. Do NOT use Invoke-WebRequest.
 $headers = @{ 'x-api-key' = $apiKey }
 
 if ($secret) {
