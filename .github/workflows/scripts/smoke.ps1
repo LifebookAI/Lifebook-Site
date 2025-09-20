@@ -1,4 +1,4 @@
-<# Lifebook: presign + upload smoke (no-throw HTTP, PS7-safe) #>
+<# Lifebook: presign + upload smoke (auto stage toggle, PS7-safe) #>
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
@@ -36,7 +36,7 @@ $ApiKey    = CleanHeaderStrict($env:PRESIGN_API_KEY)
 $SecretHex = CleanHeaderStrict($env:PRESIGN_HMAC_SECRET)
 $CfBase    = if ($env:CF_BASE_URL){ CleanHeaderStrict($env:CF_BASE_URL).TrimEnd('/') } else { "https://files.uselifebook.ai" }
 
-if (-not $Base) { Fail "Missing base URL. Set repo secret PRESIGN_API_BASE e.g. https://api.uselifebook.ai/prod" }
+if (-not $Base) { Fail "Missing base URL. Set repo secret PRESIGN_API_BASE e.g. https://api.uselifebook.ai/prod or https://api.uselifebook.ai" }
 if ($Base -notmatch '^https?://'){ Fail "PRESIGN_API_BASE must start with http(s)://" }
 if (-not $ApiKey){ Fail "Missing PRESIGN_API_KEY" }
 if (-not $SecretHex){ Fail "Missing PRESIGN_HMAC_SECRET" }
@@ -69,7 +69,7 @@ $headers = @{
   "x-signature" = $signature
 }
 
-# --- Debug (safe; GitHub will mask secrets) ---
+# --- Debug (safe) ---
 Write-Host "DEBUG base        : $Base"
 Write-Host "DEBUG ts          : $ts"
 Write-Host "DEBUG bodyJson    : $bodyJson"
@@ -78,23 +78,45 @@ Write-Host "DEBUG sig         : $signature"
 Write-Host "DEBUG keyBytesLen : $($keyBytes.Length)"
 Write-Host "DEBUG apiKeyLen   : $($ApiKey.Length)"
 
-# --- Request presign using NO-THROW path (read body even on 4xx/5xx) ---
-Write-Host "Requesting presign..."
-$response = Invoke-WebRequest -Method POST -Uri "$Base/presign" -Headers $headers -Body $bodyJson -ContentType 'application/json' -SkipHttpErrorCheck
-if ($null -eq $response) { Fail "No HTTP response from presign endpoint" }
-
-$status = [int]$response.StatusCode
-$respBody = [string]$response.Content
-
-if ($status -lt 200 -or $status -ge 300) {
-  Write-Host "ERROR STATUS: $status"
-  Write-Host "ERROR BODY  : $respBody"
-  exit 1
+# --- Build candidate presign URLs (handles custom-domain mapping with/without /prod) ---
+$normBase = $Base.TrimEnd('/')
+$candidates = New-Object System.Collections.Generic.List[string]
+$candidates.Add("$normBase/presign")
+if ($normBase -match '/prod$') {
+  $candidates.Add( ($normBase -replace '/prod$','') + '/presign' )
+} else {
+  $candidates.Add( "$normBase/prod/presign" )
 }
 
-# Parse JSON body on success
-$presign = $respBody | ConvertFrom-Json -Depth 10
-if (-not $presign.url){ Write-Host ($respBody); Fail "Presign response missing 'url'" }
+# ensure uniqueness & no double slashes
+$candidates = ($candidates | ForEach-Object { ($_ -replace '//+', '/') -replace '^https:/','https://' -replace '^http:/','http://' } | Select-Object -Unique)
+
+# --- Try candidates until one 2xx succeeds ---
+$presign = $null
+$chosen  = $null
+foreach($u in $candidates){
+  Write-Host "Trying PRESIGN URL: $u"
+  $resp = Invoke-WebRequest -Method POST -Uri $u -Headers $headers -Body $bodyJson -ContentType 'application/json' -SkipHttpErrorCheck
+  $status = [int]$resp.StatusCode
+  if ($status -ge 200 -and $status -lt 300) {
+    $presign = $resp.Content | ConvertFrom-Json -Depth 10
+    $chosen = $u
+    break
+  } else {
+    Write-Host "Candidate failed ($status): $($resp.Content)"
+    if ($status -ne 403 -and $status -ne 404) {
+      # not a simple routing error; bail early
+      Fail "Presign failed with HTTP $status. Body: $($resp.Content)"
+    }
+  }
+}
+
+if (-not $presign){ 
+  Fail ("All presign candidates failed. Tried:`n - " + ($candidates -join "`n - "))
+}
+
+Write-Host "PRESIGN OK via: $chosen"
+if (-not $presign.url){ Write-Host ($presign | ConvertTo-Json -Depth 10); Fail "Presign response missing 'url'" }
 
 $putUrl = [string]$presign.url
 Write-Host "PUT URL:`n$putUrl"
@@ -110,7 +132,7 @@ if (-not $uploadHeaders['Content-Type'])                 { $uploadHeaders['Conte
 if (-not $uploadHeaders['Content-Disposition'])          { $uploadHeaders['Content-Disposition'] = 'inline' }
 if (-not $uploadHeaders['x-amz-server-side-encryption']){ $uploadHeaders['x-amz-server-side-encryption'] = 'AES256' }
 
-# --- Upload via presigned PUT (IRM is fine here; 403/SignatureMismatch will throw) ---
+# --- Upload via presigned PUT ---
 $payload = [System.Text.Encoding]::UTF8.GetBytes("hello smoke $stamp")
 Write-Host "Uploading..."
 Invoke-RestMethod -Method PUT -Uri $putUrl -Body $payload -Headers $uploadHeaders | Out-Null
