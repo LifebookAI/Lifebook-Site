@@ -1,8 +1,22 @@
+name: Upload smoke
+
+on:
+  workflow_dispatch:
+
+jobs:
+  presign_and_upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Presign + upload (PowerShell)
         shell: pwsh
-        run: .github/workflows/scripts/smoke.ps1
         env:
-          PRESIGN_API_BASE:    ${{ secrets.PRESIGN_API_BASE }}
-          PRESIGN_ENDPOINT:    ${{ secrets.PRESIGN_ENDPOINT }}     # optional
-          PRESIGN_API_KEY:     ${{ secrets.PRESIGN_API_KEY }}
-          PRESIGN_HMAC_SECRET: ${{ secrets.PRESIGN_HMAC_SECRET }}  # optional
+          PRESIGN_API_BASE:   ${{ secrets.PRESIGN_API_BASE }}
+          PRESIGN_API_KEY:    ${{ secrets.PRESIGN_API_KEY }}
+          PRESIGN_HMAC_SECRET:${{ secrets.PRESIGN_HMAC_SECRET }}
+          # Optional: only if you created it
+          PRESIGN_ENDPOINT:   ${{ secrets.PRESIGN_ENDPOINT }}
+        run: .github/workflows/scripts/smoke.ps1
