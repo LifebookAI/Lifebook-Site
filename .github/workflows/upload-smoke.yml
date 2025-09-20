@@ -1,7 +1,9 @@
 name: Upload smoke
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:            # manual "Run workflow" button
+  push:                         # also runs whenever you push to main
+    branches: [ main ]
 
 permissions:
   contents: read
@@ -22,6 +24,6 @@ jobs:
         env:
           PRESIGN_API_BASE:   ${{ secrets.PRESIGN_API_BASE }}
           PRESIGN_API_KEY:    ${{ secrets.PRESIGN_API_KEY }}
-          PRESIGN_HMAC_SECRET:${{ secrets.PRESIGN_HMAC_SECRET }}
+          PRESIGN_HMAC_SECRET: ${{ secrets.PRESIGN_HMAC_SECRET }}
           PRESIGN_ENDPOINT:   ${{ secrets.PRESIGN_ENDPOINT }} # optional
         run: .github/workflows/scripts/smoke.ps1
