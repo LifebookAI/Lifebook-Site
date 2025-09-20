@@ -1,15 +1,10 @@
 # .github/workflows/scripts/smoke.ps1
-#!pwsh
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 function Clean([string]$s) {
-  if ($null -eq $s) { return '' }
-  $t = $s.Trim()
-  $t = ($t -replace '^[\"'']|[\"'']$','')
-  $bytes = [Text.Encoding]::UTF8.GetBytes($t)
-  $bytes = $bytes | Where-Object { $_ -notin 0,10,13 }
-  [Text.Encoding]::UTF8.GetString([byte[]]$bytes)
+  if ([string]::IsNullOrWhiteSpace($s)) { return '' }
+  ($s.Trim()) -replace '^\s*["'']|["'']\s*$', ''
 }
 
 $apiBase  = Clean $env:PRESIGN_API_BASE
@@ -22,44 +17,35 @@ if ([string]::IsNullOrWhiteSpace($apiBase) -and [string]::IsNullOrWhiteSpace($en
 if ([string]::IsNullOrWhiteSpace($apiKey)) { $need += 'PRESIGN_API_KEY' }
 if ($need.Count -gt 0) { throw "Missing one or more required env vars: $([string]::Join(', ', $need))" }
 
-Write-Host "=== smoke.ps1 starting..."
-Write-Host ("API_BASE length: {0}" -f ($apiBase?.Length))
-Write-Host ("API_KEY  length: {0}" -f ($apiKey?.Length))
-Write-Host ("SECRET   length: {0}" -f ($secret?.Length))
-
-$uri = if ($endpoint) { $endpoint } else { ($apiBase.TrimEnd('/')) + "/presign" }
+$uri = if ($endpoint) { $endpoint } else { ($apiBase.TrimEnd('/')) + '/presign' }
 
 $bodyObj = [ordered]@{
-  key                = "sources/hello.txt"
-  contentType        = "text/plain"
-  contentDisposition = "attachment; filename=`"hello.txt`""
-  sse                = "AES256"
-  checksum           = "crc32"
+  key                = 'sources/hello.txt'
+  contentType        = 'text/plain'
+  contentDisposition = 'attachment; filename="hello.txt"'
+  sse                = 'AES256'
+  checksum           = 'crc32'
 }
 $bodyJson = ($bodyObj | ConvertTo-Json -Depth 4 -Compress)
-
-Write-Host "`n--- Presign request debug ---"
-Write-Host "URI: $uri"
-Write-Host "Body: $bodyJson"
 
 $headers = @{ 'x-api-key' = $apiKey }
 
 if ($secret) {
-  $ts = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
-  $toSign = "$ts.$bodyJson"
-  $hmac   = New-Object System.Security.Cryptography.HMACSHA256([Text.Encoding]::UTF8.GetBytes($secret))
-  $sig    = ($hmac.ComputeHash([Text.Encoding]::UTF8.GetBytes($toSign)) | ForEach-Object { $_.ToString('x2') }) -join ''
+  $ts    = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds().ToString()
+  $toSig = $bodyJson + '|' + $ts
+  $hmac  = New-Object System.Security.Cryptography.HMACSHA256([Text.Encoding]::UTF8.GetBytes($secret))
+  $sig   = ($hmac.ComputeHash([Text.Encoding]::UTF8.GetBytes($toSig)) | ForEach-Object { $_.ToString('x2') }) -join ''
   $headers['x-signature'] = $sig
-  $headers['x-timestamp'] = "$ts"
+  $headers['x-timestamp'] = $ts
 }
 
 try {
   $resp = Invoke-RestMethod -Method POST -Uri $uri -Headers $headers -Body $bodyJson -ContentType 'application/json; charset=utf-8'
-  Write-Host "`nPresign OK"
-  if ($resp.url) { Write-Host "URL: $($resp.url)" }
+  Write-Host "::notice::Presign OK"
+  if ($resp.url) { Write-Host "::notice::URL: $($resp.url)" }
 } catch {
   $code = $null; try { $code = $_.Exception.Response.StatusCode.value__ } catch {}
-  Write-Host "Presign failed: HTTP $code"
+  Write-Host "::error::Presign failed HTTP $code"
   if ($_.ErrorDetails.Message) { Write-Host $_.ErrorDetails.Message }
   throw
 }
