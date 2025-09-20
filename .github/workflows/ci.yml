@@ -1,9 +1,7 @@
-name: Upload smoke
+name: CI (PR)
 on:
-  workflow_dispatch: {}
-  schedule:
-    # Daily 10:00 ET (14:00 UTC)
-    - cron: '0 14 * * *'
+  pull_request:
+    branches: [ main ]
 
 permissions:
   contents: read
@@ -14,10 +12,12 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 10
     concurrency:
-      group: lifebook-smoke-${{ github.ref }}
+      group: lifebook-ci-${{ github.ref }}
       cancel-in-progress: true
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Run smoke script
         shell: pwsh
         env:
