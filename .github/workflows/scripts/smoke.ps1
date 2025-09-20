@@ -1,4 +1,4 @@
-# .github/workflows/scripts/presign-smoke.ps1
+# .github/workflows/scripts/smoke.ps1
 #!pwsh
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -6,22 +6,21 @@ $ErrorActionPreference = 'Stop'
 function Clean([string]$s) {
   if ($null -eq $s) { return '' }
   $t = $s.Trim()
-  # strip any surrounding quotes and ALL control chars (CR/LF, NUL, etc.)
-  $t = ($t -replace '^[\"'']|[\"'']$','')
+  $t = ($t -replace '^[\"'']|[\"'']$','')             # drop surrounding quotes
   $bytes = [Text.Encoding]::UTF8.GetBytes($t)
-  $bytes = $bytes | Where-Object { $_ -notin 0,10,13 }  # remove NUL, LF, CR
-  return [Text.Encoding]::UTF8.GetString([byte[]]$bytes)
+  $bytes = $bytes | Where-Object { $_ -notin 0,10,13 } # strip NUL/LF/CR
+  [Text.Encoding]::UTF8.GetString([byte[]]$bytes)
 }
 
 $apiBase  = Clean $env:PRESIGN_API_BASE
-$endpoint = Clean $env:PRESIGN_ENDPOINT     # optional; overrides apiBase/presign
+$endpoint = Clean $env:PRESIGN_ENDPOINT
 $apiKey   = Clean $env:PRESIGN_API_KEY
-$secret   = Clean $env:PRESIGN_HMAC_SECRET  # optional
+$secret   = Clean $env:PRESIGN_HMAC_SECRET
 
-$missing = @()
-if ([string]::IsNullOrWhiteSpace($apiBase) -and [string]::IsNullOrWhiteSpace($endpoint)) { $missing += 'PRESIGN_API_BASE or PRESIGN_ENDPOINT' }
-if ([string]::IsNullOrWhiteSpace($apiKey)) { $missing += 'PRESIGN_API_KEY' }
-if ($missing.Count -gt 0) { throw "Missing one or more required env vars: $([string]::Join(', ', $missing))" }
+$need = @()
+if ([string]::IsNullOrWhiteSpace($apiBase) -and [string]::IsNullOrWhiteSpace($endpoint)) { $need += 'PRESIGN_API_BASE or PRESIGN_ENDPOINT' }
+if ([string]::IsNullOrWhiteSpace($apiKey)) { $need += 'PRESIGN_API_KEY' }
+if ($need.Count -gt 0) { throw "Missing one or more required env vars: $([string]::Join(', ', $need))" }
 
 Write-Host "=== smoke.ps1 starting..."
 Write-Host ("API_BASE length: {0}" -f ($apiBase?.Length))
@@ -43,26 +42,25 @@ Write-Host "`n--- Presign request debug ---"
 Write-Host "URI: $uri"
 Write-Host "Body: $bodyJson"
 
-# Build headers AFTER sanitizing to avoid newline issues
+# Build headers AFTER sanitizing. Do NOT use Invoke-WebRequest.
 $headers = @{ 'x-api-key' = $apiKey }
 
 if ($secret) {
   $ts = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
   $toSign = "$ts.$bodyJson"
-  $hmac  = New-Object System.Security.Cryptography.HMACSHA256([Text.Encoding]::UTF8.GetBytes($secret))
-  $sig   = ($hmac.ComputeHash([Text.Encoding]::UTF8.GetBytes($toSign)) | ForEach-Object { $_.ToString('x2') }) -join ''
+  $hmac   = New-Object System.Security.Cryptography.HMACSHA256([Text.Encoding]::UTF8.GetBytes($secret))
+  $sig    = ($hmac.ComputeHash([Text.Encoding]::UTF8.GetBytes($toSign)) | ForEach-Object { $_.ToString('x2') }) -join ''
   $headers['x-signature'] = $sig
   $headers['x-timestamp'] = "$ts"
 }
 
 try {
-  # IMPORTANT: use Invoke-RestMethod (not Invoke-WebRequest) and pass ContentType separately
   $resp = Invoke-RestMethod -Method POST -Uri $uri -Headers $headers -Body $bodyJson -ContentType 'application/json; charset=utf-8'
   Write-Host "`nPresign OK"
   if ($resp.url) { Write-Host "URL: $($resp.url)" }
 } catch {
-  $status = $null; try { $status = $_.Exception.Response.StatusCode.value__ } catch {}
-  Write-Host "Presign failed: HTTP $status"
+  $code = $null; try { $code = $_.Exception.Response.StatusCode.value__ } catch {}
+  Write-Host "Presign failed: HTTP $code"
   if ($_.ErrorDetails.Message) { Write-Host $_.ErrorDetails.Message }
   throw
 }
