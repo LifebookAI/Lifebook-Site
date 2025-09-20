@@ -1,4 +1,4 @@
-<# Lifebook: presign + upload smoke (GitHub Actions, hardened with debug) #>
+<# Lifebook: presign + upload smoke (PowerShell 7 hardened) #>
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
@@ -8,24 +8,36 @@ function Fail([string]$msg){ Write-Error $msg; exit 1 }
 function CleanHeaderStrict([object]$v){
   if ($null -eq $v) { return "" }
   $s = [string]$v
-  $s = $s -replace "[`r`n\u0085\u2028\u2029]", ""       # strip all newline kinds
+  $s = $s -replace "[`r`n\u0085\u2028\u2029]", ""   # strip any newline type
   $sb = New-Object System.Text.StringBuilder
   foreach($ch in $s.ToCharArray()){
     $code = [int][char]$ch
-    if ($code -ge 0x20 -and $code -le 0x7E) { [void]$sb.Append($ch) }  # ASCII printable only
+    if ($code -ge 0x20 -and $code -le 0x7E) { [void]$sb.Append($ch) } # printable ASCII only
   }
   $sb.ToString().Trim()
 }
 function HexToBytes([string]$hex){ [System.Convert]::FromHexString($hex) }
 function BytesToLowerHex([byte[]]$bytes){ -join ($bytes | ForEach-Object { $_.ToString('x2') }) }
 
-# --- Env (sanitized) ---
-$Base      = CleanHeaderStrict($env:PRESIGN_API_BASE).TrimEnd('/')
+# --- Read env (with fallbacks) ---
+$BaseCandidates = @(
+  $env:PRESIGN_API_BASE,
+  $env:PRESIGN_ENDPOINT,       # fallback name some repos use
+  $env:PRESIGN_BASE            # extra fallback
+) | Where-Object { $_ -and $_.Trim() -ne "" }
+
+$Base = ""
+foreach($cand in $BaseCandidates){
+  $Base = CleanHeaderStrict($cand).TrimEnd('/')
+  if ($Base) { break }
+}
+
 $ApiKey    = CleanHeaderStrict($env:PRESIGN_API_KEY)
 $SecretHex = CleanHeaderStrict($env:PRESIGN_HMAC_SECRET)
 $CfBase    = if ($env:CF_BASE_URL){ CleanHeaderStrict($env:CF_BASE_URL).TrimEnd('/') } else { "https://files.uselifebook.ai" }
 
-if (-not $Base){ Fail "Missing PRESIGN_API_BASE" }
+if (-not $Base) { Fail "Missing base URL. Set repo secret PRESIGN_API_BASE to e.g. https://api.uselifebook.ai/prod" }
+if ($Base -notmatch '^https?://'){ Fail "PRESIGN_API_BASE must start with http(s)://" }
 if (-not $ApiKey){ Fail "Missing PRESIGN_API_KEY" }
 if (-not $SecretHex){ Fail "Missing PRESIGN_HMAC_SECRET" }
 if ($SecretHex -notmatch '^[0-9a-fA-F]+$'){ Fail "PRESIGN_HMAC_SECRET must be hex" }
@@ -50,14 +62,14 @@ $hmac     = [System.Security.Cryptography.HMACSHA256]::new($keyBytes)
 $sigBytes = $hmac.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($toSign))
 $signature= BytesToLowerHex $sigBytes
 
-# --- Headers (hashtable) ---
+# --- Headers ---
 $headers = @{
   "x-api-key"   = $ApiKey
   "x-timestamp" = [string]$ts
   "x-signature" = $signature
 }
 
-# --- Debug (safe: no secrets printed) ---
+# --- Debug (safe) ---
 Write-Host "DEBUG base        : $Base"
 Write-Host "DEBUG ts          : $ts"
 Write-Host "DEBUG bodyJson    : $bodyJson"
@@ -66,13 +78,20 @@ Write-Host "DEBUG sig         : $signature"
 Write-Host "DEBUG keyBytesLen : $($keyBytes.Length)"
 Write-Host "DEBUG apiKeyLen   : $($ApiKey.Length)"
 
-# --- Request presign with rich error handling ---
+# --- Request presign with PS7-aware error body read ---
 Write-Host "Requesting presign..."
 try {
   $presign = Invoke-RestMethod -Method POST -Uri "$Base/presign" -Headers $headers -Body $bodyJson -ContentType 'application/json'
 } catch {
-  $resp = $_.Exception.Response
-  if ($resp) {
+  $ex = $_.Exception
+  $resp = $ex.Response
+  if ($resp -is [System.Net.Http.HttpResponseMessage]) {
+    $statusCode = [int]$resp.StatusCode
+    $statusName = $resp.StatusCode
+    $errBody    = $resp.Content.ReadAsStringAsync().Result
+    Write-Host "ERROR STATUS: $statusName ($statusCode)"
+    Write-Host "ERROR BODY  : $errBody"
+  } elseif ($resp) {
     try {
       $statusCode = [int]$resp.StatusCode
       $statusName = $resp.StatusCode
@@ -84,7 +103,7 @@ try {
       Write-Host "ERROR: failed to read error body: $($_.Exception.Message)"
     }
   } else {
-    Write-Host "ERROR: $($_.Exception.Message)"
+    Write-Host "ERROR: $($ex.Message)"
   }
   exit 1
 }
