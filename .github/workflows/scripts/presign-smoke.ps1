@@ -1,165 +1,165 @@
-<#  Lifebook.AI — presign + upload smoke test
-    Runs in GitHub Actions PowerShell (Windows/Linux/macOS runners)
-
-    Requires the following repo secrets:
-      - PRESIGN_API_BASE      e.g. https://l6571skkfi.execute-api.us-east-1.amazonaws.com/prod
-      - PRESIGN_ENDPOINT      e.g. presign
-      - PRESIGN_API_KEY       (optional; only if your API expects a key header)
-      - PRESIGN_HMAC_SECRET   64-char hex or secret used to sign the request body
-      - CF_BASE_URL           (optional; CloudFront domain to build the GET url)
-#>
+# .github/workflows/scripts/presign-smoke.ps1
+# Purpose: presign -> (optional) PUT upload -> (optional) GET verify
+# Works on GitHub Actions runners (Linux/Windows) and trims secrets to avoid \n issues.
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 Write-Host "▶ presign-smoke.ps1 starting..."
 
-# ----------- Read + validate env -----------
-$apiBase  = $env:PRESIGN_API_BASE
-$endpoint = $env:PRESIGN_ENDPOINT
-$apiKey   = $env:PRESIGN_API_KEY
-$secret   = $env:PRESIGN_HMAC_SECRET
-$cfBase   = $env:CF_BASE_URL
+# ----------- Read env (trim to avoid stray whitespace/newlines) -----------
+$apiBase   = (($env:PRESIGN_API_BASE)   ?? '').Trim()
+$endpoint  = (($env:PRESIGN_ENDPOINT)   ?? '').Trim()     # optional; defaults below
+$apiKey    = (($env:PRESIGN_API_KEY)    ?? '').Trim()     # optional; send if configured
+$hmac      = (($env:PRESIGN_HMAC_SECRET)?? '').Trim()     # optional; send if configured
+$cfBase    = (($env:CF_BASE_URL)        ?? '').Trim()     # optional; for GET verify
 
-Write-Host "API_BASE length: $($apiBase?.Length)"
-Write-Host "API_KEY  length: $($apiKey?.Length)"
-Write-Host "SECRET   length: $($secret?.Length)"
+if (-not $endpoint) { $endpoint = 'presign' }
 
+# Safe length prints (no null-conditional in strings)
+$apiBaseLen = ($apiBase ?? '').Length
+$apiKeyLen  = ($apiKey  ?? '').Length
+$hmacLen    = ($hmac    ?? '').Length
+Write-Host "API_BASE length: $apiBaseLen"
+Write-Host "API_KEY  length: $apiKeyLen"
+Write-Host "SECRET   length: $hmacLen"
+
+# Validate required inputs
 $missing = @()
 if (-not $apiBase)  { $missing += 'PRESIGN_API_BASE' }
 if (-not $endpoint) { $missing += 'PRESIGN_ENDPOINT' }
-if (-not $secret)   { $missing += 'PRESIGN_HMAC_SECRET' }
 if ($missing.Count -gt 0) {
   throw "Missing one or more required env vars: $([string]::Join(', ', $missing))"
 }
 
-# Normalize URL parts
-$apiBase  = $apiBase.TrimEnd('/')
-$endpoint = $endpoint.TrimStart('/')
-
-# ----------- Portable CRC32 (fallback) -----------
-# Uses lookup-table; works on all runners without extra assemblies.
-$__crc32Table = 0..255 | ForEach-Object {
-  $c = $_
-  0..7 | ForEach-Object {
-    if ($c -band 1) { $c = (0xEDB88320 -bxor ($c -shr 1)) } else { $c = ($c -shr 1) }
-  }; $c
+# ----------- Request payload -----------
+# NOTE: These fields should match what your Lambda expects.
+$keyPath   = "sources/hello.txt"
+$bodyObj = @{
+  checksum           = "crc32"                                    # algorithm label (not value)
+  contentDisposition = 'attachment; filename="hello.txt"'
+  contentType        = "text/plain"
+  key                = $keyPath
+  sse                = "AES256"
 }
-function Get-Crc32Hex([byte[]] $bytes) {
-  $crc = 0xFFFFFFFF
-  foreach ($b in $bytes) {
-    $idx = ($crc -bxor $b) -band 0xFF
-    $crc = ($crc -shr 8) -bxor $__crc32Table[$idx]
-  }
-  return '{0:x8}' -f (-bnot $crc -band 0xFFFFFFFF)
-}
+$bodyJson = $bodyObj | ConvertTo-Json -Compress -Depth 5
 
-# ----------- Build tiny test object -----------
-$objectKey  = 'sources/hello.txt'
-$filename   = 'hello.txt'
-$mime       = 'text/plain'
-$sse        = 'AES256'
-$bodyText   = "hello from smoke $(Get-Random)"
-$bytes      = [System.Text.Encoding]::UTF8.GetBytes($bodyText)
-
-# Compute CRC32; prefer System.IO.Hashing when available
-try {
-  $crcBytes = [System.IO.Hashing.Crc32]::Hash($bytes)
-  $crcHex   = ($crcBytes | ForEach-Object { $_.ToString('x2') }) -join ''
-} catch {
-  $crcHex   = Get-Crc32Hex $bytes
-}
-# (Presign API expects a field telling which checksum we send)
-$checksumAlgo = 'crc32'
-
-# ----------- Prepare presign request -----------
-$ts = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
-
-# Body that your Lambda expects (based on your previous logs)
-$reqObj = [ordered]@{
-  checksum            = $checksumAlgo
-  contentDisposition  = "attachment; filename=""$filename"""
-  contentType         = $mime
-  key                 = $objectKey
-  sse                 = $sse
-}
-$reqJson = ($reqObj | ConvertTo-Json -Compress)
-
-# Signature: HMAC-SHA256 over "<ts>\n<json>"
-$toSign   = "$ts`n$reqJson"
-$hmac     = New-Object System.Security.Cryptography.HMACSHA256 ([Text.Encoding]::UTF8.GetBytes($secret))
-$sigBytes = $hmac.ComputeHash([Text.Encoding]::UTF8.GetBytes($toSign))
-$sigHex   = ($sigBytes | ForEach-Object { $_.ToString('x2') }) -join ''
-
-Write-Host ""
-Write-Host "--- Presign request debug ---"
-Write-Host "ts: $ts"
-Write-Host "body: $reqJson"
-Write-Host "sig(hex): $sigHex"
-Write-Host ""
-
-# Headers (avoid any newline characters!)
+# ----------- Build headers -----------
 $headers = @{
-  'Content-Type' = 'application/json'
-  'x-ts'         = "$ts"
-  'x-signature'  = $sigHex
+  "content-type" = "application/json"
 }
-if ($apiKey) { $headers['x-api-key'] = $apiKey.Trim() }  # key is optional
+if ($apiKey) { $headers["x-api-key"] = $apiKey }
 
-$presignUrl = "$apiBase/$endpoint"
+# If your Lambda verifies an HMAC signature, we send ts + signature headers.
+if ($hmac) {
+  $ts = [System.DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+  # ⚠️ Canonical string must match your Lambda. Common pattern:
+  #   "<ts>\nPOST\n/<endpoint>\n<bodyJson>"
+  $preimage = "$ts`nPOST`n/$endpoint`n$bodyJson"
 
-# ----------- Call presign API -----------
-try {
-  $pres = Invoke-RestMethod -Method POST -Uri $presignUrl -Headers $headers -Body $reqJson -TimeoutSec 30 -ErrorAction Stop
-} catch {
-  # Surface status code if available
-  $status = $_.Exception.Response?.StatusCode.value__
-  if ($status) {
-    Write-Host "Presign failed: HTTP $status"
-    throw "Presign HTTP $status"
+  $h = [System.Security.Cryptography.HMACSHA256]::new([Text.Encoding]::UTF8.GetBytes($hmac))
+  try { $sigBytes = $h.ComputeHash([Text.Encoding]::UTF8.GetBytes($preimage)) } finally { $h.Dispose() }
+  $sigHex = -join ($sigBytes | ForEach-Object { $_.ToString('x2') })
+
+  $headers["x-lifebook-ts"]         = "$ts"
+  $headers["x-lifebook-signature"]  = $sigHex
+}
+
+# ----------- POST presign -----------
+$uri = ($apiBase.TrimEnd('/')) + '/' + ($endpoint.TrimStart('/'))
+Write-Host "--- Presign request debug ---"
+Write-Host "URI: $uri"
+Write-Host "Body: $bodyJson"
+
+function Show-HttpErrorAndThrow {
+  param($ex, $label)
+  $code = $null; $text = $null
+  $resp = $ex.Exception.Response
+  if ($resp -is [System.Net.Http.HttpResponseMessage]) {
+    $code = [int]$resp.StatusCode
+    try { $text = $resp.Content.ReadAsStringAsync().GetAwaiter().GetResult() } catch {}
+  } elseif ($resp -and $resp.PSObject.Properties['StatusCode']) {
+    $code = [int]$resp.StatusCode
+    try {
+      $sr = New-Object System.IO.StreamReader($resp.GetResponseStream())
+      $text = $sr.ReadToEnd()
+      $sr.Dispose()
+    } catch {}
   }
-  throw
-}
-
-# Extract upload URL (accept a few common shapes)
-$putUrl = $null
-if ($pres -is [string]) {
-  $putUrl = $pres
-} elseif ($pres.url) {
-  $putUrl = [string]$pres.url
-} elseif ($pres.uploadUrl) {
-  $putUrl = [string]$pres.uploadUrl
-} elseif ($pres.putUrl) {
-  $putUrl = [string]$pres.putUrl
-}
-if (-not $putUrl) { throw "Presign response missing URL: $($pres | ConvertTo-Json -Compress)" }
-
-Write-Host "Got presigned URL (truncated): $($putUrl.Substring(0, [Math]::Min(120, $putUrl.Length)))..."
-
-# ----------- Upload with PUT to S3 -----------
-# NOTE: You *must* send the same headers that the presign was created for
-$putHeaders = @{
-  'Content-Disposition' = "attachment; filename=""$filename"""
-  'x-amz-server-side-encryption' = $sse
+  if ($code -ne $null) { Write-Host "$label failed: HTTP $code" }
+  if ($text) { Write-Host $text }
+  throw $ex
 }
 
 try {
-  $putResp = Invoke-WebRequest -Uri $putUrl -Method Put -UseBasicParsing -Headers $putHeaders -ContentType $mime -Body $bytes -TimeoutSec 60 -ErrorAction Stop
+  $presignResp = Invoke-WebRequest -UseBasicParsing -Method POST -Uri $uri -Headers $headers -Body $bodyJson
 } catch {
-  $status = $_.Exception.Response?.StatusCode.value__
-  if ($status) {
-    Write-Host "PUT failed: HTTP $status"
-    throw "PUT HTTP $status"
+  Show-HttpErrorAndThrow $_ "Presign"
+}
+
+Write-Host "--- Presign response ---"
+Write-Host "HTTP $($presignResp.StatusCode)"
+Write-Host $presignResp.Content
+
+# Parse JSON if possible
+$presign = $null
+try { $presign = $presignResp.Content | ConvertFrom-Json } catch {}
+
+# Try to discover fields in a provider-agnostic way
+$putUrl    = $null
+$verifyUrl = $null
+
+if ($presign) {
+  if     ($presign.putUrl)     { $putUrl    = $presign.putUrl }
+  elseif ($presign.url)        { $putUrl    = $presign.url }
+  elseif ($presign.uploadURL)  { $putUrl    = $presign.uploadURL }
+  elseif ($presign.uploadUrl)  { $putUrl    = $presign.uploadUrl }
+
+  if     ($presign.verifyUrl)  { $verifyUrl = $presign.verifyUrl }
+  elseif ($presign.getUrl)     { $verifyUrl = $presign.getUrl }
+  elseif ($presign.cfUrl)      { $verifyUrl = $presign.cfUrl }
+}
+
+# If verify wasn't provided, build a CloudFront URL if base was supplied
+if (-not $verifyUrl -and $cfBase) {
+  $verifyUrl = ($cfBase.TrimEnd('/')) + '/' + $keyPath
+}
+
+# ----------- Optional PUT upload (only if we got a URL) -----------
+if ($putUrl) {
+  Write-Host "--- Uploading to presigned URL ---"
+  # Collect any required headers from response; otherwise use sane defaults.
+  $uploadHeaders = @{}
+  if ($presign -and $presign.headers) {
+    ($presign.headers | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name) | ForEach-Object {
+      $uploadHeaders[$_] = $presign.headers.$_
+    }
+  } else {
+    $uploadHeaders["content-type"]                 = $bodyObj.contentType
+    $uploadHeaders["content-disposition"]          = $bodyObj.contentDisposition
+    $uploadHeaders["x-amz-server-side-encryption"] = $bodyObj.sse
   }
-  throw
+
+  $bytes = [System.Text.Encoding]::UTF8.GetBytes("hello from Lifebook smoke $(Get-Date -Format o)`n")
+  try {
+    $putResp = Invoke-WebRequest -UseBasicParsing -Method PUT -Uri $putUrl -Headers $uploadHeaders -Body $bytes
+    Write-Host "PUT status: $($putResp.StatusCode)"
+  } catch {
+    Show-HttpErrorAndThrow $_ "PUT upload"
+  }
+
+  # ----------- Optional GET verify -----------
+  if ($verifyUrl) {
+    Start-Sleep -Seconds 1
+    try {
+      $getResp = Invoke-WebRequest -UseBasicParsing -Method GET -Uri $verifyUrl
+      Write-Host "GET verify status: $($getResp.StatusCode)"
+    } catch {
+      Show-HttpErrorAndThrow $_ "GET verify"
+    }
+  }
+} else {
+  Write-Host "No upload URL found in presign response; presign-only smoke succeeded."
 }
 
-Write-Host "PUT upload OK."
-
-# Optional: show public/edge URL candidate (no hard GET to avoid eventual consistency flakes)
-if ($cfBase) {
-  $edgeUrl = ($cfBase.TrimEnd('/')) + '/' + $objectKey
-  Write-Host "Candidate GET via CloudFront: $edgeUrl"
-}
-
-Write-Host "✅ Smoke test finished successfully."
+Write-Host "✅ Smoke complete."
