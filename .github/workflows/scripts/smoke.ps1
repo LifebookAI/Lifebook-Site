@@ -1,4 +1,4 @@
-<# Lifebook: presign + upload smoke (GitHub Actions) #>
+<# Lifebook: presign + upload smoke (GitHub Actions, hardened with debug) #>
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
@@ -8,7 +8,7 @@ function Fail([string]$msg){ Write-Error $msg; exit 1 }
 function CleanHeaderStrict([object]$v){
   if ($null -eq $v) { return "" }
   $s = [string]$v
-  $s = $s -replace "[`r`n\u0085\u2028\u2029]", ""     # remove all newline kinds
+  $s = $s -replace "[`r`n\u0085\u2028\u2029]", ""       # strip all newline kinds
   $sb = New-Object System.Text.StringBuilder
   foreach($ch in $s.ToCharArray()){
     $code = [int][char]$ch
@@ -50,15 +50,44 @@ $hmac     = [System.Security.Cryptography.HMACSHA256]::new($keyBytes)
 $sigBytes = $hmac.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($toSign))
 $signature= BytesToLowerHex $sigBytes
 
-# --- Headers (hashtable; no .Add()) ---
+# --- Headers (hashtable) ---
 $headers = @{
   "x-api-key"   = $ApiKey
   "x-timestamp" = [string]$ts
   "x-signature" = $signature
 }
 
+# --- Debug (safe: no secrets printed) ---
+Write-Host "DEBUG base        : $Base"
+Write-Host "DEBUG ts          : $ts"
+Write-Host "DEBUG bodyJson    : $bodyJson"
+Write-Host "DEBUG toSign(head): " + $toSign.Substring(0, [Math]::Min(160, $toSign.Length))
+Write-Host "DEBUG sig         : $signature"
+Write-Host "DEBUG keyBytesLen : $($keyBytes.Length)"
+Write-Host "DEBUG apiKeyLen   : $($ApiKey.Length)"
+
+# --- Request presign with rich error handling ---
 Write-Host "Requesting presign..."
-$presign = Invoke-RestMethod -Method POST -Uri "$Base/presign" -Headers $headers -Body $bodyJson -ContentType 'application/json'
+try {
+  $presign = Invoke-RestMethod -Method POST -Uri "$Base/presign" -Headers $headers -Body $bodyJson -ContentType 'application/json'
+} catch {
+  $resp = $_.Exception.Response
+  if ($resp) {
+    try {
+      $statusCode = [int]$resp.StatusCode
+      $statusName = $resp.StatusCode
+      $reader = New-Object System.IO.StreamReader($resp.GetResponseStream())
+      $errBody = $reader.ReadToEnd()
+      Write-Host "ERROR STATUS: $statusName ($statusCode)"
+      Write-Host "ERROR BODY  : $errBody"
+    } catch {
+      Write-Host "ERROR: failed to read error body: $($_.Exception.Message)"
+    }
+  } else {
+    Write-Host "ERROR: $($_.Exception.Message)"
+  }
+  exit 1
+}
 
 if (-not $presign){ Fail "No response from presign endpoint" }
 if (-not $presign.url){ Write-Host ($presign | ConvertTo-Json -Depth 10); Fail "Presign response missing 'url'" }
