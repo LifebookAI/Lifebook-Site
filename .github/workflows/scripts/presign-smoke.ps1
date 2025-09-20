@@ -1,108 +1,78 @@
-<# 
-  presign-smoke.ps1
-  Calls your /presign endpoint with a tiny test request.
-  Works whether you use API Key and/or optional HMAC headers.
-
-  Required env:
-    PRESIGN_API_BASE      -> e.g. https://l6571skkfi.execute-api.us-east-1.amazonaws.com/prod
-  Optional env:
-    PRESIGN_ENDPOINT      -> defaults to /presign
-    PRESIGN_API_KEY       -> if your API Gateway uses an API Key
-    PRESIGN_HMAC_SECRET   -> if your Lambda verifies HMAC(ts + "." + rawBody)
-
-  Output: dumps status + response body; throws on non-2xx with the HTTP code.
-#>
-
+# .github/workflows/scripts/presign-smoke.ps1
+#!pwsh
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-Write-Host '***_smoke.ps1 starting...'
-
-# --- read envs ---
-$apiBase     = $env:PRESIGN_API_BASE
-$endpoint    = if ($env:PRESIGN_ENDPOINT) { $env:PRESIGN_ENDPOINT } else { "/presign" }
-$apiKey      = $env:PRESIGN_API_KEY
-$hmacSecret  = $env:PRESIGN_HMAC_SECRET
-
-# quick visibility (GitHub masks values that match secrets)
-Write-Host ("API_BASE length: {0}" -f ($apiBase   ? $apiBase.Length   : 0))
-Write-Host ("API_KEY  length: {0}" -f ($apiKey    ? $apiKey.Length    : 0))
-Write-Host ("SECRET  length: {0}" -f ($hmacSecret ? $hmacSecret.Length: 0))
-
-# --- required vars check ---
-$missing = @()
-if ([string]::IsNullOrWhiteSpace($apiBase)) { $missing += 'PRESIGN_API_BASE' }
-if ($missing.Count -gt 0) {
-  throw ("Missing one or more required env vars: {0}" -f (($missing -join ', ')))
+function Clean([string]$s) {
+  if ($null -eq $s) { return '' }
+  # trim, strip wrapping quotes, remove any CR/LF anywhere
+  return ($s.Trim() -replace '^[\"'']|[\"'']$','' -replace '[\r\n]+','')
 }
 
-# --- build URL ---
-$uri = "{0}/{1}" -f $apiBase.TrimEnd('/'), $endpoint.TrimStart('/')
+# ---- env (from GitHub secrets) ----
+$apiBase  = Clean $env:PRESIGN_API_BASE
+$endpoint = Clean $env:PRESIGN_ENDPOINT    # optional override; if blank use $apiBase/presign
+$apiKey   = Clean $env:PRESIGN_API_KEY
+$secret   = Clean $env:PRESIGN_HMAC_SECRET # optional; only used if provided
 
-# --- body we send ---
-$bodyObj = @{
-  sse                = "AES256"
-  contentType        = "text/plain"
-  contentDisposition = 'attachment; filename="hello.txt"'
+# ---- sanity ----
+$missing = @()
+if ([string]::IsNullOrWhiteSpace($apiBase) -and [string]::IsNullOrWhiteSpace($endpoint)) { $missing += 'PRESIGN_API_BASE or PRESIGN_ENDPOINT' }
+if ([string]::IsNullOrWhiteSpace($apiKey))   { $missing += 'PRESIGN_API_KEY' }
+if ($missing.Count -gt 0) { throw "Missing one or more required env vars: $([string]::Join(', ', $missing))" }
+
+Write-Host "=== smoke.ps1 starting..."
+Write-Host ("API_BASE length: {0}" -f ($apiBase?.Length))
+Write-Host ("API_KEY  length: {0}" -f ($apiKey?.Length))
+Write-Host ("SECRET   length: {0}" -f ($secret?.Length))
+
+if ($apiKey.Length -eq 65)  { Write-Host "NOTE: API key looked like it had a trailing newline; sanitized." }
+if ($secret  -and $secret.Length -eq 65) { Write-Host "NOTE: HMAC secret looked like it had a trailing newline; sanitized." }
+
+# ---- target URL ----
+$uri = if (![string]::IsNullOrWhiteSpace($endpoint)) { $endpoint } else { ($apiBase.TrimEnd('/')) + "/presign" }
+
+# ---- request body (JSON) ----
+$bodyObj = [ordered]@{
   key                = "sources/hello.txt"
+  contentType        = "text/plain"
+  contentDisposition = "attachment; filename=`"hello.txt`""
+  sse                = "AES256"
   checksum           = "crc32"
 }
-$bodyJson = $bodyObj | ConvertTo-Json -Depth 5
+$bodyJson = ($bodyObj | ConvertTo-Json -Depth 4 -Compress)
 
-# --- headers ---
-$headers = @{
-  "Content-Type" = "application/json"
-}
-if ($apiKey) { $headers["x-api-key"] = $apiKey }
+# ---- headers ----
+$headers = @{ "x-api-key" = $apiKey }
 
-# Optional HMAC: ts + "." + rawBody (hex lowercase)
-if ($hmacSecret) {
+# optional HMAC (if secret provided)
+if ($secret) {
   $ts = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
   $toSign = "$ts.$bodyJson"
-  $hmac = [System.Security.Cryptography.HMACSHA256]::new([Text.Encoding]::UTF8.GetBytes($hmacSecret))
-  try {
-    $hash = $hmac.ComputeHash([Text.Encoding]::UTF8.GetBytes($toSign))
-  } finally {
-    $hmac.Dispose()
-  }
-  $sig = -join ($hash | ForEach-Object { $_.ToString('x2') })
-  $headers["x-lifebook-ts"]        = "$ts"
-  $headers["x-lifebook-signature"] = $sig
+  $hmac  = New-Object System.Security.Cryptography.HMACSHA256([Text.Encoding]::UTF8.GetBytes($secret))
+  $sig   = ($hmac.ComputeHash([Text.Encoding]::UTF8.GetBytes($toSign)) | ForEach-Object { $_.ToString('x2') }) -join ''
+  $headers["x-signature"] = $sig
+  $headers["x-timestamp"] = "$ts"
 }
 
-Write-Host '--- Presign request debug ---'
-Write-Host "URI: `"$uri`""
+Write-Host "`n--- Presign request debug ---"
+Write-Host "URI: $uri"
 Write-Host "Body: $bodyJson"
 
-# --- call API ---
 try {
-  $resp = Invoke-WebRequest -UseBasicParsing -Method POST -Uri $uri -Headers $headers -Body $bodyJson -TimeoutSec 60
-  Write-Host ("Presign status: {0}" -f $resp.StatusCode)
-  Write-Host ("Presign body: {0}" -f $resp.Content)
+  $resp = Invoke-RestMethod `
+    -Method POST `
+    -Uri $uri `
+    -Headers $headers `
+    -Body $bodyJson `
+    -ContentType 'application/json; charset=utf-8'
 
-  # If the response is JSON and contains a URL, surface it nicely
-  try {
-    $json = $resp.Content | ConvertFrom-Json -ErrorAction Stop
-    if ($null -ne $json.url) {
-      Write-Host ("Generated URL: {0}" -f $json.url)
-    }
-  } catch { }  # non-JSON is fine for this smoke
-
+  Write-Host "`nPresign OK"
+  if ($resp.url) { Write-Host "URL: $($resp.url)" }
 } catch {
-  # PowerShell 7 throws HttpResponseException with HttpResponseMessage
   $status = $null
-  $errBody = $null
-  $ex = $_.Exception
-
-  if ($ex.PSObject.Properties.Name -contains 'Response' -and $ex.Response) {
-    try { $status = [int]$ex.Response.StatusCode } catch { }
-    try { $errBody = $ex.Response.Content.ReadAsStringAsync().GetAwaiter().GetResult() } catch { }
-  }
-
-  if ($status) {
-    if ($errBody) { Write-Host $errBody }
-    throw "Presign HTTP $status"
-  } else {
-    throw  # unknown failure; bubble up
-  }
+  try { $status = $_.Exception.Response.StatusCode.value__ } catch {}
+  Write-Host "Presign failed: HTTP $status"
+  if ($_.ErrorDetails.Message) { Write-Host $_.ErrorDetails.Message }
+  throw
 }
