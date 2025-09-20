@@ -1,66 +1,126 @@
-# .github/workflows/scripts/smoke.ps1
-Set-StrictMode -Version latest
+<# 
+  Lifebook: presign + upload smoke (GitHub Actions)
+  Requires repo secrets:
+    PRESIGN_API_BASE       e.g. https://api.uselifebook.ai/prod
+    PRESIGN_API_KEY        64-char API key
+    PRESIGN_HMAC_SECRET    HEX string (even length; ideally 128 hex chars = 64 bytes)
+    CF_BASE_URL            (optional) e.g. https://files.uselifebook.ai
+#>
+
 $ErrorActionPreference = 'Stop'
+Set-StrictMode -Version Latest
 
-function Clean([string]$s) {
-  if ($null -eq $s) { return '' }
-  $s = $s.Trim()
-  $s = $s -replace '"',''
-  return [string]$s
+function Fail($msg) {
+  Write-Error $msg
+  exit 1
 }
 
-$apiBase  = Clean $env:PRESIGN_API_BASE
-$endpoint = Clean $env:PRESIGN_ENDPOINT
-$apiKey   = Clean $env:PRESIGN_API_KEY
-$secret   = Clean $env:PRESIGN_HMAC_SECRET
+# --- Read inputs from env ---
+$Base         = $env:PRESIGN_API_BASE
+$ApiKey       = $env:PRESIGN_API_KEY
+$SecretHex    = $env:PRESIGN_HMAC_SECRET
+$CfBase       = if ($env:CF_BASE_URL) { $env:CF_BASE_URL.TrimEnd('/') } else { "https://files.uselifebook.ai" }
 
-$need = @()
-if ([string]::IsNullOrWhiteSpace($apiKey))   { $need += 'PRESIGN_API_KEY' }
-if ([string]::IsNullOrWhiteSpace($endpoint) -and [string]::IsNullOrWhiteSpace($apiBase)) {
-  $need += 'PRESIGN_API_BASE or PRESIGN_ENDPOINT'
+if (-not $Base)      { Fail "Missing PRESIGN_API_BASE" }
+if (-not $ApiKey)    { Fail "Missing PRESIGN_API_KEY" }
+if (-not $SecretHex) { Fail "Missing PRESIGN_HMAC_SECRET (hex)" }
+
+# --- Validate HEX secret ---
+$SecretHex = $SecretHex.Trim()
+if ($SecretHex -notmatch '^[0-9a-fA-F]+$') { Fail "PRESIGN_HMAC_SECRET must be HEX (0-9a-f)" }
+if ( ($SecretHex.Length % 2) -ne 0 ) { Fail "PRESIGN_HMAC_SECRET length must be even number of hex chars" }
+
+# --- Helpers ---
+function HexToBytes([string]$hex) {
+  return [System.Convert]::FromHexString($hex)
 }
-if ($need.Count -gt 0) { throw "Missing one or more required env vars: $([string]::Join(', ', $need))" }
+function BytesToLowerHex([byte[]]$bytes) {
+  return (-join ($bytes | ForEach-Object { $_.ToString('x2') }))
+}
 
-$uri = if ($endpoint) { $endpoint } else { ($apiBase.TrimEnd('/') + '/presign') }
+# --- Build request body (compact JSON) ---
+$stamp = (Get-Date).ToUniversalTime().ToString('yyyyMMdd-HHmmss')
+$rand  = Get-Random
+$key   = "sources/smoke-$stamp-$rand.txt"
 
 $bodyObj = [ordered]@{
-  key               = 'sources/hello.txt'
-  contentType       = 'text/plain'
-  contentDisposition= 'attachment; filename="hello.txt"'
-  sse               = 'AES256'
-  checksum          = 'crc32'
+  key                = $key
+  contentType        = "text/plain"
+  contentDisposition = "inline"
 }
-$bodyJson = $bodyObj | ConvertTo-Json -Depth 4 -Compress
+$bodyJson = ($bodyObj | ConvertTo-Json -Compress)
 
-$headers = @{ 'x-api-key' = $apiKey }
+# --- HMAC signature over "$ts.$bodyJson" using HEX-decoded secret ---
+$ts      = [int][double]::Parse((Get-Date -Date (Get-Date).ToUniversalTime() -UFormat %s))
+$toSign  = "$ts.$bodyJson"
+$keyBytes = HexToBytes $SecretHex
+$hmac     = [System.Security.Cryptography.HMACSHA256]::new($keyBytes)
 
-# Optional HMAC header (timestamp + '\n' + body) if you set PRESIGN_HMAC_SECRET
-if ($secret) {
-  $ts        = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds().ToString()
-  $toSign    = "$ts`n$bodyJson"
-  $keyBytes  = [System.Text.Encoding]::UTF8.GetBytes($secret)
-  $dataBytes = [System.Text.Encoding]::UTF8.GetBytes($toSign)
+$toSignBytes = [System.Text.Encoding]::UTF8.GetBytes($toSign)
+$sigBytes    = $hmac.ComputeHash($toSignBytes)
+$signature   = BytesToLowerHex $sigBytes
 
-  # 👇 IMPORTANT: use ::new(byte[]) so PowerShell doesn't treat the byte[] as 64 separate args
-  $hmac   = [System.Security.Cryptography.HMACSHA256]::new($keyBytes)
-  $sigHex = ($hmac.ComputeHash($dataBytes) | ForEach-Object { $_.ToString('x2') }) -join ''
-
-  $headers['x-signature'] = $sigHex
-  $headers['x-timestamp'] = $ts
+# --- Request presign ---
+$headers = @{
+  "x-api-key"   = $ApiKey
+  "x-timestamp" = $ts
+  "x-signature" = $signature
+  "content-type"= "application/json"
 }
 
-try {
-  $resp = Invoke-RestMethod -Method POST -Uri $uri -Headers $headers -Body $bodyJson -ContentType 'application/json; charset=utf-8'
-  if ($resp.url) {
-    Write-Host "::notice::Presign OK"
-    Write-Host "::notice::URL: $($resp.url)"
-  } else {
-    Write-Host "::notice::Presign OK (no URL)"
+Write-Host "Requesting presign at $Base/presign"
+$presign = Invoke-RestMethod -Method POST -Uri "$Base/presign" -Headers $headers -Body $bodyJson
+
+if (-not $presign) { Fail "No response from presign endpoint" }
+if (-not $presign.url) { 
+  Write-Host ($presign | ConvertTo-Json -Depth 10)
+  Fail "Presign response missing 'url'"
+}
+
+$putUrl = [string]$presign.url
+Write-Host "PUT URL:"
+Write-Host $putUrl
+
+# --- Build upload headers; honor any from response ---
+$uploadHeaders = @{}
+if ($presign.headers) {
+  foreach ($p in $presign.headers.PSObject.Properties) {
+    $uploadHeaders[$p.Name] = [string]$p.Value
   }
 }
-catch {
-  $code = $_.Exception.Response.StatusCode.value__
-  $msg  = $_.ErrorDetails.Message
-  if ($msg) { Write-Host "::error::Presign failed HTTP $code - $msg" } else { Write-Host "::error::Presign failed HTTP $code" }
-  throw
+
+if (-not $uploadHeaders["Content-Type"])                { $uploadHeaders["Content-Type"] = "text/plain" }
+if (-not $uploadHeaders["Content-Disposition"])         { $uploadHeaders["Content-Disposition"] = "inline" }
+if (-not $uploadHeaders["x-amz-server-side-encryption"]) { $uploadHeaders["x-amz-server-side-encryption"] = "AES256" }
+
+# --- Upload via presigned PUT ---
+$payload = [System.Text.Encoding]::UTF8.GetBytes("hello smoke $stamp")
+Write-Host "Uploading object..."
+Invoke-RestMethod -Method PUT -Uri $putUrl -Body $payload -Headers $uploadHeaders | Out-Null
+Write-Host "Upload completed."
+
+# --- Derive CloudFront verify URL from S3 key in the PUT URL path ---
+$uri = [System.Uri]$putUrl
+$keyFromUrl = [System.Net.WebUtility]::UrlDecode($uri.AbsolutePath).TrimStart('/')
+$verifyUrl = "$CfBase/$keyFromUrl"
+
+Write-Host "VERIFY URL:"
+Write-Host $verifyUrl
+
+# --- Verify fetch from CloudFront ---
+Write-Host "Fetching from CloudFront..."
+$response = Invoke-WebRequest -Method GET -Uri $verifyUrl
+if ($response.StatusCode -ne 200) { Fail "Verify GET failed: HTTP $($response.StatusCode)" }
+
+$content = $response.Content
+Write-Host "VERIFY STATUS: $($response.StatusCode)"
+Write-Host "VERIFY BODY (up to 120 chars):"
+Write-Host ($content.Substring(0, [Math]::Min(120, $content.Length)))
+
+# --- Content sanity check ---
+if ($content -notmatch "^hello smoke ") {
+  Fail "Verify content mismatch."
 }
+
+Write-Host "Smoke test PASSED."
+exit 0
