@@ -5,20 +5,22 @@ $ErrorActionPreference = 'Stop'
 
 function Clean([string]$s) {
   if ($null -eq $s) { return '' }
-  # trim, strip wrapping quotes, remove any CR/LF anywhere
-  return ($s.Trim() -replace '^[\"'']|[\"'']$','' -replace '[\r\n]+','')
+  $t = $s.Trim()
+  # strip any surrounding quotes and ALL control chars (CR/LF, NUL, etc.)
+  $t = ($t -replace '^[\"'']|[\"'']$','')
+  $bytes = [Text.Encoding]::UTF8.GetBytes($t)
+  $bytes = $bytes | Where-Object { $_ -notin 0,10,13 }  # remove NUL, LF, CR
+  return [Text.Encoding]::UTF8.GetString([byte[]]$bytes)
 }
 
-# ---- env (from GitHub secrets) ----
 $apiBase  = Clean $env:PRESIGN_API_BASE
-$endpoint = Clean $env:PRESIGN_ENDPOINT    # optional override; if blank use $apiBase/presign
+$endpoint = Clean $env:PRESIGN_ENDPOINT     # optional; overrides apiBase/presign
 $apiKey   = Clean $env:PRESIGN_API_KEY
-$secret   = Clean $env:PRESIGN_HMAC_SECRET # optional; only used if provided
+$secret   = Clean $env:PRESIGN_HMAC_SECRET  # optional
 
-# ---- sanity ----
 $missing = @()
 if ([string]::IsNullOrWhiteSpace($apiBase) -and [string]::IsNullOrWhiteSpace($endpoint)) { $missing += 'PRESIGN_API_BASE or PRESIGN_ENDPOINT' }
-if ([string]::IsNullOrWhiteSpace($apiKey))   { $missing += 'PRESIGN_API_KEY' }
+if ([string]::IsNullOrWhiteSpace($apiKey)) { $missing += 'PRESIGN_API_KEY' }
 if ($missing.Count -gt 0) { throw "Missing one or more required env vars: $([string]::Join(', ', $missing))" }
 
 Write-Host "=== smoke.ps1 starting..."
@@ -26,13 +28,8 @@ Write-Host ("API_BASE length: {0}" -f ($apiBase?.Length))
 Write-Host ("API_KEY  length: {0}" -f ($apiKey?.Length))
 Write-Host ("SECRET   length: {0}" -f ($secret?.Length))
 
-if ($apiKey.Length -eq 65)  { Write-Host "NOTE: API key looked like it had a trailing newline; sanitized." }
-if ($secret  -and $secret.Length -eq 65) { Write-Host "NOTE: HMAC secret looked like it had a trailing newline; sanitized." }
+$uri = if ($endpoint) { $endpoint } else { ($apiBase.TrimEnd('/')) + "/presign" }
 
-# ---- target URL ----
-$uri = if (![string]::IsNullOrWhiteSpace($endpoint)) { $endpoint } else { ($apiBase.TrimEnd('/')) + "/presign" }
-
-# ---- request body (JSON) ----
 $bodyObj = [ordered]@{
   key                = "sources/hello.txt"
   contentType        = "text/plain"
@@ -42,36 +39,29 @@ $bodyObj = [ordered]@{
 }
 $bodyJson = ($bodyObj | ConvertTo-Json -Depth 4 -Compress)
 
-# ---- headers ----
-$headers = @{ "x-api-key" = $apiKey }
+Write-Host "`n--- Presign request debug ---"
+Write-Host "URI: $uri"
+Write-Host "Body: $bodyJson"
 
-# optional HMAC (if secret provided)
+# Build headers AFTER sanitizing to avoid newline issues
+$headers = @{ 'x-api-key' = $apiKey }
+
 if ($secret) {
   $ts = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
   $toSign = "$ts.$bodyJson"
   $hmac  = New-Object System.Security.Cryptography.HMACSHA256([Text.Encoding]::UTF8.GetBytes($secret))
   $sig   = ($hmac.ComputeHash([Text.Encoding]::UTF8.GetBytes($toSign)) | ForEach-Object { $_.ToString('x2') }) -join ''
-  $headers["x-signature"] = $sig
-  $headers["x-timestamp"] = "$ts"
+  $headers['x-signature'] = $sig
+  $headers['x-timestamp'] = "$ts"
 }
 
-Write-Host "`n--- Presign request debug ---"
-Write-Host "URI: $uri"
-Write-Host "Body: $bodyJson"
-
 try {
-  $resp = Invoke-RestMethod `
-    -Method POST `
-    -Uri $uri `
-    -Headers $headers `
-    -Body $bodyJson `
-    -ContentType 'application/json; charset=utf-8'
-
+  # IMPORTANT: use Invoke-RestMethod (not Invoke-WebRequest) and pass ContentType separately
+  $resp = Invoke-RestMethod -Method POST -Uri $uri -Headers $headers -Body $bodyJson -ContentType 'application/json; charset=utf-8'
   Write-Host "`nPresign OK"
   if ($resp.url) { Write-Host "URL: $($resp.url)" }
 } catch {
-  $status = $null
-  try { $status = $_.Exception.Response.StatusCode.value__ } catch {}
+  $status = $null; try { $status = $_.Exception.Response.StatusCode.value__ } catch {}
   Write-Host "Presign failed: HTTP $status"
   if ($_.ErrorDetails.Message) { Write-Host $_.ErrorDetails.Message }
   throw
