@@ -23,6 +23,10 @@ function Convert-HexToBytes([string]$hex) {
   }
   return $bytes
 }
+function CleanHeader([string]$v) {
+  if ($null -eq $v) { return $null }
+  return ($v -replace '[\r\n]','').Trim()
+}
 
 # --- Build object key and body we will sign ---
 $ts   = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
@@ -49,12 +53,16 @@ Write-Host "DEBUG bodyJson    : $bodyJson"
 Write-Host "DEBUG toSign(head):  $toSign"
 Write-Host "DEBUG sig         : $sig"
 Write-Host "DEBUG keyBytesLen : $($kbytes.Length)"
-$apiKeyLen = if ($apiKey) { $apiKey.Length } else { 0 }
-Write-Host "DEBUG apiKeyLen   : $apiKeyLen"
 
 # --- Request presign ---
-$headers = @{ 'x-timestamp' = "$ts"; 'x-signature' = $sig }
-if ($apiKey) { $headers['x-api-key'] = $apiKey }
+$headers = @{
+  'x-timestamp' = CleanHeader "$ts"
+  'x-signature' = CleanHeader $sig
+}
+$apiKeyClean = CleanHeader $apiKey
+$apiKeyLen   = if ($apiKeyClean) { $apiKeyClean.Length } else { 0 }
+Write-Host "DEBUG apiKeyLen   : $apiKeyLen"
+if ($apiKeyClean) { $headers['x-api-key'] = $apiKeyClean }
 
 $presignUrl = "$base/presign"
 Write-Host "Trying PRESIGN URL: $presignUrl"
@@ -82,7 +90,9 @@ $uploadBody = [System.Text.Encoding]::UTF8.GetBytes($content)
 
 $putHeaders = @{}
 if ($presign.headers) {
-  $presign.headers.PSObject.Properties | ForEach-Object { $putHeaders[$_.Name] = "$($_.Value)" }
+  $presign.headers.PSObject.Properties | ForEach-Object {
+    $putHeaders[$_.Name] = CleanHeader "$($_.Value)"
+  }
 }
 
 try {
@@ -100,7 +110,7 @@ Write-Host "Uploading..."
 Write-Host "Upload complete."
 
 # --- VERIFY via CloudFront (no bucket segment in path) ---
-$keyPath   = $key.TrimStart('/')      # "sources/smoke-....txt"
+$keyPath   = $key.TrimStart('/')
 $verifyUrl = "$cfBase/$keyPath"
 Write-Host "VERIFY URL : $verifyUrl"
 
