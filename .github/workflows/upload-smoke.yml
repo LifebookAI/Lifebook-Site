@@ -13,6 +13,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: upload-smoke
+  cancel-in-progress: false
+
 jobs:
   smoke:
     name: Presign + upload (PowerShell)
@@ -55,3 +59,14 @@ jobs:
             -RunUrl $env:RUN_URL `
             -Branch $env:BRANCH `
             -Commit $env:SHA
+
+      - name: Notify Slack on recovery
+        if: success()
+        shell: pwsh
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          Set-ExecutionPolicy -Scope Process Bypass -Force
+          .\.github\workflows\scripts\notify-recovery.ps1 `
+            -Webhook $env:SLACK_WEBHOOK_URL `
+            -WorkflowFile "upload-smoke.yml"
