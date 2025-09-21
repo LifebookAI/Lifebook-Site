@@ -1,23 +1,10 @@
-name: Upload smoke
-on:
-  workflow_dispatch: {}
-permissions:
-  contents: read
-
-jobs:
-  smoke:
-    name: Presign + upload (PowerShell)
-    runs-on: windows-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
       - name: Run smoke script
         shell: pwsh
         env:
-          PRESIGN_API_BASE: https://api.uselifebook.ai   # no /prod
+          PRESIGN_API_BASE: https://api.uselifebook.ai      # presign API (no /prod)
           PRESIGN_API_KEY: ${{ secrets.PRESIGN_API_KEY }}
           PRESIGN_HMAC_SECRET: ${{ secrets.PRESIGN_HMAC_SECRET }}
-          CF_BASE_URL: ${{ secrets.CF_BASE_URL }}
+          CF_BASE_URL: https://files.uselifebook.ai         # ✅ correct CloudFront domain
         run: |
           Set-ExecutionPolicy -Scope Process Bypass -Force
           .\.github\workflows\scripts\smoke.ps1
