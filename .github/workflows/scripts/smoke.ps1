@@ -2,17 +2,17 @@
 $ErrorActionPreference = 'Stop'
 
 # --- Inputs from workflow env ---
-$base    = $env:PRESIGN_API_BASE
-$apiKey  = $env:PRESIGN_API_KEY
-$secret  = $env:PRESIGN_HMAC_SECRET
-$cfBase  = $env:CF_BASE_URL
+$base   = $env:PRESIGN_API_BASE
+$apiKey = $env:PRESIGN_API_KEY
+$secret = $env:PRESIGN_HMAC_SECRET
+$cfBase = $env:CF_BASE_URL
 
 if (-not $base)   { throw "PRESIGN_API_BASE env var is required" }
 if (-not $secret) { throw "PRESIGN_HMAC_SECRET env var is required" }
 if (-not $cfBase) { throw "CF_BASE_URL env var is required" }
 
-$base  = $base.TrimEnd('/')
-$cfBase= $cfBase.TrimEnd('/')
+$base   = $base.TrimEnd('/')
+$cfBase = $cfBase.TrimEnd('/')
 
 # --- Helpers ---
 function Convert-HexToBytes([string]$hex) {
@@ -26,7 +26,7 @@ function Convert-HexToBytes([string]$hex) {
 
 # --- Build object key and body we will sign ---
 $ts   = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
-$rand = -join ((48..57 + 97..122) | Get-Random -Count 12 | % { [char]$_ })
+$rand = -join ((48..57 + 97..122) | Get-Random -Count 12 | ForEach-Object { [char]$_ })
 $key  = "sources/smoke-$ts-$rand.txt"
 
 $bodyObj  = @{ key = $key; contentType = "text/plain"; contentDisposition = "inline" }
@@ -41,7 +41,7 @@ try {
 } finally {
   $hmac.Dispose()
 }
-$sig = -join ($sigBytes | % { $_.ToString('x2') })
+$sig = -join ($sigBytes | ForEach-Object { $_.ToString('x2') })
 
 Write-Host "DEBUG base        : $base"
 Write-Host "DEBUG ts          : $ts"
@@ -49,7 +49,8 @@ Write-Host "DEBUG bodyJson    : $bodyJson"
 Write-Host "DEBUG toSign(head):  $toSign"
 Write-Host "DEBUG sig         : $sig"
 Write-Host "DEBUG keyBytesLen : $($kbytes.Length)"
-Write-Host "DEBUG apiKeyLen   : $((if ($apiKey){$apiKey.Length}else{0}))"
+$apiKeyLen = if ($apiKey) { $apiKey.Length } else { 0 }
+Write-Host "DEBUG apiKeyLen   : $apiKeyLen"
 
 # --- Request presign ---
 $headers = @{ 'x-timestamp' = "$ts"; 'x-signature' = $sig }
@@ -72,7 +73,7 @@ try {
 
 if (-not $presign.url) { throw "No URL in presign response" }
 Write-Host "PRESIGN OK via: $presignUrl"
-Write-Host "PUT URL: "
+Write-Host "PUT URL:"
 Write-Host $presign.url
 
 # --- Upload the file to S3 with the returned headers ---
@@ -80,9 +81,8 @@ $content    = "hello smoke at $ts`n"
 $uploadBody = [System.Text.Encoding]::UTF8.GetBytes($content)
 
 $putHeaders = @{}
-# presign.headers may be PSCustomObject; normalize to hashtable
 if ($presign.headers) {
-  $presign.headers.PSObject.Properties | % { $putHeaders[$_.Name] = "$($_.Value)" }
+  $presign.headers.PSObject.Properties | ForEach-Object { $putHeaders[$_.Name] = "$($_.Value)" }
 }
 
 try {
@@ -100,7 +100,7 @@ Write-Host "Uploading..."
 Write-Host "Upload complete."
 
 # --- VERIFY via CloudFront (no bucket segment in path) ---
-$keyPath   = $key.TrimStart('/')      # key like "sources/smoke-....txt"
+$keyPath   = $key.TrimStart('/')      # "sources/smoke-....txt"
 $verifyUrl = "$cfBase/$keyPath"
 Write-Host "VERIFY URL : $verifyUrl"
 
