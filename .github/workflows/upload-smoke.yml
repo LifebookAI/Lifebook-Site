@@ -1,7 +1,12 @@
 name: Upload smoke
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      notify_test:
+        type: boolean
+        default: false
+        description: "Force a failure to test Slack alert"
   schedule:
     - cron: "0 9 * * *"   # daily at 09:00 UTC
 
@@ -13,8 +18,10 @@ jobs:
     name: Presign + upload (PowerShell)
     runs-on: windows-latest
     timeout-minutes: 10
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Run smoke script
         shell: pwsh
         env:
@@ -25,3 +32,26 @@ jobs:
         run: |
           Set-ExecutionPolicy -Scope Process Bypass -Force
           .\.github\workflows\scripts\smoke.ps1
+
+      - name: Force failure (alert test)
+        if: ${{ github.event.inputs.notify_test == 'true' }}
+        shell: pwsh
+        run: exit 1
+
+      - name: Notify Slack on failure
+        if: failure()
+        shell: pwsh
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          BRANCH: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+        run: |
+          Set-ExecutionPolicy -Scope Process Bypass -Force
+          .\.github\workflows\scripts\notify-slack.ps1 `
+            -Webhook $env:SLACK_WEBHOOK_URL `
+            -Title "🚨 Upload smoke failed" `
+            -Status "failure" `
+            -RunUrl $env:RUN_URL `
+            -Branch $env:BRANCH `
+            -Commit $env:SHA
