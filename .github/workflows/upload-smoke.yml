@@ -1,10 +1,9 @@
 name: Upload smoke
 
 on:
-  workflow_dispatch: {}   # ✅ makes the "Run workflow" button appear
-  # (optional) run on pushes to main too:
-  # push:
-  #   branches: [ main ]
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 9 * * *"   # daily at 09:00 UTC
 
 permissions:
   contents: read
@@ -16,14 +15,13 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-
       - name: Run smoke script
         shell: pwsh
         env:
-          PRESIGN_API_BASE: https://api.uselifebook.ai        # presign API (no /prod)
+          PRESIGN_API_BASE: https://api.uselifebook.ai
           PRESIGN_API_KEY: ${{ secrets.PRESIGN_API_KEY }}
           PRESIGN_HMAC_SECRET: ${{ secrets.PRESIGN_HMAC_SECRET }}
-          CF_BASE_URL: https://files.uselifebook.ai           # ✅ correct CDN for verify
+          CF_BASE_URL: https://files.uselifebook.ai
         run: |
           Set-ExecutionPolicy -Scope Process Bypass -Force
           .\.github\workflows\scripts\smoke.ps1
