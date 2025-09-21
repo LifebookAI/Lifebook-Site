@@ -1,10 +1,6 @@
 name: Upload smoke
 on:
   workflow_dispatch: {}
-  schedule:
-    # Daily 10:00 ET (14:00 UTC)
-    - cron: '0 14 * * *'
-
 permissions:
   contents: read
 
@@ -13,15 +9,12 @@ jobs:
     name: Presign + upload (PowerShell)
     runs-on: windows-latest
     timeout-minutes: 10
-    concurrency:
-      group: lifebook-smoke-${{ github.ref }}
-      cancel-in-progress: true
     steps:
       - uses: actions/checkout@v4
       - name: Run smoke script
         shell: pwsh
         env:
-          PRESIGN_API_BASE: ${{ secrets.PRESIGN_API_BASE }}
+          PRESIGN_API_BASE: https://api.uselifebook.ai   # no /prod
           PRESIGN_API_KEY: ${{ secrets.PRESIGN_API_KEY }}
           PRESIGN_HMAC_SECRET: ${{ secrets.PRESIGN_HMAC_SECRET }}
           CF_BASE_URL: ${{ secrets.CF_BASE_URL }}
