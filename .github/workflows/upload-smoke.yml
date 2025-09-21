@@ -42,12 +42,12 @@ jobs:
         shell: pwsh
         run: exit 1
 
-      # Dedupe: only alert if previous run wasn't a recent failure
       - name: Notify Slack on new failure
         if: failure()
         shell: pwsh
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           Set-ExecutionPolicy -Scope Process Bypass -Force
           .\.github\workflows\scripts\notify-on-new-failure.ps1 `
@@ -55,12 +55,12 @@ jobs:
             -WorkflowFile "upload-smoke.yml" `
             -SuppressHours 6
 
-      # Recovery message when we turn green after a failure
       - name: Notify Slack on recovery
         if: success()
         shell: pwsh
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           Set-ExecutionPolicy -Scope Process Bypass -Force
           .\.github\workflows\scripts\notify-recovery.ps1 `
