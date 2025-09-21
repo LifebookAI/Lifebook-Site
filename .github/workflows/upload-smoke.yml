@@ -8,7 +8,7 @@ on:
         default: false
         description: "Force a failure to test Slack alert"
   schedule:
-    - cron: "0 9 * * *"   # daily at 09:00 UTC
+    - cron: "0 */6 * * *"  # every 6 hours
 
 permissions:
   contents: read
@@ -42,6 +42,7 @@ jobs:
         shell: pwsh
         run: exit 1
 
+      # Dedupe: only alert if the previous run wasn't a recent failure
       - name: Notify Slack on new failure
         if: failure()
         shell: pwsh
@@ -55,6 +56,7 @@ jobs:
             -WorkflowFile "upload-smoke.yml" `
             -SuppressHours 6
 
+      # Recovery message when we turn green after a failure
       - name: Notify Slack on recovery
         if: success()
         shell: pwsh

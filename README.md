@@ -1,3 +1,5 @@
+[![Upload smoke](https://github.com/LifebookAI/Lifebook-Site/actions/workflows/upload-smoke.yml/badge.svg)](https://github.com/LifebookAI/Lifebook-Site/actions/workflows/upload-smoke.yml)
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
