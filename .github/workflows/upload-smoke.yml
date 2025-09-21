@@ -42,24 +42,20 @@ jobs:
         shell: pwsh
         run: exit 1
 
-      - name: Notify Slack on failure
+      # Dedupe: only alert if previous run wasn't a recent failure
+      - name: Notify Slack on new failure
         if: failure()
         shell: pwsh
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          BRANCH: ${{ github.ref_name }}
-          SHA: ${{ github.sha }}
         run: |
           Set-ExecutionPolicy -Scope Process Bypass -Force
-          .\.github\workflows\scripts\notify-slack.ps1 `
+          .\.github\workflows\scripts\notify-on-new-failure.ps1 `
             -Webhook $env:SLACK_WEBHOOK_URL `
-            -Title "🚨 Upload smoke failed" `
-            -Status "failure" `
-            -RunUrl $env:RUN_URL `
-            -Branch $env:BRANCH `
-            -Commit $env:SHA
+            -WorkflowFile "upload-smoke.yml" `
+            -SuppressHours 6
 
+      # Recovery message when we turn green after a failure
       - name: Notify Slack on recovery
         if: success()
         shell: pwsh
