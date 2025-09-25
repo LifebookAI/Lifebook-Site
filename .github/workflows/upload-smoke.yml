@@ -1,20 +1,23 @@
-name: Upload smoke (scheduled)
+name: Upload smoke
 
 on:
   push:
+    branches: [ "**" ]          # run on branches (so PRs get checks)
+  pull_request:
     branches: [ "main" ]
   workflow_dispatch:
   schedule:
-    - cron: "0 */6 * * *"   # every 6 hours (UTC)
+    - cron: "0 */6 * * *"       # every 6 hours (UTC)
 
 jobs:
   presign-upload-get:
+    name: Presign + upload (PowerShell)   # 👈 matches branch-protection check
     runs-on: windows-latest
 
     env:
       PRESIGN_API_BASE: ${{ secrets.PRESIGN_API_BASE }}
       PRESIGN_HMAC_SECRET: ${{ secrets.PRESIGN_HMAC_SECRET }}
-      CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
+      CLOUDFRONT_DOMAIN: ${{ secrets:CLOUDFRONT_DOMAIN }}
 
     steps:
       - name: Checkout
@@ -24,21 +27,13 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-
-          # 1) Prepare payload
           $ts = [int][double]::Parse((Get-Date -Date (Get-Date).ToUniversalTime() -UFormat %s))
           $safeName = "ci-smoke-$(Get-Date -Format yyyyMMddHHmmss).txt"
           $key = "sources/$safeName"
-          $bodyObj = @{
-            key = $key
-            contentType = "text/plain"
-            contentDisposition = $null
-            size = 12
-          }
+          $bodyObj = @{ key = $key; contentType = "text/plain"; contentDisposition = $null; size = 12 }
           $bodyJson = ($bodyObj | ConvertTo-Json -Compress)
           $toSign = "$ts.$bodyJson"
 
-          # 2) HMAC
           function HexToBytes([string]$hex) {
             -join ($hex -split '([A-Fa-f0-9]{2})' | Where-Object { $_ -match '^[A-Fa-f0-9]{2}$' } | ForEach-Object {[byte]("0x$_")})
           }
@@ -46,7 +41,6 @@ jobs:
           $hmac = New-Object System.Security.Cryptography.HMACSHA256 ($keyBytes)
           $sig = ($hmac.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($toSign)) | ForEach-Object { $_.ToString('x2') }) -join ''
 
-          # 3) Presign request
           $presignUrl = "$env:PRESIGN_API_BASE/api/presign"
           Write-Host "POST $presignUrl"
           $presignResp = Invoke-WebRequest -Method POST -Uri $presignUrl -Headers @{
@@ -55,39 +49,28 @@ jobs:
               "x-signature"  = "$sig"
             } -Body $bodyJson -UseBasicParsing
 
-          if ($presignResp.StatusCode -ne 200) {
-            Write-Error "Presign failed: $($presignResp.StatusCode) $($presignResp.Content)"
-          }
+          if ($presignResp.StatusCode -ne 200) { Write-Error "Presign failed: $($presignResp.StatusCode) $($presignResp.Content)" }
 
           $presign = $presignResp.Content | ConvertFrom-Json
           $putUrl = $presign.url
           $headers = $presign.headers
-
           if (-not $putUrl) { Write-Error "No presign url in response" }
 
-          # 4) PUT tiny content
           $content = [System.Text.Encoding]::UTF8.GetBytes("ok lifebook")
           $putHeaders = @{}
           $headers.PSObject.Properties | ForEach-Object { $putHeaders[$_.Name] = $_.Value }
 
           Write-Host "PUT to S3 (presigned)…"
           $putResp = Invoke-WebRequest -Method PUT -Uri $putUrl -Headers $putHeaders -Body $content -UseBasicParsing -TimeoutSec 60
-          if ($putResp.StatusCode -lt 200 -or $putResp.StatusCode -ge 300) {
-            Write-Error "S3 PUT failed: $($putResp.StatusCode) $($putResp.Content)"
-          }
+          if ($putResp.StatusCode -lt 200 -or $putResp.StatusCode -ge 300) { Write-Error "S3 PUT failed: $($putResp.StatusCode) $($putResp.Content)" }
 
-          # 5) GET via CloudFront
           $cfUrl = "https://$($env:CLOUDFRONT_DOMAIN)/$key"
           Write-Host "GET $cfUrl"
           Start-Sleep -Seconds 2
           $getResp = Invoke-WebRequest -Method GET -Uri $cfUrl -UseBasicParsing -TimeoutSec 60
-          if ($getResp.StatusCode -ne 200) {
-            Write-Error "CF GET failed: $($getResp.StatusCode)"
-          }
+          if ($getResp.StatusCode -ne 200) { Write-Error "CF GET failed: $($getResp.StatusCode)" }
 
           $text = [System.Text.Encoding]::UTF8.GetString($getResp.Content)
-          if ($text -notmatch "ok lifebook") {
-            Write-Error "File content mismatch: '$text'"
-          }
+          if ($text -notmatch "ok lifebook") { Write-Error "File content mismatch: '$text'" }
 
           Write-Host "✅ Smoke OK: $key"
