@@ -1,0 +1,14 @@
+[
+  {
+    "AllowedOrigins": ["https://uselifebook.ai", "http://localhost:3000"],
+    "AllowedMethods": ["PUT"],
+    "AllowedHeaders": [
+      "content-type",
+      "content-disposition",
+      "x-amz-server-side-encryption",
+      "x-amz-content-sha256"
+    ],
+    "ExposeHeaders": ["ETag"],
+    "MaxAgeSeconds": 300
+  }
+]
