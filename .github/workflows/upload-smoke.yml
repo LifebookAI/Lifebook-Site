@@ -1,18 +1,29 @@
-name: Upload smoke
-
+name: Upload smoke (PowerShell)
 on:
   pull_request:
     branches: [ main ]
-
 permissions:
   contents: read
-
+  id-token: write
 jobs:
-  presign_upload:
+  smoke:
     name: Presign + upload (PowerShell)
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}->${{ github.ref }}
+      cancel-in-progress: true
     steps:
-      - name: No-op smoke (PR-safe)
+      - uses: actions/checkout@v4
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Presign + upload (PowerShell)
         shell: pwsh
         run: |
-          Write-Host "Smoke OK (no AWS on PR)."
+          $key = "lb_smoke_$(Get-Date -UFormat %s).txt"
+          Set-Content -Path $key -Value ($(Get-Date -Format o)) -Encoding utf8
+          aws s3 cp $key "s3://${{ vars.BUCKET }}/$key" --sse AES256 --only-show-errors
+          $resp = Invoke-WebRequest https://files.uselifebook.ai/$key -UseBasicParsing
+          if ($resp.StatusCode -ne 200) { throw "Smoke failed: $($resp.StatusCode)" }
