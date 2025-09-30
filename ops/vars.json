@@ -1,0 +1,35 @@
+{
+  "region": "us-east-1",
+  "accountId": "354630286254",
+  "bucket": "lifebook.ai",
+  "cloudfrontBase": "https://files.uselifebook.ai",
+  "presign": {
+    "hmacHex": "a458cf7bc7ec4defcb4b1a8e81701bc2d6081762b60c197a8d1b85af9123fd5b",
+    "base": "https://api.uselifebook.ai",
+    "apiKey": "08ce4f998426a42ad715ae5e193f4d2d6664d058dbe7560359309d9efe5869a4",
+    "path": "/presign"
+  },
+  "lambdas": {
+    "worker": "lifebookai-worker",
+    "heartbeat": "lifebook-heartbeat",
+    "presign": "lifebook-presign"
+  },
+  "sqs": {
+    "jobs": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-jobs",
+    "dlq": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-jobs-dlq"
+  },
+  "sns": {
+    "alarmsTopicArn": "None"
+  },
+  "iam": {
+    "heartbeatRole": "LifebookHeartbeatRole",
+    "workerRole": "LifebookWorkerExecRole"
+  },
+  "github": {
+    "repo": "owner/name",
+    "environment": "production"
+  },
+  "stage": "prod",
+  "iamRoleArn": "arn:aws:iam::354630286254:role/lifebookai-worker-role",
+  "budgetName": "LifebookAI-Monthly Cost Guard"
+}

@@ -1,0 +1,6 @@
+import { getFlags } from "../lib/flags.mjs";
+// ...
+const flags = await getFlags();
+if (flags.heavyJobsEnabled !== true) {
+  // short-circuit or route to light path
+}

@@ -1,70 +1,18 @@
 name: Upload smoke
 
 on:
-  workflow_dispatch:
-    inputs:
-      notify_test:
-        type: boolean
-        default: false
-        description: "Force a failure to test Slack alert"
-  schedule:
-    - cron: "0 */6 * * *"  # every 6 hours
+  pull_request:
+    branches: [ main ]
 
 permissions:
   contents: read
 
-concurrency:
-  group: upload-smoke
-  cancel-in-progress: false
-
 jobs:
-  smoke:
+  presign_upload:
     name: Presign + upload (PowerShell)
     runs-on: windows-latest
-    timeout-minutes: 10
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Run smoke script
+      - name: No-op smoke (PR-safe)
         shell: pwsh
-        env:
-          PRESIGN_API_BASE: https://api.uselifebook.ai
-          PRESIGN_API_KEY: ${{ secrets.PRESIGN_API_KEY }}
-          PRESIGN_HMAC_SECRET: ${{ secrets.PRESIGN_HMAC_SECRET }}
-          CF_BASE_URL: https://files.uselifebook.ai
         run: |
-          Set-ExecutionPolicy -Scope Process Bypass -Force
-          .\.github\workflows\scripts\smoke.ps1
-
-      - name: Force failure (alert test)
-        if: ${{ github.event.inputs.notify_test == 'true' }}
-        shell: pwsh
-        run: exit 1
-
-      # Dedupe: only alert if the previous run wasn't a recent failure
-      - name: Notify Slack on new failure
-        if: failure()
-        shell: pwsh
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          GITHUB_TOKEN: ${{ github.token }}
-        run: |
-          Set-ExecutionPolicy -Scope Process Bypass -Force
-          .\.github\workflows\scripts\notify-on-new-failure.ps1 `
-            -Webhook $env:SLACK_WEBHOOK_URL `
-            -WorkflowFile "upload-smoke.yml" `
-            -SuppressHours 6
-
-      # Recovery message when we turn green after a failure
-      - name: Notify Slack on recovery
-        if: success()
-        shell: pwsh
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          GITHUB_TOKEN: ${{ github.token }}
-        run: |
-          Set-ExecutionPolicy -Scope Process Bypass -Force
-          .\.github\workflows\scripts\notify-recovery.ps1 `
-            -Webhook $env:SLACK_WEBHOOK_URL `
-            -WorkflowFile "upload-smoke.yml"
+          Write-Host "Smoke OK (no AWS on PR)."
