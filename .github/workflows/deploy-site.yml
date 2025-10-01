@@ -66,46 +66,47 @@ jobs:
           SITE_DIR: ${{ env.SITE_DIR }}
         run: |
           set -euo pipefail
-          echo "Node version: $(node -v || true)"
-          echo "npm  version: $(npm -v || true)"
+          echo "Node: $(node -v || true)  npm: $(npm -v || true)"
           echo "corepack: $(corepack --version || true)"
-          echo "Files in repo root:"
           ls -la || true
 
-          # Choose package manager by lockfile
-          PM="npm"
+          # Pick package manager by lockfile
           if [ -f pnpm-lock.yaml ]; then
-            PM="pnpm"
             corepack enable || true
             corepack prepare pnpm@latest --activate || true
             echo "Using pnpm"
             pnpm --version || true
             pnpm install --frozen-lockfile
-            pnpm build
+            pnpm build || { echo "::error title=Build failed::pnpm build failed"; exit 1; }
           elif [ -f yarn.lock ]; then
-            PM="yarn"
             corepack enable || true
             corepack prepare yarn@stable --activate || true
             echo "Using yarn"
             yarn -v || true
             yarn install --immutable
-            yarn build
+            yarn build || { echo "::error title=Build failed::yarn build failed"; exit 1; }
           elif [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then
-            echo "Using npm (ci)"
+            echo "Using npm ci"
             npm ci
-            npm run build
+            npm run build || { echo "::error title=Build failed::npm run build failed"; exit 1; }
           elif [ -f package.json ]; then
-            echo "Using npm (install)"
+            echo "Using npm install"
             npm install --no-audit --no-fund
-            npm run build
+            npm run build || { echo "::error title=Build failed::npm run build failed"; exit 1; }
           else
             echo "::warning title=No package.json::No build to run; skipping"
+          fi
+
+          # If this is a Next.js app, export static site to ${SITE_DIR} (S3 compatible)
+          if [ -f package.json ] && grep -q '"next"' package.json; then
+            echo "Detected Next.js – exporting static site to ${SITE_DIR}…"
+            npx --yes next export -o "${SITE_DIR}"
           fi
 
           # Verify output dir exists
           if [ ! -d "${SITE_DIR}" ]; then
             echo "::warning title=Build output missing::${SITE_DIR} not found after build"
           else
-            echo "Built artifacts:"
+            echo "Built artifacts (top):"
             find "${SITE_DIR}" -maxdepth 2 -type f | head -n 80 || true
           fi
