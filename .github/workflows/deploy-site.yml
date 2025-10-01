@@ -5,12 +5,20 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - "site/**"
+      - "src/**"
+      - "public/**"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.*"
       - ".github/workflows/deploy-site.yml"
   pull_request:
     branches: [ "main" ]
     paths:
-      - "site/**"
+      - "src/**"
+      - "public/**"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.*"
       - ".github/workflows/deploy-site.yml"
 
 permissions:
@@ -20,7 +28,7 @@ permissions:
 env:
   AWS_REGION: us-east-1
   S3_BUCKET: lifebook.ai
-  SITE_DIR: site
+  SITE_DIR: dist
   CF_DIST_ID: ${{ vars.CF_DIST_ID }}
 
 jobs:
@@ -46,6 +54,29 @@ jobs:
           role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
           role-session-name: lifebook-site-deploy
           output-env-credentials: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Build site
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then
+            npm ci
+          elif [ -f package.json ]; then
+            npm install --no-audit --no-fund
+          else
+            echo "No package.json found; nothing to build."
+          fi
+          if [ -f package.json ]; then
+            # expects "build" script to write to ./dist
+            npm run build
+          fi
+          test -d "${SITE_DIR}" || { echo "::warning title=Build output missing::${SITE_DIR} not found after build"; }
 
       - name: Verify inputs
         shell: bash
