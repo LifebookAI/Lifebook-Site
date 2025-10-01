@@ -2,6 +2,7 @@ name: Deploy site (S3 + CloudFront)
 
 on:
   workflow_dispatch:
+  workflow_dispatch:
   push:
     branches: [ "main" ]
     paths:
@@ -49,3 +50,4 @@ jobs:
           test -n "${{ env.CF_DIST_ID }}" || (echo "Missing repo var CF_DIST_ID"; exit 1)
           test -n "${{ env.S3_BUCKET }}" || (echo "Missing env S3_BUCKET"; exit 1)
 ops/fix-vars-and-ensure.ps1
+
