@@ -1,5 +1,5 @@
 'use client';
-import { useRef, useState } from 'react';
+import React, {} from "react";
 import * as React from 'react';
 
 import type { ChangeEvent } from 'react';
@@ -37,7 +37,7 @@ export default function UploadPage() {
       const putRes = await fetch(url as string, { method:'PUT', headers: putHeaders, body: file });
       if (!putRes.ok) throw new Error(`PUT failed: ${putRes.status} ${await putRes.text()}`);
       setStatus('Upload complete.'); setKeyShown(echoedKey || key); setLink(publicUrl || null);
-    } catch (err: unknown) { setStatus(err.message || 'Upload failed'); }
+    } catch (err: unknown) { setStatus(err instanceof Error ? err.message : 'Presign failed'); }
   }
 
   return (
@@ -54,6 +54,8 @@ export default function UploadPage() {
     </main>
   );
 }
+
+
 
 
 
