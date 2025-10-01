@@ -1,6 +1,11 @@
 name: OIDC debug
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - ".github/workflows/oidc-debug.yml"
+  workflow_dispatch:
 
 permissions:
   id-token: write
@@ -21,3 +26,4 @@ jobs:
             const body = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString('utf8'));
             core.info(`OIDC aud: ${JSON.stringify(body.aud)}`);
             core.info(`OIDC sub: ${body.sub}`);
+
