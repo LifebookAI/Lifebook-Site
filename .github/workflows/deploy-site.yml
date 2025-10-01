@@ -19,7 +19,8 @@ permissions:
 
 env:
   AWS_REGION: us-east-1
-  S3_BUCKET: lifebook.ai
+  S3_BUCKET: lifebook.ai
+  SITE_DIR: site
   CF_DIST_ID: ${{ vars.CF_DIST_ID }}
 
 jobs:
@@ -49,6 +50,7 @@ jobs:
           test -n "${{ env.CF_DIST_ID }}" || (echo "Missing repo var CF_DIST_ID"; exit 1)
           test -n "${{ env.S3_BUCKET }}" || (echo "Missing env S3_BUCKET"; exit 1)
 ops/fix-vars-and-ensure.ps1
+
 
 
 
