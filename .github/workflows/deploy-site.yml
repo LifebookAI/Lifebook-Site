@@ -5,12 +5,12 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - "site/**"
+      - "${SITE_DIR}/**"
       - ".github/workflows/deploy-site.yml"
   pull_request:
     branches: [ "main" ]
     paths:
-      - "site/**"
+      - "${SITE_DIR}/**"
       - ".github/workflows/deploy-site.yml"
 
 permissions:
@@ -20,7 +20,7 @@ permissions:
 env:
   AWS_REGION: us-east-1
   S3_BUCKET: lifebook.ai
-  SITE_DIR: site
+  SITE_DIR: dist
   CF_DIST_ID: ${{ vars.CF_DIST_ID }}
 
 jobs:
@@ -45,8 +45,6 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
           role-session-name: lifebook-site-deploy
-          output-env-variables: true
-
       - name: Verify inputs
         shell: bash
         run: |
@@ -58,7 +56,7 @@ jobs:
         shell: bash
         env:
           S3_BUCKET: ${{ env.S3_BUCKET }}
-          SITE_DIR: ${{ env.SITE_DIR }}
+          SITE_DIR: dist env.SITE_DIR }}
         run: |
           set -euo pipefail
           shopt -s globstar nullglob
@@ -97,7 +95,7 @@ jobs:
         shell: bash
         env:
           S3_BUCKET: ${{ env.S3_BUCKET }}
-          SITE_DIR: ${{ env.SITE_DIR }}
+          SITE_DIR: dist env.SITE_DIR }}
         run: |
           set -euo pipefail
           if [[ ! -f "${SITE_DIR}/index.html" ]]; then
@@ -117,3 +115,4 @@ jobs:
           set -euo pipefail
           echo "Creating CloudFront invalidation for distribution ${CF_DIST_ID}…"
           aws cloudfront create-invalidation --distribution-id "${CF_DIST_ID}" --paths "/*"
+
