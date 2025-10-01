@@ -14,3 +14,15 @@ const eslintConfig = [
 ];
 
 export default eslintConfig;
+
+export default [
+  // keep existing config entries above
+  {
+    files: ["**/*.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }]
+    }
+  }
+];
+

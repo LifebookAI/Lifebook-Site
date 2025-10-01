@@ -60,6 +60,11 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+      - name: Lint
+        run: npm run lint -- --max-warnings=0
+
+      - name: Type check
+        run: npm run typecheck
       - name: Build site
         shell: bash
         env:
@@ -110,3 +115,4 @@ jobs:
             echo "Built artifacts (top):"
             find "${SITE_DIR}" -maxdepth 2 -type f | head -n 80 || true
           fi
+
