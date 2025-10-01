@@ -25,7 +25,7 @@ export default function UploadPage() {
       const r = await fetch('/api/presign', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(body) });
       if (!r.ok) throw new Error(`Presign failed: ${r.status} ${await r.text()}`);
       presign = await r.json();
-    } catch (err:React.ChangeEvent<HTMLInputElement>) { setStatus(err.message || 'Presign failed'); return; }
+    } catch (err: unknown) { setStatus(err instanceof Error ? err.message : 'Presign failed'); return; }
 
     const { url, headers: putHeadersMap, publicUrl, key: echoedKey } = presign || {};
     if (!url || !putHeadersMap) { setStatus('Presign response missing url/headers.'); return; }
@@ -37,7 +37,7 @@ export default function UploadPage() {
       const putRes = await fetch(url as string, { method:'PUT', headers: putHeaders, body: file });
       if (!putRes.ok) throw new Error(`PUT failed: ${putRes.status} ${await putRes.text()}`);
       setStatus('Upload complete.'); setKeyShown(echoedKey || key); setLink(publicUrl || null);
-    } catch (err:React.ChangeEvent<HTMLInputElement>) { setStatus(err.message || 'Upload failed'); }
+    } catch (err: unknown) { setStatus(err.message || 'Upload failed'); }
   }
 
   return (
@@ -54,6 +54,8 @@ export default function UploadPage() {
     </main>
   );
 }
+
+
 
 
 
