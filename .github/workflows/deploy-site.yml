@@ -60,91 +60,52 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-
       - name: Build site
         shell: bash
+        env:
+          SITE_DIR: ${{ env.SITE_DIR }}
         run: |
           set -euo pipefail
-          if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then
+          echo "Node version: $(node -v || true)"
+          echo "npm  version: $(npm -v || true)"
+          echo "corepack: $(corepack --version || true)"
+          echo "Files in repo root:"
+          ls -la || true
+
+          # Choose package manager by lockfile
+          PM="npm"
+          if [ -f pnpm-lock.yaml ]; then
+            PM="pnpm"
+            corepack enable || true
+            corepack prepare pnpm@latest --activate || true
+            echo "Using pnpm"
+            pnpm --version || true
+            pnpm install --frozen-lockfile
+            pnpm build
+          elif [ -f yarn.lock ]; then
+            PM="yarn"
+            corepack enable || true
+            corepack prepare yarn@stable --activate || true
+            echo "Using yarn"
+            yarn -v || true
+            yarn install --immutable
+            yarn build
+          elif [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then
+            echo "Using npm (ci)"
             npm ci
-          elif [ -f package.json ]; then
-            npm install --no-audit --no-fund
-          else
-            echo "No package.json found; nothing to build."
-          fi
-          if [ -f package.json ]; then
-            # expects "build" script to write to ./dist
             npm run build
-          fi
-          test -d "${SITE_DIR}" || { echo "::warning title=Build output missing::${SITE_DIR} not found after build"; }
-
-      - name: Verify inputs
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "SITE_DIR=${SITE_DIR}"
-          test -n "${CF_DIST_ID}" || (echo "::error title=Missing var::CF_DIST_ID repo variable is not set"; exit 1)
-          test -n "${S3_BUCKET}"   || (echo "::error title=Missing env::S3_BUCKET is not set"; exit 1)
-
-      - name: Sync assets (immutable)
-        shell: bash
-        env:
-          S3_BUCKET: ${{ env.S3_BUCKET }}
-          SITE_DIR: ${{ env.SITE_DIR }}
-        run: |
-          set -euo pipefail
-          shopt -s globstar nullglob
-          echo "Listing ${SITE_DIR} (top 2 levels):"
-          (find "${SITE_DIR}" -maxdepth 2 -type f | head -n 50) || true
-
-          has_any=0
-          for pat in "*.css" "*.js" "*.mjs" "*.map" "*.svg" "*.png" "*.jpg" "*.jpeg" "*.webp" "*.gif" "assets/*"; do
-            if compgen -G "${SITE_DIR}/${pat}" > /dev/null; then
-              echo "Found files for pattern: ${pat}"
-              has_any=1; break
-            fi
-          done
-          if [[ "${has_any}" -eq 0 ]]; then
-            echo "::notice title=No immutable assets::Skipping asset upload; no matching files under ${SITE_DIR}"
-            exit 0
+          elif [ -f package.json ]; then
+            echo "Using npm (install)"
+            npm install --no-audit --no-fund
+            npm run build
+          else
+            echo "::warning title=No package.json::No build to run; skipping"
           fi
 
-          echo "Uploading hashed/static assets with long immutable caching…"
-          aws s3 cp "${SITE_DIR}/" "s3://${S3_BUCKET}/" --recursive \
-            --exclude "*" --include "*.css" --include "*.js" --include "*.mjs" --include "*.map" \
-            --include "*.svg" --include "*.png" --include "*.jpg" --include "*.jpeg" --include "*.webp" --include "*.gif" \
-            --metadata-directive REPLACE \
-            --cache-control "public, max-age=31536000, immutable" \
-            --sse AES256
-
-          echo "Uploading assets/ subtree with immutable caching (if present)…"
-          aws s3 cp "${SITE_DIR}/" "s3://${S3_BUCKET}/" --recursive \
-            --exclude "*" --include "assets/*" \
-            --metadata-directive REPLACE \
-            --cache-control "public, max-age=31536000, immutable" \
-            --sse AES256
-
-      - name: Upload HTML (no-store)
-        shell: bash
-        env:
-          S3_BUCKET: ${{ env.S3_BUCKET }}
-          SITE_DIR: ${{ env.SITE_DIR }}
-        run: |
-          set -euo pipefail
-          if [[ ! -f "${SITE_DIR}/index.html" ]]; then
-            echo "::warning title=No index.html::Skipping HTML upload; ${SITE_DIR}/index.html not found"
-            exit 0
+          # Verify output dir exists
+          if [ ! -d "${SITE_DIR}" ]; then
+            echo "::warning title=Build output missing::${SITE_DIR} not found after build"
+          else
+            echo "Built artifacts:"
+            find "${SITE_DIR}" -maxdepth 2 -type f | head -n 80 || true
           fi
-          aws s3 cp "${SITE_DIR}/index.html" "s3://${S3_BUCKET}/index.html" \
-            --content-type "text/html; charset=utf-8" \
-            --metadata-directive REPLACE \
-            --cache-control "no-store" \
-            --sse AES256
-
-      - name: Invalidate CloudFront
-        if: ${{ env.CF_DIST_ID != '' }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "Creating CloudFront invalidation for distribution ${CF_DIST_ID}…"
-          aws cloudfront create-invalidation --distribution-id "${CF_DIST_ID}" --paths "/*"
