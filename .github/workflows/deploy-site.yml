@@ -1,41 +1,69 @@
-name: Deploy site (PowerShell)
+name: Deploy site shell
+
 on:
   push:
     branches: [ main ]
+    paths:
+      - "site/**"
+      - ".github/workflows/deploy-site.yml"
+  workflow_dispatch: {}
+
 permissions:
-  contents: read
   id-token: write
+  contents: read
+
+concurrency:
+  group: deploy-site
+  cancel-in-progress: true
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  BUCKET: ${{ vars.BUCKET }}
+  CF_DIST_ID: ${{ vars.CF_DIST_ID }}
+  SITE_DIR: ${{ vars.SITE_DIR || 'site' }}
+
 jobs:
   deploy:
-    name: Sync + set HTML no-cache + CF invalidation
     runs-on: ubuntu-latest
-    concurrency:
-      group: ${{ github.workflow }}->${{ github.ref }}
-      cancel-in-progress: true
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
+
       - name: Sync all files (SSE enforced)
-        shell: pwsh
         run: |
-          aws s3 sync ${{ env.SITE_DIR }} "s3://${{ vars.BUCKET }}/" --delete --sse AES256 --only-show-errors
+          aws s3 sync "$SITE_DIR/" "s3://$BUCKET/" --delete --sse AES256 --only-show-errors
+
       - name: Set no-cache on HTML (keep proper content-type)
-        shell: pwsh
+        shell: bash
         run: |
-          Get-ChildItem -Path ${{ env.SITE_DIR }} -Recurse -Filter *.html | ForEach-Object {
-            $rel = $_.FullName.Substring((Resolve-Path ${{ env.SITE_DIR }}).Path.Length).TrimStart('\','/')
-            aws s3 cp $_.FullName "s3://${{ vars.BUCKET }}/$rel" `
-              --cache-control "no-cache, no-store, must-revalidate" `
-              --metadata-directive REPLACE `
+          find "$SITE_DIR" -type f -name "*.html" -print0 | while IFS= read -r -d '' f; do
+            key="${f#$SITE_DIR/}"
+            aws s3 cp "$f" "s3://$BUCKET/$key" \
+              --cache-control "no-cache, no-store, must-revalidate" \
+              --content-type "text/html" \
+              --sse AES256 \
+              --metadata-directive REPLACE \
               --only-show-errors
-          }
+          done
+          for f in index.html 404.html robots.txt; do
+            if [ -f "$SITE_DIR/$f" ]; then
+              aws s3 cp "$SITE_DIR/$f" "s3://$BUCKET/$f" \
+                --cache-control "no-cache, no-store, must-revalidate" \
+                --sse AES256 \
+                --metadata-directive REPLACE \
+                --only-show-errors
+            fi
+          done
+
       - name: CloudFront invalidation
-        shell: pwsh
         run: |
-          aws cloudfront create-invalidation `
-            --distribution-id ${{ vars.CF_DIST_ID }} `
-            --paths "/index.html" "/404.html" "/robots.txt" "/*" | Out-Null
+          aws cloudfront create-invalidation \
+            --distribution-id "$CF_DIST_ID" \
+            --paths "/index.html" "/404.html" "/robots.txt" "/*" \
+            >/dev/null
