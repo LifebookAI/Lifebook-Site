@@ -5,12 +5,12 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - "${SITE_DIR}/**"
+      - "site/**"
       - ".github/workflows/deploy-site.yml"
   pull_request:
     branches: [ "main" ]
     paths:
-      - "${SITE_DIR}/**"
+      - "site/**"
       - ".github/workflows/deploy-site.yml"
 
 permissions:
@@ -20,7 +20,7 @@ permissions:
 env:
   AWS_REGION: us-east-1
   S3_BUCKET: lifebook.ai
-  SITE_DIR: dist
+  SITE_DIR: site
   CF_DIST_ID: ${{ vars.CF_DIST_ID }}
 
 jobs:
@@ -45,10 +45,13 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
           role-session-name: lifebook-site-deploy
+          output-env-credentials: true
+
       - name: Verify inputs
         shell: bash
         run: |
           set -euo pipefail
+          echo "SITE_DIR=${SITE_DIR}"
           test -n "${CF_DIST_ID}" || (echo "::error title=Missing var::CF_DIST_ID repo variable is not set"; exit 1)
           test -n "${S3_BUCKET}"   || (echo "::error title=Missing env::S3_BUCKET is not set"; exit 1)
 
@@ -56,11 +59,10 @@ jobs:
         shell: bash
         env:
           S3_BUCKET: ${{ env.S3_BUCKET }}
-          SITE_DIR: dist env.SITE_DIR }}
+          SITE_DIR: ${{ env.SITE_DIR }}
         run: |
           set -euo pipefail
           shopt -s globstar nullglob
-
           echo "Listing ${SITE_DIR} (top 2 levels):"
           (find "${SITE_DIR}" -maxdepth 2 -type f | head -n 50) || true
 
@@ -95,7 +97,7 @@ jobs:
         shell: bash
         env:
           S3_BUCKET: ${{ env.S3_BUCKET }}
-          SITE_DIR: dist env.SITE_DIR }}
+          SITE_DIR: ${{ env.SITE_DIR }}
         run: |
           set -euo pipefail
           if [[ ! -f "${SITE_DIR}/index.html" ]]; then
@@ -115,4 +117,3 @@ jobs:
           set -euo pipefail
           echo "Creating CloudFront invalidation for distribution ${CF_DIST_ID}…"
           aws cloudfront create-invalidation --distribution-id "${CF_DIST_ID}" --paths "/*"
-
