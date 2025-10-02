@@ -69,7 +69,7 @@ function WaitlistForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="mt-6 flex w-full max-w-xl items-center gap-2">
+    <form onSubmit={(e) => { void onSubmit(e); }} className="mt-6 flex w-full max-w-xl items-center gap-2">
       <label className="sr-only" htmlFor="email">Email</label>
       <input
         id="email"
@@ -260,4 +260,5 @@ export default function Page() {
     </Suspense>
   );
 }
+
 
