@@ -1,35 +1,45 @@
-/** Flat ESLint config for Next.js + TypeScript (typed rules) */
+/** Flat ESLint for Next.js + TypeScript (scoped correctly) */
 import tseslint from "typescript-eslint";
 import nextPlugin from "@next/eslint-plugin-next";
 
-/** Pull only rules from Next's legacy preset to avoid legacy 'plugins' shape */
-const nextCoreWebVitalsRules =
-  (nextPlugin?.configs?.["core-web-vitals"]?.rules) ?? {};
+// Only borrow Next’s rules from its legacy config object
+const nextCoreWebVitalsRules = nextPlugin?.configs?.["core-web-vitals"]?.rules ?? {};
+
+/** Helper: scope every tseslint typed config to TS files + parserOptions.project */
+const typedTsConfigs = tseslint.configs.recommendedTypeChecked.map((c) => ({
+  ...c,
+  files: ["**/*.{ts,tsx}"],
+  languageOptions: {
+    ...(c.languageOptions ?? {}),
+    parserOptions: {
+      ...(c.languageOptions?.parserOptions ?? {}),
+      project: ["./tsconfig.json"],
+      tsconfigRootDir: process.cwd(),
+    },
+  },
+}));
 
 export default [
-  // TypeScript recommended with type information (flat)
-  ...tseslint.configs.recommendedTypeChecked,
+  // Ignore build artifacts
+  { ignores: ["**/.next/**", "**/out/**", "**/dist/**", "**/node_modules/**"] },
 
-  // Our project settings
+  // JS files: enable Next rules; DO NOT enable TS typed rules here
+  {
+    files: ["**/*.{js,jsx,mjs,cjs}"],
+    plugins: { "@next/next": nextPlugin },
+    rules: {
+      ...nextCoreWebVitalsRules,
+    },
+  },
+
+  // TS files: enable typed TS rules + Next rules
+  ...typedTsConfigs,
   {
     files: ["**/*.{ts,tsx}"],
-    plugins: {
-      // register next plugin in flat style
-      next: nextPlugin,
-      "@next/next": nextPlugin, // support either rule prefix
-    },
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.json"],
-        tsconfigRootDir: process.cwd(),
-      },
-    },
+    plugins: { "@next/next": nextPlugin },
     rules: {
-      // Next.js rules
       ...nextCoreWebVitalsRules,
-
-      // TS hygiene
-      "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
+      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/ban-ts-comment": "error",
     },
