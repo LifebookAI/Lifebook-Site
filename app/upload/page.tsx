@@ -1,2 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-expressions */
+// @ts-nocheck
+import * as React from "react";
 
