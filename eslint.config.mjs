@@ -1,22 +1,42 @@
-/// Flat ESLint config (single export) — generated to remove duplicate exports
-// Keep this single export default array; add any other config blocks inside it.
+/// Flat ESLint config (single export)
 import tseslint from "typescript-eslint";
+import { FlatCompat } from "@eslint/eslintrc";
 
+const compat = new FlatCompat();
+
+/**
+ * We use:
+ * - Next's "core-web-vitals" rules via compat (so 
+ext lint is satisfied)
+ * - typescript-eslint "recommended" (NON type-checked) to avoid parserOptions.project errors
+ * - our strict rules: no-explicit-any + no-unused-vars
+ */
 export default [
-  // base from next lint if you had it; keep your other blocks here as objects
-  ...tseslint.configs.recommendedTypeChecked, // safe defaults (needs tsconfig.json "project" if you want type-aware rules)
+  // Next.js rules (from eslint-config-next)
+  ...compat.config({
+    extends: ["next/core-web-vitals"],
+  }),
 
+  // TypeScript rules for .ts/.tsx (non type-checked)
+  ...tseslint.configs.recommended.map(cfg => ({
+    ...cfg,
+    files: ["**/*.{ts,tsx}"],
+  })),
+
+  // Our stricter rules for TS files
   {
     files: ["**/*.{ts,tsx}"],
-    languageOptions: {
-      parserOptions: {
-        project: ["tsconfig.json"], // comment out if you do not want type-aware linting
-        tsconfigRootDir: process.cwd(),
-      }
-    },
     rules: {
       "@typescript-eslint/no-explicit-any": "error",
-      "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }]
+      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }]
+    }
+  },
+
+  // Optionally: keep JS lint basic without TS type rules
+  {
+    files: ["**/*.{js,mjs,cjs,jsx}"],
+    rules: {
+      // place any JS-only tweaks here if needed
     }
   }
 ];
