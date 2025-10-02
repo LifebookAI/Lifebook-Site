@@ -11,7 +11,7 @@ type _SignedUpload = {
 'use client';
 import React, {} from "react";
 
-type SignedUpload = {
+type _SignedUpload = {
   url: string;
   headers: Record<string, string>;
   publicUrl: string;
@@ -68,6 +68,7 @@ export default function UploadPage() {
     </main>
   );
 }
+
 
 
 
