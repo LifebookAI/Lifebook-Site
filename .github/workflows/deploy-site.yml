@@ -56,4 +56,43 @@ jobs:
           else
             echo "No package.json found; nothing to install."
           fi
+      - name: Lint
+        run: npm run lint -- --max-warnings=0
+      - name: Type check
+        run: npm run typecheck
+      - name: Build site
+        shell: bash
+        env:
+          SITE_DIR: dist
+        run: |
+          set -euo pipefail
+          if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then
+            npm run build
+          elif [ -f yarn.lock ]; then
+            yarn build
+          elif [ -f pnpm-lock.yaml ]; then
+            pnpm build
+          else
+            echo "::warning::No package.json found; skipping build"
+          fi
+          # If Next.js, export a static site (adjust/remove if not applicable)
+          if [ -f package.json ] && grep -q '"next"' package.json; then
+            npx --yes next export -o "$SITE_DIR"
+          fi
+      - name: Debug OIDC token (sub/aud)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const token = await core.getIDToken("sts.amazonaws.com");
+            const body = JSON.parse(Buffer.from(token.split(".")[1], "base64").toString("utf8"));
+            core.info(`OIDC aud: ${JSON.stringify(body.aud)}`);
+            core.info(`OIDC sub: ${body.sub}`);
+      - name: Configure AWS (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: us-east-1
+          role-session-name: lifebook-site-deploy
+          output-env-credentials: true
+          audience: sts.amazonaws.com
 
