@@ -1,9 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 "use client";
 
+import * as React from "react";
 // Keep this exported type so any imports from other files won't break.
-export type SignedUpload = {
+export type _SignedUpload = {
   url: string;
   headers: Record<string, string>;
   publicUrl: string;
@@ -14,3 +14,4 @@ export type SignedUpload = {
 export default function UploadPage() {
   return <div className="p-6">Upload temporarily disabled.</div>;
 }
+
