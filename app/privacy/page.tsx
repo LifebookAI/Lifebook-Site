@@ -1,6 +1,4 @@
 // app/privacy/page.tsx
-import Link from "next/link";
-
 export const metadata = {
   title: "Privacy Policy — Lifebook.AI",
   robots: { index: true, follow: true },
@@ -39,3 +37,10 @@ export default function PrivacyPage() {
     </main>
   );
 }
+
+
+
+
+
+
+

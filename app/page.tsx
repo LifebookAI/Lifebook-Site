@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FormEvent, useEffect, useState } from 'react';
 
+import { Suspense } from "react";
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mwgqlzvn';
 
 function classNames(...xs: (string | false | undefined)[]) {
@@ -68,7 +69,7 @@ function WaitlistForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="mt-6 flex w-full max-w-xl items-center gap-2">
+    <form onSubmit={(e) => { void onSubmit(e); }} className="mt-6 flex w-full max-w-xl items-center gap-2">
       <label className="sr-only" htmlFor="email">Email</label>
       <input
         id="email"
@@ -103,8 +104,7 @@ function WaitlistForm() {
     </form>
   );
 }
-
-export default function Page() {
+export function Page() {
   // simple gradient dots behind hero
   useEffect(() => {
     // no-op, layout is static
@@ -252,3 +252,13 @@ export default function Page() {
     </div>
   );
 }
+
+export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <Page />
+    </Suspense>
+  );
+}
+
+
