@@ -2,9 +2,7 @@
 import { useState, useRef } from 'react';
 import type * as React from 'react';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-
-type SignedUpload = {
+type _SignedUpload = {
   url: string;
   headers: Record<string, string>;
   publicUrl: string;
@@ -70,6 +68,7 @@ export default function UploadPage() {
     </main>
   );
 }
+
 
 
 
