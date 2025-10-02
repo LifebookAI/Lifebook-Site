@@ -38,13 +38,3 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Debug OIDC token (sub/aud)
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const token = await core.getIDToken('sts.amazonaws.com');
-            const body = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString('utf8'));
-            core.info(`OIDC aud: ${JSON.stringify(body.aud)}`);
-            core.info(`OIDC sub: ${body.sub}`);
-
-
