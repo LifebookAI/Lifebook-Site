@@ -1,8 +1,6 @@
 'use client';
 import React, {} from "react";
 import * as React from 'react';
-
-import type { ChangeEvent } from 'react';
 function slugify(name: string) {
   return String(name || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9._-]/g, '').replace(/-+/g, '-').replace(/^[-.]+|[-.]+$/g, '');
 }
@@ -54,6 +52,7 @@ export default function UploadPage() {
     </main>
   );
 }
+
 
 
 
