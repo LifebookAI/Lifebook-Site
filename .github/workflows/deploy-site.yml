@@ -37,4 +37,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Install deps
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f pnpm-lock.yaml ]; then
+            corepack enable || true
+            corepack prepare pnpm@latest --activate || true
+            pnpm install --frozen-lockfile
+          elif [ -f yarn.lock ]; then
+            corepack enable || true
+            corepack prepare yarn@stable --activate || true
+            yarn install --immutable
+          elif [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then
+            npm ci
+          elif [ -f package.json ]; then
+            npm install --no-audit --no-fund
+          else
+            echo "No package.json found; nothing to install."
+          fi
 
