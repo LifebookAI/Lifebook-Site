@@ -1,99 +1,58 @@
-name: Deploy site
+name: Deploy site (PowerShell)
 
 on:
-  pull_request:
+  push:
+    branches: [ main ]
   workflow_dispatch:
-
-concurrency:
-  group: deploy-site-${{ github.ref }}
-  cancel-in-progress: false
 
 permissions:
   id-token: write
   contents: read
 
-env:
-  AWS_REGION: us-east-1
-  S3_BUCKET: lifebook.ai
-  SITE_DIR: dist
-  CF_DIST_ID: E2D7FJLA6YQUNP
+concurrency:
+  group: site-deploy
+  cancel-in-progress: false
 
 jobs:
   deploy:
-    name: deploy
-    runs-on: ubuntu-24.04
-    timeout-minutes: 30
-
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-          cache: npm
-
-      - name: Install deps
-        run: |
-          set -euo pipefail
-          if [ -f package-lock.json ] || [ -f npm-shrinkwrap.json ]; then
-            npm ci
-          else
-            npm install --no-audit --no-fund
-          fi
-
-      - name: Lint
-        run: npm run lint -- --max-warnings=0
-
-      - name: Type check
-        run: npm run typecheck
-
-      - name: Build site
-        env:
-          # Let Next find CI env and produce optimized output
-          CI: "true"
-        run: |
-          set -euo pipefail
-          npm run build
-          # If this is a Next.js app, export a static site to $SITE_DIR
-          if [ -f package.json ] && grep -q '"next"' package.json; then
-            npx --yes next export -o "$SITE_DIR"
-          fi
-          test -d "$SITE_DIR" || { echo "::error::Build output dir '$SITE_DIR' not found"; exit 1; }
-          echo "Exported site to '$SITE_DIR'"
 
       - name: Configure AWS (OIDC)
-        if: github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request'
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          role-session-name: lifebook-site-deploy
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
 
-      - name: Sync assets to S3
+      - name: Validate site folder exists
+        shell: pwsh
         run: |
-          set -euo pipefail
-          # Long-cache immutable assets under _next, static, assets, etc. (best-effort)
-          if [ -d "$SITE_DIR/_next" ]; then
-            aws s3 sync "$SITE_DIR/_next/" "s3://$S3_BUCKET/_next/" --delete --only-show-errors --cache-control "public,max-age=31536000,immutable" --content-encoding utf-8 || true
-          fi
-          # Everything else (HTML short cache)
-          aws s3 sync "$SITE_DIR/" "s3://$S3_BUCKET/" \
-            --delete --only-show-errors \
-            --exclude "_next/*" \
-            --cache-control "public,max-age=60"
-          echo "S3 sync complete."
+          if (-not (Test-Path 'site')) { Write-Error 'site/ folder not found'; exit 1 }
+          Write-Host 'site/ found' -ForegroundColor Green
+
+      - name: Upload index.html (no-cache)
+        shell: pwsh
+        run: |
+          $bucket = "${{ vars.S3_BUCKET }}"
+          aws s3 cp "site/index.html" "s3://$bucket/index.html" `
+            --cache-control "no-cache, must-revalidate" `
+            --content-type "text/html"
+          Write-Host "Uploaded index.html with no-cache" -ForegroundColor Green
+
+      - name: Upload assets (immutable cache)
+        shell: pwsh
+        run: |
+          $bucket = "${{ vars.S3_BUCKET }}"
+          aws s3 sync site/ "s3://$bucket" `
+            --exclude "index.html" `
+            --cache-control "public, max-age=31536000, immutable"
+          Write-Host "Assets synced with long cache" -ForegroundColor Green
 
       - name: Invalidate CloudFront
+        shell: pwsh
         run: |
-          set -euo pipefail
-          if [ -n "${CF_DIST_ID:-}" ]; then
-            aws cloudfront create-invalidation --distribution-id "$CF_DIST_ID" --paths "/*" 1>/dev/null
-            echo "Invalidation requested."
-          else
-            echo "CF_DIST_ID not set; skipping invalidation."
-          fi
-
+          $dist = "${{ vars.CF_DIST_ID }}"
+          aws cloudfront create-invalidation --distribution-id $dist --paths "/index.html" "/"
+          Write-Host "Invalidation requested" -ForegroundColor Green
