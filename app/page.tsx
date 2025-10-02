@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FormEvent, useEffect, useState } from 'react';
 
+import { Suspense } from "react";
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mwgqlzvn';
 
 function classNames(...xs: (string | false | undefined)[]) {
@@ -103,8 +104,7 @@ function WaitlistForm() {
     </form>
   );
 }
-
-export default function Page() {
+export function Page() {
   // simple gradient dots behind hero
   useEffect(() => {
     // no-op, layout is static
@@ -250,5 +250,13 @@ export default function Page() {
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <Page />
+    </Suspense>
   );
 }
