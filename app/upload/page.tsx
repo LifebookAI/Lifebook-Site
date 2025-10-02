@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { useState, useRef } from 'react';
 import type * as React from 'react';
 
@@ -67,6 +68,7 @@ export default function UploadPage() {
     </main>
   );
 }
+
 
 
 
