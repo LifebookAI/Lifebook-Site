@@ -1,14 +1,16 @@
-name: E2E smoke (PR)
+name: e2e-pr-smoke
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  workflow_dispatch:
 permissions:
   id-token: write
   contents: read
 env:
   AWS_REGION: us-east-1
 jobs:
-  smoke:
+  e2e:
+    name: e2e
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -49,7 +51,7 @@ PY
           echo "hello from e2e smoke $GITHUB_RUN_ID" > /tmp/smoke.txt
           curl -sfS -X PUT -T /tmp/smoke.txt "$URL" -H "x-amz-server-side-encryption: AES256"
 
-          KEY=$(python3 -c 'import json,sys; from urllib.parse import urlparse; u=sys.argv[1]; p=urlparse(u).path; print(p.split("/",3)[-1])' "$URL")
+          KEY=$(python3 -c 'import sys; from urllib.parse import urlparse; p=urlparse(sys.argv[1]).path; print(p.split("/",3)[-1])' "$URL")
           GET_URL="${CF_BASE_URL%/}/$KEY"
           echo "Verifying via CloudFront: $GET_URL"
           curl -sfS "$GET_URL" | tee /tmp/fetched.txt
