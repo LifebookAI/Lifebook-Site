@@ -53,3 +53,4 @@ Thumbs.db
 .env.*
 # keep a safe template in git:
 !.env.example
+*.bak
