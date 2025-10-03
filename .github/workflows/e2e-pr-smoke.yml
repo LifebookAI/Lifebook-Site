@@ -60,7 +60,7 @@ print(hmac.new(k, f\"{ts}.{body}\".encode(), hashlib.sha256).hexdigest())" "$TS"
             -H "content-type: application/json" \
             -d "$BODY" || true)
 
-          echo "presign HTTP=$code"
+          echo "presign HTTP=$code  url=${PRESIGN_API_BASE%/}${PRESIGN_PATH}"
           # redact long tokens if present
           sed -e 's/[A-Za-z0-9_]\{24,\}/[redacted]/g' /tmp/presign.json || true
           test "$code" = "200"
@@ -76,3 +76,4 @@ print(hmac.new(k, f\"{ts}.{body}\".encode(), hashlib.sha256).hexdigest())" "$TS"
           echo "Verifying via CloudFront: $GET_URL"
           curl -sfS "$GET_URL" | tee /tmp/fetched.txt
           grep -q "hello from e2e smoke" /tmp/fetched.txt
+
