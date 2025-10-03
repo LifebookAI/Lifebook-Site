@@ -24,7 +24,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # OIDC is enforced only when an ARN is configured; if empty, step is skipped.
       - name: Configure AWS creds via OIDC
         if: ${{ env.AWS_OIDC_ROLE_ARN != '' }}
         uses: aws-actions/configure-aws-credentials@v4
@@ -44,13 +43,15 @@ jobs:
           set -euo pipefail
           TS=$(date +%s)
           BODY='{"key":"sources/smoke/pr-'"$GITHUB_RUN_ID"'.txt","contentType":"text/plain","contentDisposition":"inline"}'
-          SIG=$(python3 -c "import os,hmac,hashlib;print(hmac.new(bytes.fromhex(os.environ['PRESIGN_HMAC_SECRET']),f\"{os.environ['TS']}.{os.environ['BODY']}\".encode(),hashlib.sha256).hexdigest())")
+          SIG=$(python3 -c "import sys,hmac,hashlib; ts,body,hexkey=sys.argv[1:4]; print(hmac.new(bytes.fromhex(hexkey), f'{ts}.{body}'.encode(), hashlib.sha256).hexdigest())" "$TS" "$BODY" "$PRESIGN_HMAC_SECRET")
           URL=$(curl -sfS -X POST "$PRESIGN_API_BASE/presign" \
             -H "x-api-key: $PRESIGN_API_KEY" -H "x-timestamp: $TS" -H "x-signature: $SIG" \
             -H "content-type: application/json" -d "$BODY" | jq -r .url)
+
           echo "Presign URL obtained: ${URL%%\?*}"
           echo "hello from e2e smoke $GITHUB_RUN_ID" > /tmp/smoke.txt
           curl -sfS -X PUT -T /tmp/smoke.txt "$URL" -H "x-amz-server-side-encryption: AES256"
+
           KEY=$(python3 -c 'import sys; from urllib.parse import urlparse; p=urlparse(sys.argv[1]).path; print(p.split("/",3)[-1])' "$URL")
           GET_URL="${CF_BASE_URL%/}/$KEY"
           echo "Verifying via CloudFront: $GET_URL"
