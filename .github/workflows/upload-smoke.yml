@@ -11,8 +11,10 @@ jobs:
   presign_upload:
     name: Presign + upload (PowerShell)
     runs-on: windows-latest
+  if: ${{ github.event_name == 'pull_request' }}
     steps:
       - name: No-op smoke (PR-safe)
         shell: pwsh
         run: |
           Write-Host "Smoke OK (no AWS on PR)."
+
