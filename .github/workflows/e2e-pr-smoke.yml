@@ -3,34 +3,37 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
   workflow_dispatch:
+
 permissions:
   id-token: write
   contents: read
-env:
-  AWS_REGION: us-east-1
+
 jobs:
   e2e:
     name: e2e
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: us-east-1
+      # Bridge secrets -> env so we can use them in "if:" safely
+      HAS_OIDC_ROLE: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+      PRESIGN_API_BASE: ${{ secrets.PRESIGN_API_BASE }}
+      PRESIGN_API_KEY:  ${{ secrets.PRESIGN_API_KEY }}
+      PRESIGN_HMAC_SECRET: ${{ secrets.PRESIGN_HMAC_SECRET }}
+      CF_BASE_URL: ${{ secrets.CF_BASE_URL }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Only assume AWS role if the secret exists
       - name: Configure AWS creds via OIDC
-        if: ${{ secrets.AWS_OIDC_ROLE_ARN != '' }}
+        if: ${{ env.HAS_OIDC_ROLE != '' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          role-to-assume: ${{ env.HAS_OIDC_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Presign → PUT → GET via CloudFront
         shell: bash
-        env:
-          PRESIGN_API_BASE: ${{ secrets.PRESIGN_API_BASE }}
-          PRESIGN_API_KEY:  ${{ secrets.PRESIGN_API_KEY }}
-          PRESIGN_HMAC_SECRET: ${{ secrets.PRESIGN_HMAC_SECRET }}
-          CF_BASE_URL: ${{ secrets.CF_BASE_URL }}
         run: |
           set -euo pipefail
           TS=$(date +%s)
