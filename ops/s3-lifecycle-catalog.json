@@ -1,0 +1,22 @@
+{
+  "Rules": [
+    {
+      "ID": "Catalog-StdToIA-30d",
+      "Filter": { "Prefix": "catalog/" },
+      "Status": "Enabled",
+      "Transitions": [{ "Days": 30, "StorageClass": "STANDARD_IA" }]
+    },
+    {
+      "ID": "Catalog-IAtoGlacier-90d",
+      "Filter": { "Prefix": "catalog/" },
+      "Status": "Enabled",
+      "Transitions": [{ "Days": 90, "StorageClass": "GLACIER" }]
+    },
+    {
+      "ID": "Catalog-Expire-365d",
+      "Filter": { "Prefix": "catalog/tmp/" },
+      "Status": "Enabled",
+      "Expiration": { "Days": 365 }
+    }
+  ]
+}
