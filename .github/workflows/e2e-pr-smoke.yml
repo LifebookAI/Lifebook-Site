@@ -16,7 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Only try to assume AWS role if the secret is present
+      # Only assume AWS role if the secret exists
       - name: Configure AWS creds via OIDC
         if: ${{ secrets.AWS_OIDC_ROLE_ARN != '' }}
         uses: aws-actions/configure-aws-credentials@v4
