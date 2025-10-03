@@ -14,10 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AWS_REGION: us-east-1
-      # Bridge secrets -> env so we can use them in "if:" safely
+      # Bridge secrets -> env so step `if:` can read them
       HAS_OIDC_ROLE: ${{ secrets.AWS_OIDC_ROLE_ARN }}
       PRESIGN_API_BASE: ${{ secrets.PRESIGN_API_BASE }}
-      PRESIGN_API_KEY:  ${{ secrets.PRESIGN_API_KEY }}
+      PRESIGN_API_KEY: ${{ secrets.PRESIGN_API_KEY }}
       PRESIGN_HMAC_SECRET: ${{ secrets.PRESIGN_HMAC_SECRET }}
       CF_BASE_URL: ${{ secrets.CF_BASE_URL }}
 
@@ -26,11 +26,21 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure AWS creds via OIDC
-        if: ${{ env.HAS_OIDC_ROLE != '' }}
+        if: ${{ env.HAS_OIDC_ROLE }}   # runs only when non-empty
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.HAS_OIDC_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
+
+      - name: Check required secrets present
+        shell: bash
+        run: |
+          set -euo pipefail
+          for v in PRESIGN_API_BASE PRESIGN_API_KEY PRESIGN_HMAC_SECRET CF_BASE_URL; do
+            if [ -z "${!v:-}" ]; then
+              echo "::error::$v is missing"; exit 1
+            fi
+          done
 
       - name: Presign → PUT → GET via CloudFront
         shell: bash
