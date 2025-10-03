@@ -14,33 +14,29 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AWS_REGION: us-east-1
-      # Bridge secrets -> env so step `if:` can read them
-      HAS_OIDC_ROLE: ${{ secrets.AWS_OIDC_ROLE_ARN }}
-      PRESIGN_API_BASE: ${{ secrets.PRESIGN_API_BASE }}
-      PRESIGN_API_KEY: ${{ secrets.PRESIGN_API_KEY }}
+      AWS_OIDC_ROLE_ARN: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+      PRESIGN_API_BASE:  ${{ secrets.PRESIGN_API_BASE }}
+      PRESIGN_API_KEY:   ${{ secrets.PRESIGN_API_KEY }}
       PRESIGN_HMAC_SECRET: ${{ secrets.PRESIGN_HMAC_SECRET }}
-      CF_BASE_URL: ${{ secrets.CF_BASE_URL }}
+      CF_BASE_URL:       ${{ secrets.CF_BASE_URL }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # OIDC is enforced only when an ARN is configured; if empty, step is skipped.
       - name: Configure AWS creds via OIDC
-        if: ${{ env.HAS_OIDC_ROLE }}   # runs only when non-empty
+        if: ${{ env.AWS_OIDC_ROLE_ARN != '' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ env.HAS_OIDC_ROLE }}
+          role-to-assume: ${{ env.AWS_OIDC_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Check required secrets present
+      - name: Validate required secrets
         shell: bash
         run: |
           set -euo pipefail
-          for v in PRESIGN_API_BASE PRESIGN_API_KEY PRESIGN_HMAC_SECRET CF_BASE_URL; do
-            if [ -z "${!v:-}" ]; then
-              echo "::error::$v is missing"; exit 1
-            fi
-          done
+          : "${PRESIGN_API_BASE:?}"; : "${PRESIGN_API_KEY:?}"; : "${PRESIGN_HMAC_SECRET:?}"; : "${CF_BASE_URL:?}"
 
       - name: Presign → PUT → GET via CloudFront
         shell: bash
@@ -48,20 +44,13 @@ jobs:
           set -euo pipefail
           TS=$(date +%s)
           BODY='{"key":"sources/smoke/pr-'"$GITHUB_RUN_ID"'.txt","contentType":"text/plain","contentDisposition":"inline"}'
-
           SIG=$(python3 -c "import os,hmac,hashlib;print(hmac.new(bytes.fromhex(os.environ['PRESIGN_HMAC_SECRET']),f\"{os.environ['TS']}.{os.environ['BODY']}\".encode(),hashlib.sha256).hexdigest())")
-
           URL=$(curl -sfS -X POST "$PRESIGN_API_BASE/presign" \
-            -H "x-api-key: $PRESIGN_API_KEY" \
-            -H "x-timestamp: $TS" \
-            -H "x-signature: $SIG" \
-            -H "content-type: application/json" \
-            -d "$BODY" | jq -r .url)
-
-          echo "Presign URL obtained"
+            -H "x-api-key: $PRESIGN_API_KEY" -H "x-timestamp: $TS" -H "x-signature: $SIG" \
+            -H "content-type: application/json" -d "$BODY" | jq -r .url)
+          echo "Presign URL obtained: ${URL%%\?*}"
           echo "hello from e2e smoke $GITHUB_RUN_ID" > /tmp/smoke.txt
           curl -sfS -X PUT -T /tmp/smoke.txt "$URL" -H "x-amz-server-side-encryption: AES256"
-
           KEY=$(python3 -c 'import sys; from urllib.parse import urlparse; p=urlparse(sys.argv[1]).path; print(p.split("/",3)[-1])' "$URL")
           GET_URL="${CF_BASE_URL%/}/$KEY"
           echo "Verifying via CloudFront: $GET_URL"
