@@ -30,6 +30,6 @@ jobs:
           role-to-assume: ${{ env.AWS_OIDC_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
           audience: sts.amazonaws.com
-          output-env-variables: true
       - name: Presign smoke
         uses: ./.github/actions/presign-smoke
+
