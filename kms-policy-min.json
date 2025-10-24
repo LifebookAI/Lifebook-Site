@@ -1,0 +1,36 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "EnableIamUserPermissions",
+      "Effect": "Allow",
+      "Principal": { "AWS": "arn:aws:iam::" },
+      "Action": "kms:*",
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowUseFromAccountViaS3",
+      "Effect": "Allow",
+      "Principal": { "AWS": "arn:aws:iam::" },
+      "Action": [ "kms:Decrypt", "kms:GenerateDataKey*", "kms:DescribeKey" ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": { "kms:ViaService": "s3.us-east-1.amazonaws.com" },
+        "ForAnyValue:StringLike": {
+          "kms:EncryptionContext:aws:s3:arn": [ "arn:aws:s3:::lifebook.ai", "arn:aws:s3:::lifebook.ai/*" ]
+        }
+      }
+    },
+    {
+      "Sid": "AllowS3CreateGrantForBucket-lifebook.ai",
+      "Effect": "Allow",
+      "Principal": { "Service": "s3.amazonaws.com" },
+      "Action": [ "kms:CreateGrant" ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": { "kms:ViaService": "s3.us-east-1.amazonaws.com" },
+        "Bool": { "kms:GrantIsForAWSResource": true }
+      }
+    }
+  ]
+}
