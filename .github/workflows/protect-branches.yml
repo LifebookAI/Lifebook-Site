@@ -1,11 +1,11 @@
 name: Enforce branch protections
 
 on:
+  workflow_dispatch: {}
   workflow_dispatch:
   schedule:
     - cron: "*/30 * * * *"
-  create:
-
+  create: {}
 jobs:
   protect:
     # For `create`, only act on branches. For schedule/dispatch, always run.
@@ -100,3 +100,4 @@ jobs:
             gh api "/repos/$OWNER/$REPO/branches/$b/protection" \
               -q "{branch:\"$b\",checks:(.required_status_checks.checks // []) | map(.context),strict:.required_status_checks.strict,admins:.enforce_admins.enabled,approvals:.required_pull_request_reviews.required_approving_review_count,lastPush:.required_pull_request_reviews.require_last_push_approval,linear:.required_linear_history.enabled,convo:.required_conversation_resolution.enabled}"
           done
+
