@@ -45,3 +45,4 @@ jobs:
             --function-name $FUNCTION_NAME \
             --zip-file fileb://$GITHUB_WORKSPACE/$LAMBDA_DIR/presign.zip \
             --publish
+

@@ -1,0 +1,7 @@
+{
+  "Name": "S3-NoViewerHeaders-1384387125",
+  "Comment": "No viewer headers/cookies/querystrings to S3 (OAC signs)",
+  "HeadersConfig":   { "HeaderBehavior": "none" },
+  "CookiesConfig":   { "CookieBehavior": "none" },
+  "QueryStringsConfig": { "QueryStringBehavior": "none" }
+}

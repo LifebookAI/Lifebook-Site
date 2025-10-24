@@ -1,0 +1,25 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyInsecureTransport",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:*",
+      "Resource": ["arn:aws:s3:::lifebook.ai","arn:aws:s3:::lifebook.ai/*"],
+      "Condition": { "Bool": { "aws:SecureTransport": "false" } }
+    },
+    {
+      "Sid": "AllowCloudFrontReadViaOAC",
+      "Effect": "Allow",
+      "Principal": { "Service": "cloudfront.amazonaws.com" },
+      "Action": ["s3:GetObject","s3:GetObjectVersion","s3:ListBucket"],
+      "Resource": ["arn:aws:s3:::lifebook.ai","arn:aws:s3:::lifebook.ai/*"],
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::354630286254:distribution/E2D7FJLA6YQUNP"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+{
+  "Version": "2012-10-17",
+  "Id": "key-default-1",
+  "Statement": [
+    {
+      "Sid": "Enable IAM User Permissions",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::354630286254:root"
+      },
+      "Action": "kms:*",
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowS3UseForBucket",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "s3.amazonaws.com"
+      },
+      "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:GenerateDataKey*",
+        "kms:Encrypt",
+        "kms:ReEncrypt*"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceArn": "arn:aws:s3:::lifebook.ai",
+          "aws:SourceAccount": "354630286254"
+        },
+        "StringLike": {
+          "kms:ViaService": "s3.us-east-1.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Sid": "AllowS3Canonical",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "s3.amazonaws.com"
+      },
+      "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "kms:CallerAccount": "354630286254",
+          "kms:EncryptionContext:aws:s3:bucket": "lifebook.ai"
+        },
+        "ForAnyValue:StringEquals": {
+          "kms:ViaService": [
+            "s3.us-east-1.amazonaws.com",
+            "s3.amazonaws.com",
+            "s3.*.amazonaws.com"
+          ]
+        },
+        "ArnLike": {
+          "kms:EncryptionContext:aws:s3:arn": [
+            "arn:aws:s3:::lifebook.ai",
+            "arn:aws:s3:::lifebook.ai/*"
+          ]
+        }
+      }
+    },
+    {
+      "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*"
+      ],
+      "Effect": "Allow",
+      "Condition": {
+        "ArnLike": {
+          "kms:EncryptionContext:aws:s3:arn": [
+            "arn:aws:s3:::lifebook.ai",
+            "arn:aws:s3:::lifebook.ai/*"
+          ]
+        },
+        "StringEquals": {
+          "kms:CallerAccount": "354630286254"
+        },
+        "ForAnyValue:StringEquals": {
+          "kms:ViaService": [
+            "s3.us-east-1.amazonaws.com",
+            "s3.amazonaws.com",
+            "s3-external-1.amazonaws.com",
+            "s3.dualstack.us-east-1.amazonaws.com"
+          ]
+        }
+      },
+      "Sid": "AllowS3_ViaService_Arn",
+      "Principal": {
+        "Service": "s3.amazonaws.com"
+      },
+      "Resource": "*"
+    },
+    {
+      "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*"
+      ],
+      "Effect": "Allow",
+      "Condition": {
+        "ForAnyValue:StringEquals": {
+          "kms:ViaService": [
+            "s3.us-east-1.amazonaws.com",
+            "s3.amazonaws.com",
+            "s3-external-1.amazonaws.com",
+            "s3.dualstack.us-east-1.amazonaws.com"
+          ]
+        },
+        "StringEquals": {
+          "kms:CallerAccount": "354630286254",
+          "kms:EncryptionContext:aws:s3:bucket": "lifebook.ai"
+        }
+      },
+      "Sid": "AllowS3_ViaService_Bucket",
+      "Principal": {
+        "Service": "s3.amazonaws.com"
+      },
+      "Resource": "*"
+    }
+  ]
+}

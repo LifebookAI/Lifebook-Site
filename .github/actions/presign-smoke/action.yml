@@ -1,0 +1,107 @@
+name: "presign-smoke"
+description: "Presign → PUT → GET via CloudFront (Linux/Windows)"
+runs:
+  using: "composite"
+  steps:
+    - name: Validate required env (Linux)
+      if: runner.os != 'Windows'
+      shell: bash
+      run: |
+        set -euo pipefail
+        : "${PRESIGN_API_BASE:?}"; : "${PRESIGN_API_KEY:?}"; : "${PRESIGN_HMAC_SECRET:?}"; : "${CF_BASE_URL:?}"; : "${PRESIGN_PATH:?}"
+
+    - name: Presign/Upload/Verify (Linux)
+      if: runner.os != 'Windows'
+      shell: bash
+      run: |
+        set -euo pipefail
+        TS=$(date +%s)
+        BODY='{"key":"sources/smoke/pr-'"$GITHUB_RUN_ID"'.txt","contentType":"text/plain","contentDisposition":"inline"}'
+        SIG=$(python3 - <<'PY' "$TS" "$BODY" "$PRESIGN_HMAC_SECRET"
+import sys,hmac,hashlib,base64,binascii
+ts,body,key=sys.argv[1:4]
+try: k=binascii.unhexlify(key.strip())
+except binascii.Error: k=base64.b64decode(key.strip(), validate=True)
+print(hmac.new(k, f"{ts}.{body}".encode(), hashlib.sha256).hexdigest())
+PY
+)
+        URL_BASE="${PRESIGN_API_BASE%/}${PRESIGN_PATH}"
+        code=$(curl --silent --show-error --fail-with-body \
+          -o /tmp/presign.json -w '%{http_code}' \
+          -X "${PRESIGN_METHOD:-POST}" "$URL_BASE" \
+          -H "x-api-key: $PRESIGN_API_KEY" \
+          -H "x-timestamp: $TS" \
+          -H "x-signature: $SIG" \
+          -H "content-type: application/json" \
+          -d "$BODY" || true)
+        echo "presign HTTP=$code url=$URL_BASE"
+        sed -e 's/[A-Za-z0-9_]\{24,\}/[redacted]/g' /tmp/presign.json || true
+        test "$code" = "200"
+        URL=$(jq -r .url /tmp/presign.json)
+        echo "Presign URL obtained: ${URL%%\?*}"
+        echo "hello from e2e smoke $GITHUB_RUN_ID" > /tmp/smoke.txt
+        curl -sfS -X PUT -T /tmp/smoke.txt "$URL" -H "x-amz-server-side-encryption: AES256"
+        KEY=$(python3 -c 'import sys; from urllib.parse import urlparse; p=urlparse(sys.argv[1]).path; print(p.split("/",3)[-1])' "$URL")
+        GET_URL="${CF_BASE_URL%/}/$KEY"
+        echo "Verifying via CloudFront: $GET_URL"
+        curl -sfS "$GET_URL" | tee /tmp/fetched.txt
+        grep -q "hello from e2e smoke" /tmp/fetched.txt
+
+    - name: Validate required env (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $ErrorActionPreference = 'Stop'
+        foreach ($n in 'PRESIGN_API_BASE','PRESIGN_API_KEY','PRESIGN_HMAC_SECRET','CF_BASE_URL','PRESIGN_PATH') {
+          if (-not $env:$n) { throw "Missing env: $n" }
+        }
+
+    - name: Presign/Upload/Verify (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $ErrorActionPreference = 'Stop'
+        $ts = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+        $body = '{"' + "key" + '":"sources/smoke/pr-' + $env:GITHUB_RUN_ID + '.txt","contentType":"text/plain","contentDisposition":"inline"}'
+
+        function Get-KeyBytes([string]$s) {
+          $t = $s.Trim()
+          if ($t -match '^[0-9a-fA-F]+$' -and ($t.Length % 2 -eq 0)) {
+            $bytes = New-Object byte[] ($t.Length/2)
+            for ($i=0; $i -lt $t.Length; $i+=2) { $bytes[$i/2] = [Convert]::ToByte($t.Substring($i,2),16) }
+            return $bytes
+          } else { return [Convert]::FromBase64String($t) }
+        }
+
+        $keyBytes = Get-KeyBytes $env:PRESIGN_HMAC_SECRET
+        $payload  = "$ts.$body"
+        $hmac     = [System.Security.Cryptography.HMACSHA256]::new($keyBytes)
+        $sigBytes = $hmac.ComputeHash([Text.Encoding]::UTF8.GetBytes($payload))
+        $sig      = ($sigBytes | ForEach-Object { $_.ToString('x2') }) -join ''
+
+        $base   = ($env:PRESIGN_API_BASE.TrimEnd('/')) + $env:PRESIGN_PATH
+        $method = if ($env:PRESIGN_METHOD) { $env:PRESIGN_METHOD } else { 'POST' }
+
+        Write-Host "presign call: $method $base"
+        $resp = Invoke-WebRequest -Method $method -Uri $base -Headers @{
+          'x-api-key'   = $env:PRESIGN_API_KEY
+          'x-timestamp' = "$ts"
+          'x-signature' = $sig
+        } -ContentType 'application/json' -Body $body -ErrorAction Stop
+
+        $presign = $resp.Content | ConvertFrom-Json
+        $url = $presign.url
+        if (-not $url) { throw "presign missing 'url' field: $($resp.Content)" }
+        Write-Host ("Presign URL obtained: " + ($url -replace '\?.*$',''))
+
+        $tmp = Join-Path $env:RUNNER_TEMP "smoke.txt"
+        "hello from e2e smoke $env:GITHUB_RUN_ID" | Set-Content -Path $tmp -Encoding ASCII
+        Invoke-WebRequest -Method Put -Uri $url -InFile $tmp -Headers @{ 'x-amz-server-side-encryption'='AES256' } -ErrorAction Stop
+
+        $u = [System.Uri]::new($url)
+        $key = ($u.AbsolutePath -split '/',3)[2]
+        $getUrl = ($env:CF_BASE_URL.TrimEnd('/')) + '/' + $key
+        Write-Host "Verifying via CloudFront: $getUrl"
+
+        $got = Invoke-WebRequest -Uri $getUrl -UseBasicParsing -ErrorAction Stop
+        if ($got.Content -notmatch 'hello from e2e smoke') { throw "GET body mismatch: $($got.Content)" }
