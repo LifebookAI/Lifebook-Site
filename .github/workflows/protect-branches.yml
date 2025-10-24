@@ -1,0 +1,102 @@
+name: Enforce branch protections
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/30 * * * *"
+  create:
+
+jobs:
+  protect:
+    # For `create`, only act on branches. For schedule/dispatch, always run.
+    if: github.event_name != 'create' || github.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      GH_TOKEN: ${{ secrets.REPO_ADMIN_TOKEN }}
+      OWNER: LifebookAI
+      REPO: Lifebook-Site
+      SOURCE_BRANCH: main
+      REQUIRE_APPROVALS: "0"          # solo flow
+      REQUIRE_LAST_PUSH: "false"      # solo flow
+      MATCH_GLOBS: "release/* hotfix/*"
+    steps:
+      - name: gh and jq versions
+        run: |
+          gh --version
+          jq --version
+
+      - name: Compute target branch list
+        id: branches
+        shell: bash
+        run: |
+          set -euo pipefail
+          targets=("$SOURCE_BRANCH")
+          if [[ "${{ github.event_name }}" == "create" && "${{ github.ref_type }}" == "branch" ]]; then
+            targets+=("${{ github.ref_name }}")
+          fi
+          mapfile -t all_branches < <(gh api "/repos/$OWNER/$REPO/branches?per_page=100" -q '.[].name')
+          for b in "${all_branches[@]}"; do
+            for g in $MATCH_GLOBS; do
+              case "$b" in
+                $g) targets+=("$b");;
+              esac
+            done
+          done
+          jq -n --argjson arr "$(printf '%s\n' "${targets[@]}" | sort -u | jq -R . | jq -s .)" '$arr' | tee targets.json
+          echo "list=$(cat targets.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Build payload from SOURCE_BRANCH protections
+        id: payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          bp="$(gh api "/repos/$OWNER/$REPO/branches/$SOURCE_BRANCH/protection")" || bp=""
+          checks_lines="$(echo "$bp" | jq -r '.required_status_checks.checks // [] | .[].context')"
+          if [[ -z "$checks_lines" || "$checks_lines" == "null" ]]; then
+            checks_lines="$(echo "$bp" | jq -r '.required_status_checks.contexts // [] | .[]')"
+          fi
+          if [[ -z "$checks_lines" || "$checks_lines" == "null" ]]; then
+            checks_lines=$'EOL guard (LF only) / eol'
+          fi
+          checks_json="$(printf '%s\n' "$checks_lines" | jq -R '{context:.}' | jq -s .)"
+          jq -n \
+            --argjson checks "$checks_json" \
+            --arg approvals   "${REQUIRE_APPROVALS}" \
+            --argjson lastPush ${REQUIRE_LAST_PUSH} \
+            '{
+              required_status_checks: { strict: true, checks: $checks },
+              enforce_admins: true,
+              required_pull_request_reviews: {
+                required_approving_review_count: ($approvals|tonumber),
+                dismiss_stale_reviews: true,
+                require_code_owner_reviews: false,
+                require_last_push_approval: $lastPush
+              },
+              required_linear_history: true,
+              required_conversation_resolution: true,
+              restrictions: null
+            }' | tee payload.json
+          echo "path=payload.json" >> "$GITHUB_OUTPUT"
+
+      - name: Apply protections to targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="$(cat "${{ steps.payload.outputs.path }}")"
+          jq -r '.[]' <<< '${{ steps.branches.outputs.list }}' | while read -r b; do
+            echo "Protecting $b …"
+            printf '%s' "$payload" | gh api --method PUT -H "Accept: application/vnd.github+json" \
+              "/repos/$OWNER/$REPO/branches/$b/protection" --input -
+            gh api --method POST "/repos/$OWNER/$REPO/branches/$b/protection/required_signatures" >/dev/null 2>&1 || true
+          done
+
+      - name: Summary
+        shell: bash
+        run: |
+          echo "== Summary =="
+          jq -r '.[]' <<< '${{ steps.branches.outputs.list }}' | while read -r b; do
+            gh api "/repos/$OWNER/$REPO/branches/$b/protection" \
+              -q "{branch:\"$b\",checks:(.required_status_checks.checks // []) | map(.context),strict:.required_status_checks.strict,admins:.enforce_admins.enabled,approvals:.required_pull_request_reviews.required_approving_review_count,lastPush:.required_pull_request_reviews.require_last_push_approval,linear:.required_linear_history.enabled,convo:.required_conversation_resolution.enabled}"
+          done
