@@ -28,3 +28,4 @@ jobs:
         run: |
           Set-ExecutionPolicy -Scope Process Bypass -Force
           .\.github\workflows\scripts\smoke.ps1
+

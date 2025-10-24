@@ -54,3 +54,4 @@ Thumbs.db
 # keep a safe template in git:
 !.env.example
 *.bak
+.vercel

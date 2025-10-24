@@ -56,3 +56,4 @@ jobs:
           $dist = "${{ vars.CF_DIST_ID }}"
           aws cloudfront create-invalidation --distribution-id $dist --paths "/index.html" "/"
           Write-Host "Invalidation requested" -ForegroundColor Green
+
