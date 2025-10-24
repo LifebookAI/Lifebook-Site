@@ -2,30 +2,33 @@ name: Enforce branch protections
 
 on:
   workflow_dispatch: {}
-  workflow_dispatch:
   schedule:
     - cron: "*/30 * * * *"
   create: {}
+
 jobs:
   protect:
-    # For `create`, only act on branches. For schedule/dispatch, always run.
     if: github.event_name != 'create' || github.ref_type == 'branch'
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      administration: write
     env:
       GH_TOKEN: ${{ secrets.REPO_ADMIN_TOKEN }}
       OWNER: LifebookAI
       REPO: Lifebook-Site
       SOURCE_BRANCH: main
-      REQUIRE_APPROVALS: "0"          # solo flow
-      REQUIRE_LAST_PUSH: "false"      # solo flow
+      REQUIRE_APPROVALS: "0"
+      REQUIRE_LAST_PUSH: "false"
       MATCH_GLOBS: "release/* hotfix/*"
+
     steps:
-      - name: gh and jq versions
+      - name: Tooling info
         run: |
+          set -euo pipefail
           gh --version
           jq --version
+          gh auth status -h github.com -t
 
       - name: Compute target branch list
         id: branches
@@ -39,9 +42,7 @@ jobs:
           mapfile -t all_branches < <(gh api "/repos/$OWNER/$REPO/branches?per_page=100" -q '.[].name')
           for b in "${all_branches[@]}"; do
             for g in $MATCH_GLOBS; do
-              case "$b" in
-                $g) targets+=("$b");;
-              esac
+              case "$b" in $g) targets+=("$b");; esac
             done
           done
           jq -n --argjson arr "$(printf '%s\n' "${targets[@]}" | sort -u | jq -R . | jq -s .)" '$arr' | tee targets.json
@@ -52,7 +53,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          bp="$(gh api "/repos/$OWNER/$REPO/branches/$SOURCE_BRANCH/protection")" || bp=""
+          bp="$(gh api "/repos/$OWNER/$REPO/branches/$SOURCE_BRANCH/protection" 2>/dev/null || true)"
           checks_lines="$(echo "$bp" | jq -r '.required_status_checks.checks // [] | .[].context')"
           if [[ -z "$checks_lines" || "$checks_lines" == "null" ]]; then
             checks_lines="$(echo "$bp" | jq -r '.required_status_checks.contexts // [] | .[]')"
@@ -100,4 +101,3 @@ jobs:
             gh api "/repos/$OWNER/$REPO/branches/$b/protection" \
               -q "{branch:\"$b\",checks:(.required_status_checks.checks // []) | map(.context),strict:.required_status_checks.strict,admins:.enforce_admins.enabled,approvals:.required_pull_request_reviews.required_approving_review_count,lastPush:.required_pull_request_reviews.require_last_push_approval,linear:.required_linear_history.enabled,convo:.required_conversation_resolution.enabled}"
           done
-
