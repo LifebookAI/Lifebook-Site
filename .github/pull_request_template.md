@@ -1,26 +1,7 @@
-\## What
+## Summary
+<!-- What does this change do? -->
 
-\- Brief summary
-
-
-
-\## Why
-
-\- Reason / context
-
-
-
-\## Test
-
-\- \[ ] CI (PR) smoke is green
-
-\- \[ ] Manually opened VERIFY URL if relevant
-
-
-
-\## Notes
-
-\- Risks / follow-ups
-
-
-
+## Checklist
+- [ ] Code builds locally (`npm run build` or `pnpm build`)
+- [ ] Lints/tests pass if present
+- [ ] EOL policy respected (LF) and CI green
