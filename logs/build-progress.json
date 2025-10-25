@@ -1188,5 +1188,39 @@
         "at": "2025-10-25T00:30:32Z"
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "OPS.12",
+    "StepTitle": "Ops orchestrator committed (verify-retry + CW shape-safe)",
+    "Status": "✔",
+    "Evidence": "infra/ops/Invoke-LifebookOps.ps1 + run-LifebookOps.ps1; non-blocking 'Attempted' fallback; local state at %LOCALAPPDATA%\\Lifebook\\ops_state.json",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      ""
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "LastUpdated": "2025-10-25T04:02:24Z",
+    "History": [
+      {
+        "patch": {
+          "StepTitle": "Ops orchestrator committed (verify-retry + CW shape-safe)",
+          "Owner": "Zach",
+          "Decisions": "",
+          "StepID": "OPS.12",
+          "Blockers": "",
+          "Target": "",
+          "Status": "✔",
+          "Next": [
+            ""
+          ],
+          "Phase": "Phase 0 — Infra",
+          "Evidence": "infra/ops/Invoke-LifebookOps.ps1 + run-LifebookOps.ps1; non-blocking 'Attempted' fallback; local state at %LOCALAPPDATA%\\Lifebook\\ops_state.json"
+        },
+        "at": "2025-10-25T04:02:24Z"
+      }
+    ]
   }
 ]
