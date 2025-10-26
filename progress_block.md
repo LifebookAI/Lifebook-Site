@@ -1,7 +1,7 @@
 Phase | Step ID | Step Title | Status (☐/⏳/✔/⛔) | Evidence (IDs/ARNs/links) | Decisions | Blockers | Next actions (max 3) | Owner | Target (YYYY-MM-DD)
 --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 Phase 0 — Lifebook-Site | REP.31 | Protect-branches enforcer | ⏳ | WF id 200496210; PR #31 open |  |  | Merge PR #31 \| Dispatch enforcer + verify release/* \| Add contributor guide & collaborator reviews | Zach | 
-Phase 0 — Infra | EVT.11 | Eventing IaC + alarms follow-ups | ✔ | EVT.11 complete: Created AWS/Events FailedInvocations alarms (lifebook-ssm-rc-fail, lifebook-ssm-sm-fail); fixed SNS topic 'lifebook-alerts' policy + KMS policy (Decrypt/DataKey/CreateGrant); verified ALARM→OK via synthetic; added nightly smoke Lambda 'lifebook-cw-alarm-smoke'… |  |  |  | Zach | 
+Phase 0 — Infra | EVT.11 | Eventing IaC + alarms follow-ups | ⏳ |  |  |  | Codify EB target role+grant+SNS policy \| Add AWS/Events FailedInvocations alarm \| Nightly synthetic ALARM→OK smoke | Zach | 
 Phase 0 | AUTH.SSO.01 | Admin SSO lifebook-admin validated; dev pending | ⏳ |  |  |  | aws configure sso + sso login \| Doc profile switch in /ops/README \| — | Zach | 
 Phase 0 | LEG.00 | AUP / 0.7, 0.11 | ⏳ |  |  |  | Draft AUP \| Set review window \| Track in gates-status.json | Zach | 2025-10-31
 Phase 0 — Infra | NET.20 | Bastion follow-ups | ⏳ |  |  |  | Add stop/start schedule \| Restrict SG egress to endpoints \| Tag/capture in IaC | Zach | 
