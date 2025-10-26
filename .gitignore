@@ -55,3 +55,9 @@ Thumbs.db
 !.env.example
 *.bak
 .vercel
+# Allow infra/ev11 to be tracked
+!infra/
+!infra/ev11/
+!infra/ev11/**
+infra/**/*.tfvars
+infra/**/*.auto.tfvars
