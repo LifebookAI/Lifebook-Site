@@ -556,18 +556,14 @@
     "Phase": "Phase 0 — Infra",
     "StepID": "EDGE.01",
     "StepTitle": "Edge follow-ups",
-    "Status": "⏳",
-    "Evidence": "",
+    "Status": "✔",
+    "Evidence": "checked=1 dists; no Host forwarded",
     "Decisions": "",
     "Blockers": "",
-    "Next": [
-      "Verify Host not forwarded",
-      "Confirm ViaService decrypts in CloudTrail",
-      "Keep OAC in IaC + /sources/* invalidations"
-    ],
+    "Next": [],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-25T00:30:29Z",
+    "LastUpdated": "2025-10-26T19:53:44Z",
     "History": [
       {
         "patch": {
@@ -587,6 +583,23 @@
           "Evidence": ""
         },
         "at": "2025-10-25T00:30:29Z"
+      },
+      {
+        "at": "2025-10-26T19:53:44Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "checked=1 dists; no Host forwarded",
+          "Owner": "Zach",
+          "Phase": "Phase 0 — Infra",
+          "Next": [
+            ""
+          ],
+          "StepID": "EDGE.01",
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "StepTitle": "Edge follow-ups"
+        }
       }
     ]
   },

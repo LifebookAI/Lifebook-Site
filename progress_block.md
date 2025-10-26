@@ -5,7 +5,7 @@ Phase 0 — Infra | EVT.11 | Eventing IaC + alarms follow-ups | ✔ | acct=35463
 Phase 0 | AUTH.SSO.01 | Admin SSO lifebook-admin validated; dev pending | ⏳ |  |  |  | aws configure sso + sso login \| Doc profile switch in /ops/README \| — | Zach | 
 Phase 0 | LEG.00 | AUP / 0.7, 0.11 | ⏳ |  |  |  | Draft AUP \| Set review window \| Track in gates-status.json | Zach | 2025-10-31
 Phase 0 — Infra | NET.20 | Bastion follow-ups | ⏳ |  |  |  | Add stop/start schedule \| Restrict SG egress to endpoints \| Tag/capture in IaC | Zach | 
-Phase 0 — Infra | EDGE.01 | Edge follow-ups | ⏳ |  |  |  | Verify Host not forwarded \| Confirm ViaService decrypts in CloudTrail \| Keep OAC in IaC + /sources/* invalidations | Zach | 
+Phase 0 — Infra | EDGE.01 | Edge follow-ups | ✔ | checked=1 dists; no Host forwarded |  |  |  | Zach | 
 Phase 0 — Infra | OPS.11 | Ops follow-ups | ⏳ |  |  |  | Set paste-run conventions \| Schedule periodic audits \| Add one-click verify | Zach | 
 Phase 0 — Synthetics | MON.01 | Synthetics follow-ups | ✔ | region=us-east-1; canaries=0; created=0; updated=0; unchanged=0; topic=arn:aws:sns:us-east-1:354630286254:lifebook-alerts |  |  |  | Zach | 
 Phase 0 — S3 Artifacts | STG.ART.02 | Artifacts follow-ups | ⏳ |  |  |  | Consider BucketKeyEnabled \| Tag bucket + record in IaC \| Add prefix-scoped conditions | Zach | 
