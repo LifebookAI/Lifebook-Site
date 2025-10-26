@@ -331,18 +331,14 @@
     "Phase": "Phase 0 — Infra",
     "StepID": "EVT.11",
     "StepTitle": "Eventing IaC + alarms follow-ups",
-    "Status": "⏳",
-    "Evidence": "",
+    "Status": "✔",
+    "Evidence": "EVT.11 complete: Created AWS/Events FailedInvocations alarms (lifebook-ssm-rc-fail, lifebook-ssm-sm-fail); fixed SNS topic 'lifebook-alerts' policy + KMS policy (Decrypt/DataKey/CreateGrant); verified ALARM→OK via synthetic; added nightly smoke Lambda 'lifebook-cw-alarm-smoke' + Events rule/target. CloudWatch history shows 'Successfully executed action' for both alarms.",
     "Decisions": "",
     "Blockers": "",
-    "Next": [
-      "Codify EB target role+grant+SNS policy",
-      "Add AWS/Events FailedInvocations alarm",
-      "Nightly synthetic ALARM→OK smoke"
-    ],
+    "Next": [],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-25T00:30:28Z",
+    "LastUpdated": "2025-10-25T19:57:58Z",
     "History": [
       {
         "patch": {
@@ -362,6 +358,40 @@
           "Evidence": ""
         },
         "at": "2025-10-25T00:30:28Z"
+      },
+      {
+        "patch": {
+          "StepTitle": "Eventing IaC + alarms follow-ups",
+          "Owner": "Zach",
+          "Decisions": "",
+          "StepID": "EVT.11",
+          "Blockers": "",
+          "Target": "",
+          "Status": "✔",
+          "Next": [
+            ""
+          ],
+          "Phase": "Phase 0 — Infra",
+          "Evidence": "Created AWS/Events FailedInvocations alarms for rules lifebook-ssm-rc-fail & lifebook-ssm-sm-fail; fixed SNS topic 'lifebook-alerts' policy and KMS key policy to permit CloudWatch→SNS; verified ALARM→OK succeeds (CloudWatch history shows 'Successfully executed action'); added nightly smoke Lambda 'lifebook-cw-alarm-smoke' and EventBridge schedule 'lifebook-cw-alarm-smoke-nightly' with target attached."
+        },
+        "at": "2025-10-25T19:55:18Z"
+      },
+      {
+        "patch": {
+          "StepTitle": "Eventing IaC + alarms follow-ups",
+          "Owner": "Zach",
+          "Decisions": "",
+          "StepID": "EVT.11",
+          "Blockers": "",
+          "Target": "",
+          "Status": "✔",
+          "Next": [
+            ""
+          ],
+          "Phase": "Phase 0 — Infra",
+          "Evidence": "EVT.11 complete: Created AWS/Events FailedInvocations alarms (lifebook-ssm-rc-fail, lifebook-ssm-sm-fail); fixed SNS topic 'lifebook-alerts' policy + KMS policy (Decrypt/DataKey/CreateGrant); verified ALARM→OK via synthetic; added nightly smoke Lambda 'lifebook-cw-alarm-smoke' + Events rule/target. CloudWatch history shows 'Successfully executed action' for both alarms."
+        },
+        "at": "2025-10-25T19:57:58Z"
       }
     ]
   },
