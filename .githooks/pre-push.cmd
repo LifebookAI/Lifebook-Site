@@ -1,3 +1,4 @@
 @echo off
-pwsh -NoLogo -NoProfile -File "%~dp0pre-push.ps1"
+setlocal
+powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0pre-push.ps1"
 exit /b %ERRORLEVEL%

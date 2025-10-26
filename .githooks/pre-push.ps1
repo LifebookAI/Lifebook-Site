@@ -1,14 +1,15 @@
 #requires -Version 7
-Set-StrictMode -Version Latest
-$range = git rev-list --no-merges @{u}..HEAD 2>$null
-$bad = @()
-foreach ($sha in $range) {
-  git verify-commit -v $sha *> $null
-  if ($LASTEXITCODE -ne 0) { $bad += $sha }
-}
-if ($bad.Count) {
-  Write-Host "[pre-push] Unsigned/Unverified commits:" -ForegroundColor Red
-  $bad | ForEach-Object { " - $_" } | Out-Host
+$ErrorActionPreference='Stop'
+
+# Resolve repo root reliably
+$repo = (git rev-parse --show-toplevel).Trim()
+if (-not $repo) { Write-Error "pre-push: cannot resolve repo root"; exit 1 }
+
+$script = Join-Path $repo 'infra/ops/progress/progress.ps1'
+if (-not (Test-Path $script)) {
+  Write-Error "pre-push: $script not found; run setup first."
   exit 1
 }
-exit 0
+
+# Enforce that today's progress was recorded
+pwsh -NoLogo -NoProfile -File $script guard
