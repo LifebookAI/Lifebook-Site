@@ -935,18 +935,14 @@
     "Phase": "Phase 0 — Infra",
     "StepID": "IAM.03",
     "StepTitle": "Tighten S3 policy prefixes",
-    "Status": "⏳",
-    "Evidence": "",
+    "Status": "✔",
+    "Evidence": "acct=354630286254; bucket=lifebook.ai; broad /* is read-only (no write/public); ok",
     "Decisions": "",
     "Blockers": "",
-    "Next": [
-      "Tighten to exact prefixes",
-      "Commit policy docs",
-      "Set annual review reminder"
-    ],
+    "Next": [],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-25T00:30:31Z",
+    "LastUpdated": "2025-10-26T23:38:12Z",
     "History": [
       {
         "patch": {
@@ -966,6 +962,23 @@
           "Evidence": ""
         },
         "at": "2025-10-25T00:30:31Z"
+      },
+      {
+        "at": "2025-10-26T23:38:12Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "acct=354630286254; bucket=lifebook.ai; broad /* is read-only (no write/public); ok",
+          "Owner": "Zach",
+          "Phase": "Phase 0 — Infra",
+          "Next": [
+            ""
+          ],
+          "StepID": "IAM.03",
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "StepTitle": "Tighten S3 policy prefixes"
+        }
       }
     ]
   },
