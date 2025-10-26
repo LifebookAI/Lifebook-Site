@@ -1,7 +1,7 @@
 Phase | Step ID | Step Title | Status (☐/⏳/✔/⛔) | Evidence (IDs/ARNs/links) | Decisions | Blockers | Next actions (max 3) | Owner | Target (YYYY-MM-DD)
 --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 Phase 0 — Lifebook-Site | REP.31 | Protect-branches enforcer | ⏳ | WF id 200496210; PR #31 open |  |  | Merge PR #31 \| Dispatch enforcer + verify release/* \| Add contributor guide & collaborator reviews | Zach | 
-Phase 0 — Infra | EVT.11 | Eventing IaC + alarms follow-ups | ⏳ |  |  |  | Codify EB target role+grant+SNS policy \| Add AWS/Events FailedInvocations alarm \| Nightly synthetic ALARM→OK smoke | Zach | 
+Phase 0 — Infra | EVT.11 | Eventing IaC + alarms follow-ups | ✔ | acct=354630286254; region=us-east-1; KMS-rotation=ON; EB(lifebook-cw-alarm-smoke-nightly)=ENABLED cron(15 9 * * ? *); SNS AllowEventBridge ArnEquals empty?=NO |  |  |  | Zach | 
 Phase 0 | AUTH.SSO.01 | Admin SSO lifebook-admin validated; dev pending | ⏳ |  |  |  | aws configure sso + sso login \| Doc profile switch in /ops/README \| — | Zach | 
 Phase 0 | LEG.00 | AUP / 0.7, 0.11 | ⏳ |  |  |  | Draft AUP \| Set review window \| Track in gates-status.json | Zach | 2025-10-31
 Phase 0 — Infra | NET.20 | Bastion follow-ups | ⏳ |  |  |  | Add stop/start schedule \| Restrict SG egress to endpoints \| Tag/capture in IaC | Zach | 
@@ -15,4 +15,3 @@ Phase 0 — Infra | PREF.02 | Preflight follow-ups | ⏳ |  |  |  | Add CI/pre-p
 Phase 0 — Prod S3 Data | STG.PROD.02 | Prod S3 follow-ups | ⏳ |  |  |  | IaC bucket/VPCE/KMS \| Enable S3 logs + Config rules \| Change alarms + KMS rotation | Zach | 
 Phase D.S2 — Catalog prefixes | LFC.DS2 | Catalog lifecycle | ⏳ | /ops/s3-lifecycle-catalog.json present |  |  | Apply lifecycle to prod \| Verify transitions \| Surface 'Restoring <5m' badge | Zach | 
 Phase 3 — 13A | OIDC.02 | Wire OIDC in workflow + docs | ⏳ |  |  |  | Hook GH workflow to assume role \| Document in README \| — | Zach | 
-Phase 0 — Infra | OPS.12 | Ops orchestrator committed (verify-retry + CW shape-safe) | ✔ | infra/ops/Invoke-LifebookOps.ps1 + run-LifebookOps.ps1; non-blocking 'Attempted' fallback; local state at %LOCALAPPDATA%\Lifebook\ops_state.json |  |  |  | Zach | 
