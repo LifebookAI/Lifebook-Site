@@ -1,6 +1,6 @@
 Phase | Step ID | Step Title | Status (☐/⏳/✔/⛔) | Evidence (IDs/ARNs/links) | Decisions | Blockers | Next actions (max 3) | Owner | Target (YYYY-MM-DD)
 --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
-Phase 0 — Lifebook-Site | REP.31 | Protect-branches enforcer | ⏳ | WF id 200496210; PR #31 open |  |  | Merge PR #31 \| Dispatch enforcer + verify release/* \| Add contributor guide & collaborator reviews | Zach | 
+Phase 0 — Lifebook-Site | REP.31 | Protect-branches enforcer | ✔ | BPR id=BPR_kwDOPc61NM4EHhPz pattern=release/*; default=main prot=True; release/* protected=True |  |  |  | Zach | 
 Phase 0 — Infra | EVT.11 | Eventing IaC + alarms follow-ups | ✔ | acct=354630286254; region=us-east-1; KMS-rotation=ON; EB(lifebook-cw-alarm-smoke-nightly)=ENABLED cron(15 9 * * ? *); SNS AllowEventBridge ArnEquals empty?=NO |  |  |  | Zach | 
 Phase 0 | AUTH.SSO.01 | Admin SSO lifebook-admin validated; dev pending | ⏳ |  |  |  | aws configure sso + sso login \| Doc profile switch in /ops/README \| — | Zach | 
 Phase 0 | LEG.00 | AUP / 0.7, 0.11 | ⏳ |  |  |  | Draft AUP \| Set review window \| Track in gates-status.json | Zach | 2025-10-31

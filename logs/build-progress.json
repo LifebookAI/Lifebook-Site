@@ -112,18 +112,14 @@
     "Phase": "Phase 0 — Lifebook-Site",
     "StepID": "REP.31",
     "StepTitle": "Protect-branches enforcer",
-    "Status": "⏳",
-    "Evidence": "WF id 200496210; PR #31 open",
+    "Status": "✔",
+    "Evidence": "BPR id=BPR_kwDOPc61NM4EHhPz pattern=release/*; default=main prot=True; release/* protected=True",
     "Decisions": "",
     "Blockers": "",
-    "Next": [
-      "Merge PR #31",
-      "Dispatch enforcer + verify release/*",
-      "Add contributor guide & collaborator reviews"
-    ],
+    "Next": [],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-25T00:30:31Z",
+    "LastUpdated": "2025-10-26T23:46:47Z",
     "History": [
       {
         "patch": {
@@ -219,6 +215,23 @@
           "Evidence": "WF id 200496210; PR #31 open"
         },
         "at": "2025-10-25T00:30:31Z"
+      },
+      {
+        "at": "2025-10-26T23:46:47Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "BPR id=BPR_kwDOPc61NM4EHhPz pattern=release/*; default=main prot=True; release/* protected=True",
+          "Owner": "Zach",
+          "Phase": "Phase 0 — Lifebook-Site",
+          "Next": [
+            ""
+          ],
+          "StepID": "REP.31",
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "StepTitle": "Protect-branches enforcer"
+        }
       }
     ]
   },
