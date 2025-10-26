@@ -13,5 +13,5 @@ Phase 0 — Infra | KMS.ROT.01 | Enable key rotation | ✔ | region=us-east-1; a
 Phase 0 — Infra | IAM.03 | Tighten S3 policy prefixes | ⏳ |  |  |  | Tighten to exact prefixes \| Commit policy docs \| Set annual review reminder | Zach | 
 Phase 0 — Infra | PREF.02 | Preflight follow-ups | ⏳ |  |  |  | Add CI/pre-push Preflight gate \| Hook smoke tests \| Doc paste-run conventions | Zach | 
 Phase 0 — Prod S3 Data | STG.PROD.02 | Prod S3 follow-ups | ⏳ |  |  |  | IaC bucket/VPCE/KMS \| Enable S3 logs + Config rules \| Change alarms + KMS rotation | Zach | 
-Phase D.S2 — Catalog prefixes | LFC.DS2 | Catalog lifecycle | ⏳ | /ops/s3-lifecycle-catalog.json present |  |  | Apply lifecycle to prod \| Verify transitions \| Surface 'Restoring <5m' badge | Zach | 
+Phase D.S2 — Catalog prefixes | LFC.DS2 | Catalog lifecycle | ✔ | acct=354630286254; region=us-east-1; lifecycle=ops/s3-lifecycle-catalog.json; lifebook-354630286254-prod-processed:OK(1); lifebook-354630286254-prod-uploads:OK(1); lifebook-logs-prod:OK(3); lifebook-prod-processed:OK(1); lifebook-prod-processed-354630286254:OK(1); lifebook-pro… |  |  |  | Zach | 
 Phase 3 — 13A | OIDC.02 | Wire OIDC in workflow + docs | ⏳ |  |  |  | Hook GH workflow to assume role \| Document in README \| — | Zach | 

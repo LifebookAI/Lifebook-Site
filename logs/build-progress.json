@@ -1139,18 +1139,14 @@
     "Phase": "Phase D.S2 — Catalog prefixes",
     "StepID": "LFC.DS2",
     "StepTitle": "Catalog lifecycle",
-    "Status": "⏳",
-    "Evidence": "/ops/s3-lifecycle-catalog.json present",
+    "Status": "✔",
+    "Evidence": "acct=354630286254; region=us-east-1; lifecycle=ops/s3-lifecycle-catalog.json; lifebook-354630286254-prod-processed:OK(1); lifebook-354630286254-prod-uploads:OK(1); lifebook-logs-prod:OK(3); lifebook-prod-processed:OK(1); lifebook-prod-processed-354630286254:OK(1); lifebook-prod-uploads:OK(1); lifebook-prod-uploads-354630286254:OK(1)",
     "Decisions": "",
     "Blockers": "",
-    "Next": [
-      "Apply lifecycle to prod",
-      "Verify transitions",
-      "Surface 'Restoring <5m' badge"
-    ],
+    "Next": [],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-25T00:30:32Z",
+    "LastUpdated": "2025-10-26T23:29:22Z",
     "History": [
       {
         "patch": {
@@ -1170,6 +1166,23 @@
           "Evidence": "/ops/s3-lifecycle-catalog.json present"
         },
         "at": "2025-10-25T00:30:32Z"
+      },
+      {
+        "at": "2025-10-26T23:29:22Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "acct=354630286254; region=us-east-1; lifecycle=ops/s3-lifecycle-catalog.json; lifebook-354630286254-prod-processed:OK(1); lifebook-354630286254-prod-uploads:OK(1); lifebook-logs-prod:OK(3); lifebook-prod-processed:OK(1); lifebook-prod-processed-354630286254:OK(1); lifebook-prod-uploads:OK(1); lifebook-prod-uploads-354630286254:OK(1)",
+          "Owner": "Zach",
+          "Phase": "Phase D.S2 — Catalog prefixes",
+          "Next": [
+            ""
+          ],
+          "StepID": "LFC.DS2",
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "StepTitle": "Catalog lifecycle"
+        }
       }
     ]
   },
