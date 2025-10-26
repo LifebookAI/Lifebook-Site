@@ -1298,6 +1298,12 @@
       "by": "Zach",
       "msg": "ev11: production-green ✅ — conditional SNS topic policy (no empty ArnEquals), KMS rotation verified, smoke lambda + nightly EB rule validated, checklist + idempotent prod-green.ps1 committed",
       "time": "13:30:58"
+    },
+    {
+      "area": "infra/ev11",
+      "by": "Zach",
+      "msg": "ev11: production-green ✅ — conditional SNS topic policy (no empty ArnEquals), KMS rotation verified, smoke lambda + nightly EB rule validated, checklist + idempotent prod-green.ps1 committed",
+      "time": "13:34:23"
     }
   ]
 }
