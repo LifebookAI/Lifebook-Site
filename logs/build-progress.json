@@ -692,18 +692,14 @@
     "Phase": "Phase 0 — Synthetics",
     "StepID": "MON.01",
     "StepTitle": "Synthetics follow-ups",
-    "Status": "⏳",
-    "Evidence": "",
+    "Status": "✔",
+    "Evidence": "region=us-east-1; canaries=0; created=0; updated=0; unchanged=0; topic=arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
     "Decisions": "",
     "Blockers": "",
-    "Next": [
-      "Wire canary alarms→SNS alerts",
-      "Add more health endpoints",
-      "Nightly ALARM→OK smoke"
-    ],
+    "Next": [],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-25T00:30:30Z",
+    "LastUpdated": "2025-10-26T19:46:16Z",
     "History": [
       {
         "patch": {
@@ -723,6 +719,23 @@
           "Evidence": ""
         },
         "at": "2025-10-25T00:30:30Z"
+      },
+      {
+        "at": "2025-10-26T19:46:16Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "region=us-east-1; canaries=0; created=0; updated=0; unchanged=0; topic=arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+          "Owner": "Zach",
+          "Phase": "Phase 0 — Synthetics",
+          "Next": [
+            ""
+          ],
+          "StepID": "MON.01",
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "StepTitle": "Synthetics follow-ups"
+        }
       }
     ]
   },
