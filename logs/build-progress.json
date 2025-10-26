@@ -433,18 +433,14 @@
     "Phase": "Phase 0",
     "StepID": "LEG.00",
     "StepTitle": "AUP / 0.7, 0.11",
-    "Status": "⏳",
-    "Evidence": "",
+    "Status": "✔",
+    "Evidence": "AUP v0.11 draft at legal/AUP.md; review=2025-10-26→2025-10-31 tracked in ops/gates-status.json",
     "Decisions": "",
     "Blockers": "",
-    "Next": [
-      "Draft AUP",
-      "Set review window",
-      "Track in gates-status.json"
-    ],
+    "Next": [],
     "Owner": "Zach",
-    "Target": "2025-10-31",
-    "LastUpdated": "2025-10-25T00:30:28Z",
+    "Target": "",
+    "LastUpdated": "2025-10-26T23:53:10Z",
     "History": [
       {
         "patch": {
@@ -464,6 +460,23 @@
           "Evidence": ""
         },
         "at": "2025-10-25T00:30:28Z"
+      },
+      {
+        "at": "2025-10-26T23:53:10Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "AUP v0.11 draft at legal/AUP.md; review=2025-10-26→2025-10-31 tracked in ops/gates-status.json",
+          "Owner": "Zach",
+          "Phase": "Phase 0",
+          "Next": [
+            ""
+          ],
+          "StepID": "LEG.00",
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "StepTitle": "AUP / 0.7, 0.11"
+        }
       }
     ]
   },
