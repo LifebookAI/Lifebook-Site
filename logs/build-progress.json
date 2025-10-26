@@ -828,18 +828,14 @@
     "Phase": "Phase 0 — Infra",
     "StepID": "KMS.ROT.01",
     "StepTitle": "Enable key rotation",
-    "Status": "⏳",
-    "Evidence": "",
+    "Status": "✔",
+    "Evidence": "region=us-east-1; alias/lifebook-synthetics=ON; alias/lifebook-s3-prod=ON",
     "Decisions": "",
     "Blockers": "",
-    "Next": [
-      "Rotate alias/lifebook-synthetics",
-      "Rotate alias/lifebook-s3-prod",
-      "Verify alerts topic key + rotation"
-    ],
+    "Next": [],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-25T00:30:30Z",
+    "LastUpdated": "2025-10-26T19:42:40Z",
     "History": [
       {
         "patch": {
@@ -859,6 +855,23 @@
           "Evidence": ""
         },
         "at": "2025-10-25T00:30:30Z"
+      },
+      {
+        "at": "2025-10-26T19:42:40Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "region=us-east-1; alias/lifebook-synthetics=ON; alias/lifebook-s3-prod=ON",
+          "Owner": "Zach",
+          "Phase": "Phase 0 — Infra",
+          "Next": [
+            ""
+          ],
+          "StepID": "KMS.ROT.01",
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "StepTitle": "Enable key rotation"
+        }
       }
     ]
   },

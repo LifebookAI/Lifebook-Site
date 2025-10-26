@@ -9,7 +9,7 @@ Phase 0 — Infra | EDGE.01 | Edge follow-ups | ⏳ |  |  |  | Verify Host not f
 Phase 0 — Infra | OPS.11 | Ops follow-ups | ⏳ |  |  |  | Set paste-run conventions \| Schedule periodic audits \| Add one-click verify | Zach | 
 Phase 0 — Synthetics | MON.01 | Synthetics follow-ups | ⏳ |  |  |  | Wire canary alarms→SNS alerts \| Add more health endpoints \| Nightly ALARM→OK smoke | Zach | 
 Phase 0 — S3 Artifacts | STG.ART.02 | Artifacts follow-ups | ⏳ |  |  |  | Consider BucketKeyEnabled \| Tag bucket + record in IaC \| Add prefix-scoped conditions | Zach | 
-Phase 0 — Infra | KMS.ROT.01 | Enable key rotation | ⏳ |  |  |  | Rotate alias/lifebook-synthetics \| Rotate alias/lifebook-s3-prod \| Verify alerts topic key + rotation | Zach | 
+Phase 0 — Infra | KMS.ROT.01 | Enable key rotation | ✔ | region=us-east-1; alias/lifebook-synthetics=ON; alias/lifebook-s3-prod=ON |  |  |  | Zach | 
 Phase 0 — Infra | IAM.03 | Tighten S3 policy prefixes | ⏳ |  |  |  | Tighten to exact prefixes \| Commit policy docs \| Set annual review reminder | Zach | 
 Phase 0 — Infra | PREF.02 | Preflight follow-ups | ⏳ |  |  |  | Add CI/pre-push Preflight gate \| Hook smoke tests \| Doc paste-run conventions | Zach | 
 Phase 0 — Prod S3 Data | STG.PROD.02 | Prod S3 follow-ups | ⏳ |  |  |  | IaC bucket/VPCE/KMS \| Enable S3 logs + Config rules \| Change alarms + KMS rotation | Zach | 
