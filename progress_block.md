@@ -14,4 +14,4 @@ Phase 0 — Infra | IAM.03 | Tighten S3 policy prefixes | ✔ | acct=35463028625
 Phase 0 — Infra | PREF.02 | Preflight follow-ups | ⏳ |  |  |  | Add CI/pre-push Preflight gate \| Hook smoke tests \| Doc paste-run conventions | Zach | 
 Phase 0 — Prod S3 Data | STG.PROD.02 | Prod S3 follow-ups | ⏳ |  |  |  | IaC bucket/VPCE/KMS \| Enable S3 logs + Config rules \| Change alarms + KMS rotation | Zach | 
 Phase D.S2 — Catalog prefixes | LFC.DS2 | Catalog lifecycle | ✔ | acct=354630286254; region=us-east-1; lifecycle=ops/s3-lifecycle-catalog.json; lifebook-354630286254-prod-processed:OK(1); lifebook-354630286254-prod-uploads:OK(1); lifebook-logs-prod:OK(3); lifebook-prod-processed:OK(1); lifebook-prod-processed-354630286254:OK(1); lifebook-pro… |  |  |  | Zach | 
-Phase 3 — 13A | OIDC.02 | Wire OIDC in workflow + docs | ⏳ |  |  |  | Hook GH workflow to assume role \| Document in README \| — | Zach | 
+Phase 3 — 13A | OIDC.02 | Wire OIDC in workflow + docs | ✔ | provider=arn:aws:iam::354630286254:oidc-provider/token.actions.githubusercontent.com; role=arn:aws:iam::354630286254:role/GitHubActionsOIDC; repo=LifebookAI/Lifebook-Site; region=us-east-1 |  |  |  | Zach | 

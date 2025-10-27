@@ -1259,18 +1259,14 @@
     "Phase": "Phase 3 — 13A",
     "StepID": "OIDC.02",
     "StepTitle": "Wire OIDC in workflow + docs",
-    "Status": "⏳",
-    "Evidence": "",
+    "Status": "✔",
+    "Evidence": "provider=arn:aws:iam::354630286254:oidc-provider/token.actions.githubusercontent.com; role=arn:aws:iam::354630286254:role/GitHubActionsOIDC; repo=LifebookAI/Lifebook-Site; region=us-east-1",
     "Decisions": "",
     "Blockers": "",
-    "Next": [
-      "Hook GH workflow to assume role",
-      "Document in README",
-      "—"
-    ],
+    "Next": [],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-25T00:30:32Z",
+    "LastUpdated": "2025-10-27T00:04:56Z",
     "History": [
       {
         "patch": {
@@ -1290,6 +1286,23 @@
           "Evidence": ""
         },
         "at": "2025-10-25T00:30:32Z"
+      },
+      {
+        "at": "2025-10-27T00:04:56Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "provider=arn:aws:iam::354630286254:oidc-provider/token.actions.githubusercontent.com; role=arn:aws:iam::354630286254:role/GitHubActionsOIDC; repo=LifebookAI/Lifebook-Site; region=us-east-1",
+          "Owner": "Zach",
+          "Phase": "Phase 3 — 13A",
+          "Next": [
+            ""
+          ],
+          "StepID": "OIDC.02",
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "StepTitle": "Wire OIDC in workflow + docs"
+        }
       }
     ]
   },
