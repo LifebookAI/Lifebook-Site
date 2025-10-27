@@ -4,7 +4,7 @@ Phase 0 — Lifebook-Site | REP.31 | Protect-branches enforcer | ✔ | BPR id=BP
 Phase 0 — Infra | EVT.11 | Eventing IaC + alarms follow-ups | ✔ | acct=354630286254; region=us-east-1; KMS-rotation=ON; EB(lifebook-cw-alarm-smoke-nightly)=ENABLED cron(15 9 * * ? *); SNS AllowEventBridge ArnEquals empty?=NO |  |  |  | Zach | 
 Phase 0 | AUTH.SSO.01 | Admin SSO lifebook-admin validated; dev pending | ✔ | Profile=lifebook-dev; StartURL=https://d-906629e799.awsapps.com/start; AccountAlias=n/a; Caller=arn:aws:sts::354630286254:assumed-role/AWSReservedSSO_AdministratorAccess_218fc3a66a7afc34/Founder; STSAccount=354630286254; Region=us-east-1 |  |  |  | Zach | 
 Phase 0 | LEG.00 | AUP / 0.7, 0.11 | ✔ | AUP v0.11 draft at legal/AUP.md; review=2025-10-26→2025-10-31 tracked in ops/gates-status.json |  |  |  | Zach | 
-Phase 0 — Infra | NET.20 | Bastion follow-ups | ✔ | Instances=; RoleArn=; StartSched=lifebook-bastion-start@America/New_York; StopSched=lifebook-bastion-stop@America/New_York; SGs=; EgressTarget=0.0.0.0/0 |  |  |  | Zach | 
+Phase 0 — Infra | NET.20 | Bastion follow-ups | ⏳ | No bastion instances; expected Tag Component=bastion or Name~bastion; schedules/egress not applied |  |  | Tag instance(s) as Component=bastion; rerun NET.20 | Zach | 
 Phase 0 — Infra | EDGE.01 | Edge follow-ups | ✔ | checked=1 dists; no Host forwarded |  |  |  | Zach | 
 Phase 0 — Infra | OPS.11 | Ops follow-ups | ✔ | QuickVerify exit=0;  |  |  |  | Zach | 
 Phase 0 — Synthetics | MON.01 | Synthetics follow-ups | ✔ | region=us-east-1; canaries=0; created=0; updated=0; unchanged=0; topic=arn:aws:sns:us-east-1:354630286254:lifebook-alerts |  |  |  | Zach | 

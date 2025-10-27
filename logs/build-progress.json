@@ -527,14 +527,16 @@
     "Phase": "Phase 0 — Infra",
     "StepID": "NET.20",
     "StepTitle": "Bastion follow-ups",
-    "Status": "✔",
-    "Evidence": "Instances=; RoleArn=; StartSched=lifebook-bastion-start@America/New_York; StopSched=lifebook-bastion-stop@America/New_York; SGs=; EgressTarget=0.0.0.0/0",
+    "Status": "⏳",
+    "Evidence": "No bastion instances; expected Tag Component=bastion or Name~bastion; schedules/egress not applied",
     "Decisions": "",
     "Blockers": "",
-    "Next": [],
+    "Next": [
+      "Tag instance(s) as Component=bastion; rerun NET.20"
+    ],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-27T01:26:49Z",
+    "LastUpdated": "2025-10-27T01:32:59Z",
     "History": [
       {
         "patch": {
@@ -602,6 +604,23 @@
           "StepID": "NET.20",
           "Decisions": "",
           "Status": "✔",
+          "Target": "",
+          "StepTitle": "Bastion follow-ups"
+        }
+      },
+      {
+        "at": "2025-10-27T01:32:59Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "No bastion instances; expected Tag Component=bastion or Name~bastion; schedules/egress not applied",
+          "Owner": "Zach",
+          "Phase": "Phase 0 — Infra",
+          "Next": [
+            "Tag instance(s) as Component=bastion; rerun NET.20"
+          ],
+          "StepID": "NET.20",
+          "Decisions": "",
+          "Status": "⏳",
           "Target": "",
           "StepTitle": "Bastion follow-ups"
         }
