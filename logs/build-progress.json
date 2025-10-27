@@ -395,18 +395,14 @@
     "Phase": "Phase 0",
     "StepID": "AUTH.SSO.01",
     "StepTitle": "Admin SSO lifebook-admin validated; dev pending",
-    "Status": "⏳",
-    "Evidence": "",
+    "Status": "✔",
+    "Evidence": "Profile=lifebook-dev; StartURL=https://d-906629e799.awsapps.com/start; AccountAlias=n/a; Caller=arn:aws:sts::354630286254:assumed-role/AWSReservedSSO_AdministratorAccess_218fc3a66a7afc34/Founder; STSAccount=354630286254; Region=us-east-1",
     "Decisions": "",
     "Blockers": "",
-    "Next": [
-      "aws configure sso + sso login",
-      "Doc profile switch in /ops/README",
-      "—"
-    ],
+    "Next": [],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-25T00:30:28Z",
+    "LastUpdated": "2025-10-27T01:13:24Z",
     "History": [
       {
         "patch": {
@@ -426,6 +422,23 @@
           "Evidence": ""
         },
         "at": "2025-10-25T00:30:28Z"
+      },
+      {
+        "at": "2025-10-27T01:13:24Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "Profile=lifebook-dev; StartURL=https://d-906629e799.awsapps.com/start; AccountAlias=n/a; Caller=arn:aws:sts::354630286254:assumed-role/AWSReservedSSO_AdministratorAccess_218fc3a66a7afc34/Founder; STSAccount=354630286254; Region=us-east-1",
+          "Owner": "Zach",
+          "Phase": "Phase 0",
+          "Next": [
+            ""
+          ],
+          "StepID": "AUTH.SSO.01",
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "StepTitle": "Admin SSO lifebook-admin validated; dev pending"
+        }
       }
     ]
   },

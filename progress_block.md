@@ -2,7 +2,7 @@ Phase | Step ID | Step Title | Status (☐/⏳/✔/⛔) | Evidence (IDs/ARNs/lin
 --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 Phase 0 — Lifebook-Site | REP.31 | Protect-branches enforcer | ✔ | BPR id=BPR_kwDOPc61NM4EHhPz pattern=release/*; default=main prot=True; release/* protected=True |  |  |  | Zach | 
 Phase 0 — Infra | EVT.11 | Eventing IaC + alarms follow-ups | ✔ | acct=354630286254; region=us-east-1; KMS-rotation=ON; EB(lifebook-cw-alarm-smoke-nightly)=ENABLED cron(15 9 * * ? *); SNS AllowEventBridge ArnEquals empty?=NO |  |  |  | Zach | 
-Phase 0 | AUTH.SSO.01 | Admin SSO lifebook-admin validated; dev pending | ⏳ |  |  |  | aws configure sso + sso login \| Doc profile switch in /ops/README \| — | Zach | 
+Phase 0 | AUTH.SSO.01 | Admin SSO lifebook-admin validated; dev pending | ✔ | Profile=lifebook-dev; StartURL=https://d-906629e799.awsapps.com/start; AccountAlias=n/a; Caller=arn:aws:sts::354630286254:assumed-role/AWSReservedSSO_AdministratorAccess_218fc3a66a7afc34/Founder; STSAccount=354630286254; Region=us-east-1 |  |  |  | Zach | 
 Phase 0 | LEG.00 | AUP / 0.7, 0.11 | ✔ | AUP v0.11 draft at legal/AUP.md; review=2025-10-26→2025-10-31 tracked in ops/gates-status.json |  |  |  | Zach | 
 Phase 0 — Infra | NET.20 | Bastion follow-ups | ⏳ |  |  |  | Add stop/start schedule \| Restrict SG egress to endpoints \| Tag/capture in IaC | Zach | 
 Phase 0 — Infra | EDGE.01 | Edge follow-ups | ✔ | checked=1 dists; no Host forwarded |  |  |  | Zach | 
