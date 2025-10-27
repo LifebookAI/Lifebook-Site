@@ -939,15 +939,15 @@
     "StepID": "STG.ART.02",
     "StepTitle": "Artifacts follow-ups",
     "Status": "⏳",
-    "Evidence": "STG.ART.02: no artifacts buckets found by name/tag; nothing changed",
+    "Evidence": "Buckets=; BucketKeyEnabled=; TagsApplied=; PolicyApplied=; PolicyBlocked=; IaC=C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\storage\\artifacts\\artifacts-buckets.tf; Policy=C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\storage\\policies\\artifacts-prefix-guard.json",
     "Decisions": "",
     "Blockers": "",
     "Next": [
-      "Tag bucket(s) {Project=lifebook,Component=artifacts}; rerun"
+      "no artifact buckets by name — create/tag an artifacts bucket"
     ],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-27T01:50:50Z",
+    "LastUpdated": "2025-10-27T01:57:15Z",
     "History": [
       {
         "patch": {
@@ -994,6 +994,23 @@
           "Phase": "Phase 0 — S3 Artifacts",
           "Next": [
             "Tag bucket(s) {Project=lifebook,Component=artifacts}; rerun"
+          ],
+          "StepID": "STG.ART.02",
+          "Decisions": "",
+          "Status": "⏳",
+          "Target": "",
+          "StepTitle": "Artifacts follow-ups"
+        }
+      },
+      {
+        "at": "2025-10-27T01:57:15Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "Buckets=; BucketKeyEnabled=; TagsApplied=; PolicyApplied=; PolicyBlocked=; IaC=C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\storage\\artifacts\\artifacts-buckets.tf; Policy=C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\storage\\policies\\artifacts-prefix-guard.json",
+          "Owner": "Zach",
+          "Phase": "Phase 0 — S3 Artifacts",
+          "Next": [
+            "no artifact buckets by name — create/tag an artifacts bucket"
           ],
           "StepID": "STG.ART.02",
           "Decisions": "",
