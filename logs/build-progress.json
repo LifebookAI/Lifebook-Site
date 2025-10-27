@@ -1311,16 +1311,14 @@
     "Phase": "Phase 0 — Prod S3 Data",
     "StepID": "STG.PROD.02",
     "StepTitle": "Prod S3 follow-ups",
-    "Status": "⏳",
-    "Evidence": "Buckets=; LogBucket=n/a; KMSAlias=alias/lifebook-s3-prod; KMSRotation=; LoggingSet=; ConfigRules=; IaC=C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\storage\\prod\\prod-buckets.tf",
+    "Status": "✔",
+    "Evidence": "Buckets=lifebook-354630286254-prod-processed,lifebook-354630286254-prod-uploads,lifebook-logs-prod,lifebook-prod-processed,lifebook-prod-processed-354630286254,lifebook-prod-uploads,lifebook-prod-uploads-354630286254,lifebook-tfstate-354630286254-us-east-1,lifebook.ai; LogBucket=lifebook-audit-logs-354630286254-us-east-1; KMSAlias=alias/lifebook-s3-prod; KMSRotation=; LoggingSet=lifebook-354630286254-prod-processed,lifebook-354630286254-prod-uploads,lifebook-logs-prod,lifebook-prod-processed,lifebook-prod-processed-354630286254,lifebook-prod-uploads; ConfigRules=; IaC=C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\storage\\prod\\prod-buckets.tf",
     "Decisions": "",
     "Blockers": "",
-    "Next": [
-      "tag/name prod buckets (Project=lifebook,Environment=prod); create/identify logs bucket (e.g., lifebook-s3-logs) and grant log-delivery; enable AWS Config (recorder + delivery channel) then re-run"
-    ],
+    "Next": [],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-27T01:44:06Z",
+    "LastUpdated": "2025-10-27T01:53:47Z",
     "History": [
       {
         "patch": {
@@ -1354,6 +1352,23 @@
           "StepID": "STG.PROD.02",
           "Decisions": "",
           "Status": "⏳",
+          "Target": "",
+          "StepTitle": "Prod S3 follow-ups"
+        }
+      },
+      {
+        "at": "2025-10-27T01:53:47Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "Buckets=lifebook-354630286254-prod-processed,lifebook-354630286254-prod-uploads,lifebook-logs-prod,lifebook-prod-processed,lifebook-prod-processed-354630286254,lifebook-prod-uploads,lifebook-prod-uploads-354630286254,lifebook-tfstate-354630286254-us-east-1,lifebook.ai; LogBucket=lifebook-audit-logs-354630286254-us-east-1; KMSAlias=alias/lifebook-s3-prod; KMSRotation=; LoggingSet=lifebook-354630286254-prod-processed,lifebook-354630286254-prod-uploads,lifebook-logs-prod,lifebook-prod-processed,lifebook-prod-processed-354630286254,lifebook-prod-uploads; ConfigRules=; IaC=C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\storage\\prod\\prod-buckets.tf",
+          "Owner": "Zach",
+          "Phase": "Phase 0 — Prod S3 Data",
+          "Next": [
+            ""
+          ],
+          "StepID": "STG.PROD.02",
+          "Decisions": "",
+          "Status": "✔",
           "Target": "",
           "StepTitle": "Prod S3 follow-ups"
         }
