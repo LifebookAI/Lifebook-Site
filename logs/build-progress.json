@@ -1085,18 +1085,14 @@
     "Phase": "Phase 0 — Infra",
     "StepID": "PREF.02",
     "StepTitle": "Preflight follow-ups",
-    "Status": "⏳",
-    "Evidence": "",
+    "Status": "✔",
+    "Evidence": "QuickVerify exit=0; CI=.github/workflows/quick-verify.yml; sample=",
     "Decisions": "",
     "Blockers": "",
-    "Next": [
-      "Add CI/pre-push Preflight gate",
-      "Hook smoke tests",
-      "Doc paste-run conventions"
-    ],
+    "Next": [],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-25T00:30:31Z",
+    "LastUpdated": "2025-10-27T00:26:58Z",
     "History": [
       {
         "patch": {
@@ -1116,6 +1112,23 @@
           "Evidence": ""
         },
         "at": "2025-10-25T00:30:31Z"
+      },
+      {
+        "at": "2025-10-27T00:26:58Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "QuickVerify exit=0; CI=.github/workflows/quick-verify.yml; sample=",
+          "Owner": "Zach",
+          "Phase": "Phase 0 — Infra",
+          "Next": [
+            ""
+          ],
+          "StepID": "PREF.02",
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "StepTitle": "Preflight follow-ups"
+        }
       }
     ]
   },

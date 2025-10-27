@@ -5,7 +5,7 @@ function Get-Region { if($env:AWS_REGION){$env:AWS_REGION} elseif($env:AWS_DEFAU
 
 $acct   = (aws sts get-caller-identity | ConvertFrom-Json).Account
 $region = Get-Region
-$topicArn = "arn:aws:sns:$region:$acct:lifebook-alerts"
+$topicArn = "arn:aws:sns:${region}:${acct}:lifebook-alerts"
 
 # KMS rotation (aliases we care about)
 $aliases = @('alias/lifebook-synthetics','alias/lifebook-s3-prod')
@@ -69,3 +69,4 @@ $summary = [pscustomobject]@{
 
 $summary | ConvertTo-Json -Depth 10 | Write-Output
 if($ok){ exit 0 } else { exit 1 }
+

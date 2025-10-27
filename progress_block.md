@@ -11,7 +11,7 @@ Phase 0 — Synthetics | MON.01 | Synthetics follow-ups | ✔ | region=us-east-1
 Phase 0 — S3 Artifacts | STG.ART.02 | Artifacts follow-ups | ⏳ |  |  |  | Consider BucketKeyEnabled \| Tag bucket + record in IaC \| Add prefix-scoped conditions | Zach | 
 Phase 0 — Infra | KMS.ROT.01 | Enable key rotation | ✔ | region=us-east-1; alias/lifebook-synthetics=ON; alias/lifebook-s3-prod=ON |  |  |  | Zach | 
 Phase 0 — Infra | IAM.03 | Tighten S3 policy prefixes | ✔ | acct=354630286254; bucket=lifebook.ai; broad /* is read-only (no write/public); ok |  |  |  | Zach | 
-Phase 0 — Infra | PREF.02 | Preflight follow-ups | ⏳ |  |  |  | Add CI/pre-push Preflight gate \| Hook smoke tests \| Doc paste-run conventions | Zach | 
+Phase 0 — Infra | PREF.02 | Preflight follow-ups | ✔ | QuickVerify exit=0; CI=.github/workflows/quick-verify.yml; sample= |  |  |  | Zach | 
 Phase 0 — Prod S3 Data | STG.PROD.02 | Prod S3 follow-ups | ⏳ |  |  |  | IaC bucket/VPCE/KMS \| Enable S3 logs + Config rules \| Change alarms + KMS rotation | Zach | 
 Phase D.S2 — Catalog prefixes | LFC.DS2 | Catalog lifecycle | ✔ | acct=354630286254; region=us-east-1; lifecycle=ops/s3-lifecycle-catalog.json; lifebook-354630286254-prod-processed:OK(1); lifebook-354630286254-prod-uploads:OK(1); lifebook-logs-prod:OK(3); lifebook-prod-processed:OK(1); lifebook-prod-processed-354630286254:OK(1); lifebook-pro… |  |  |  | Zach | 
 Phase 3 — 13A | OIDC.02 | Wire OIDC in workflow + docs | ✔ | provider=arn:aws:iam::354630286254:oidc-provider/token.actions.githubusercontent.com; role=arn:aws:iam::354630286254:role/GitHubActionsOIDC; repo=LifebookAI/Lifebook-Site; region=us-east-1 |  |  |  | Zach | 
