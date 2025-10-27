@@ -527,14 +527,16 @@
     "Phase": "Phase 0 — Infra",
     "StepID": "NET.20",
     "StepTitle": "Bastion follow-ups",
-    "Status": "✔",
-    "Evidence": "Instances=; RoleArn=; StartSched=lifebook-bastion-start@America/New_York; StopSched=lifebook-bastion-stop@America/New_York; SGs=; EgressTarget=0.0.0.0/0",
+    "Status": "⏳",
+    "Evidence": "NET.20 verify → scheduler-role-missing, no-bastion",
     "Decisions": "",
     "Blockers": "",
-    "Next": [],
+    "Next": [
+      "Tag instance(s) Component=bastion; re-run NET.20 apply"
+    ],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-27T01:33:46Z",
+    "LastUpdated": "2025-10-27T01:38:09Z",
     "History": [
       {
         "patch": {
@@ -636,6 +638,23 @@
           "StepID": "NET.20",
           "Decisions": "",
           "Status": "✔",
+          "Target": "",
+          "StepTitle": "Bastion follow-ups"
+        }
+      },
+      {
+        "at": "2025-10-27T01:38:09Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "NET.20 verify → scheduler-role-missing, no-bastion",
+          "Owner": "Zach",
+          "Phase": "Phase 0 — Infra",
+          "Next": [
+            "Tag instance(s) Component=bastion; re-run NET.20 apply"
+          ],
+          "StepID": "NET.20",
+          "Decisions": "",
+          "Status": "⏳",
           "Target": "",
           "StepTitle": "Bastion follow-ups"
         }
