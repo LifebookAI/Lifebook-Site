@@ -45,8 +45,8 @@ foreach($d in $items){
     if ($b.OriginRequestPolicyId) {
       $orp = aws cloudfront get-origin-request-policy --id $b.OriginRequestPolicyId --output json 2>$null | ConvertFrom-Json
       $hdrCfg = $orp.OriginRequestPolicy.OriginRequestPolicyConfig.HeadersConfig
-      $mode = $hdrCfg.HeaderBehavior; $hdrs = @($hdrCfg.Headers.Items)
-      if ($mode -eq 'allViewer' -or ($mode -eq 'whitelist' -and ($hdrs -match '^host$' -or $hdrs -match '^:authority$'))) { $hostFwd = $true }
+      $hdrBehavior = $hdrCfg.HeaderBehavior; $hdrs=@(); if ($hdrCfg.Headers -and $hdrCfg.Headers.Items){ $hdrs=@($hdrCfg.Headers.Items) }
+      if ($hdrBehavior -eq 'allViewer' -or ($hdrBehavior -eq 'whitelist' -and ($hdrs -match '^host$' -or $hdrs -match '^:authority$'))) { $hostFwd = $true }
     } else {
       $fv = $b.ForwardedValues
       if ($fv -and $fv.Headers) {
@@ -69,4 +69,5 @@ $summary = [pscustomobject]@{
 
 $summary | ConvertTo-Json -Depth 10 | Write-Output
 if($ok){ exit 0 } else { exit 1 }
+
 
