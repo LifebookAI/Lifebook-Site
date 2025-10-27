@@ -663,18 +663,14 @@
     "Phase": "Phase 0 — Infra",
     "StepID": "OPS.11",
     "StepTitle": "Ops follow-ups",
-    "Status": "⏳",
-    "Evidence": "",
+    "Status": "✔",
+    "Evidence": "QuickVerify exit=0; ",
     "Decisions": "",
     "Blockers": "",
-    "Next": [
-      "Set paste-run conventions",
-      "Schedule periodic audits",
-      "Add one-click verify"
-    ],
+    "Next": [],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-25T00:30:29Z",
+    "LastUpdated": "2025-10-27T00:20:19Z",
     "History": [
       {
         "patch": {
@@ -694,6 +690,23 @@
           "Evidence": ""
         },
         "at": "2025-10-25T00:30:29Z"
+      },
+      {
+        "at": "2025-10-27T00:20:19Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "QuickVerify exit=0; ",
+          "Owner": "Zach",
+          "Phase": "Phase 0 — Infra",
+          "Next": [
+            ""
+          ],
+          "StepID": "OPS.11",
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "StepTitle": "Ops follow-ups"
+        }
       }
     ]
   },
