@@ -32,4 +32,3 @@ jobs:
           audience: sts.amazonaws.com
       - name: Presign smoke
         uses: ./.github/actions/presign-smoke
-

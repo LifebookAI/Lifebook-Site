@@ -69,5 +69,3 @@ $summary = [pscustomobject]@{
 
 $summary | ConvertTo-Json -Depth 10 | Write-Output
 if($ok){ exit 0 } else { exit 1 }
-
-

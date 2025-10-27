@@ -51,4 +51,3 @@ resource "aws_s3_bucket" "lifebook.ai" {
   bucket = "lifebook.ai"
   tags = { Project = "lifebook", Environment = "prod", Component = "data" }
 }
-

@@ -86,4 +86,3 @@ Set-Alias setprot Set-Protection  -Scope Local
 Set-Alias solo    Set-SoloMode    -Scope Local
 Set-Alias team    Set-TeamMode    -Scope Local
 Set-Alias protect Show-Protection -Scope Local
-

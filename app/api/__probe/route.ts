@@ -4,4 +4,3 @@ export const dynamic = "force-dynamic";
 export function GET() {
   return NextResponse.json({ ok: true, who: "__probe" });
 }
-

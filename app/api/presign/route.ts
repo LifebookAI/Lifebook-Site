@@ -76,6 +76,3 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 export function GET() {
   return NextResponse.json({ alive: true });
 }
-
-
-

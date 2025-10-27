@@ -14,7 +14,7 @@ jobs:
     # For `create`, only act
  on branches. For schedule/dispatch, always r
 un.
-    if: github.event_name != 'create' || 
+    if: github.event_name != 'create' ||
 github.ref_type == 'branch'
     runs-on: ubun
 tu-latest
@@ -25,7 +25,7 @@ ad
       GH_TOKEN: ${{ secrets.REPO_
 ADMIN_TOKEN }}
       OWNER: LifebookAI
-      
+
 REPO: Lifebook-Site
       SOURCE_BRANCH: main
 
@@ -40,13 +40,13 @@ ix/*"
 ions
         run: |
           gh --version
-  
+
         jq --version
 
       - name: Compute t
 arget branch list
         id: branches
-      
+
   shell: bash
         run: |
           set -e
@@ -54,9 +54,9 @@ uo pipefail
           targets=("$SOURCE_BRANC
 H")
           if [[ "${{ github.event_name }}
-" == "create" && "${{ github.ref_type }}" == 
+" == "create" && "${{ github.ref_type }}" ==
 "branch" ]]; then
-            targets+=("${{ 
+            targets+=("${{
 github.ref_name }}")
           fi
           m
@@ -66,12 +66,12 @@ NER/$REPO/branches?per_page=100" -q '.[].name
           for b in "${all_branches[@]}"; d
 o
             for g in $MATCH_GLOBS; do
-     
+
          case "$b" in
                 $g) tar
 gets+=("$b");;
               esac
-           
+
  done
           done
           jq -n --argjso
@@ -81,9 +81,9 @@ s.json
           echo "list=$(cat targets.jso
 n)" >> "$GITHUB_OUTPUT"
 
-      - name: Build 
+      - name: Build
 payload from SOURCE_BRANCH protections
-      
+
   id: payload
         shell: bash
         run
@@ -95,7 +95,7 @@ CE_BRANCH/protection")" || bp=""
           ch
 ecks_lines="$(echo "$bp" | jq -r '.required_s
 tatus_checks.checks // [] | .[].context')"
-  
+
         if [[ -z "$checks_lines" || "$checks_
 lines" == "null" ]]; then
             checks_
@@ -107,27 +107,27 @@ _checks.contexts // [] | .[]')"
 s_lines" == "null" ]]; then
             check
 s_lines=$'EOL guard (LF only) / eol'
-        
+
   fi
           checks_json="$(printf '%s\n' "
-$checks_lines" | jq -R '{context:.}' | jq -s 
+$checks_lines" | jq -R '{context:.}' | jq -s
 .)"
           jq -n \
             --argjson c
 hecks "$checks_json" \
             --arg appr
 ovals   "${REQUIRE_APPROVALS}" \
-            
+
 --argjson lastPush ${REQUIRE_LAST_PUSH} \
-   
+
          '{
               required_status_che
 cks: { strict: true, checks: $checks },
-     
+
          enforce_admins: true,
-              
+
 required_pull_request_reviews: {
-            
+
     required_approving_review_count: ($approv
 als|tonumber),
                 dismiss_stale_
@@ -143,24 +143,24 @@ last_push_approval: $lastPush
               required_conversation_resolut
 ion: true,
               restrictions: null
- 
+
            }' | tee payload.json
           ec
 ho "path=payload.json" >> "$GITHUB_OUTPUT"
 
- 
+
      - name: Apply protections to targets
-   
+
      shell: bash
         run: |
           set
  -euo pipefail
-          payload="$(cat "${{ 
+          payload="$(cat "${{
 steps.payload.outputs.path }}")"
           jq
  -r '.[]' <<< '${{ steps.branches.outputs.lis
 t }}' | while read -r b; do
-            echo 
+            echo
 "Protecting $b …"
             printf '%s' "
 $payload" | gh api --method PUT -H "Accept: a
@@ -171,7 +171,7 @@ pplication/vnd.github+json" \
             gh api --method POST "/r
 epos/$OWNER/$REPO/branches/$b/protection/requ
 ired_signatures" >/dev/null 2>&1 || true
-    
+
       done
 
       - name: Summary
@@ -196,6 +196,3 @@ _push_approval,linear:.required_linear_histor
 y.enabled,convo:.required_conversation_resolu
 tion.enabled}"
           done
-
-
-
