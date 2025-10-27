@@ -527,14 +527,16 @@
     "Phase": "Phase 0 — Infra",
     "StepID": "NET.20",
     "StepTitle": "Bastion follow-ups",
-    "Status": "✔",
-    "Evidence": "Profile=lifebook-dev; StartURL=https://d-906629e799.awsapps.com/start; AccountAlias=n/a; Caller=arn:aws:sts::354630286254:assumed-role/AWSReservedSSO_AdministratorAccess_218fc3a66a7afc34/Founder; STSAccount=354630286254; Region=us-east-1",
+    "Status": "⏳",
+    "Evidence": "No bastion instances discovered; Tag Component=bastion or Name~bastion required; schedules/egress not applied",
     "Decisions": "",
     "Blockers": "",
-    "Next": [],
+    "Next": [
+      "Tag instances; rerun NET.20 script"
+    ],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-27T01:22:11Z",
+    "LastUpdated": "2025-10-27T01:26:10Z",
     "History": [
       {
         "patch": {
@@ -568,6 +570,23 @@
           "StepID": "NET.20",
           "Decisions": "",
           "Status": "✔",
+          "Target": "",
+          "StepTitle": "Bastion follow-ups"
+        }
+      },
+      {
+        "at": "2025-10-27T01:26:10Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "No bastion instances discovered; Tag Component=bastion or Name~bastion required; schedules/egress not applied",
+          "Owner": "Zach",
+          "Phase": "Phase 0 — Infra",
+          "Next": [
+            "Tag instances; rerun NET.20 script"
+          ],
+          "StepID": "NET.20",
+          "Decisions": "",
+          "Status": "⏳",
           "Target": "",
           "StepTitle": "Bastion follow-ups"
         }
