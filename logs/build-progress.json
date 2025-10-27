@@ -938,16 +938,14 @@
     "Phase": "Phase 0 — S3 Artifacts",
     "StepID": "STG.ART.02",
     "StepTitle": "Artifacts follow-ups",
-    "Status": "⏳",
-    "Evidence": "Buckets=; BucketKeyEnabled=; TagsApplied=; PolicyApplied=; PolicyBlocked=; IaC=C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\storage\\artifacts\\artifacts-buckets.tf; Policy=C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\storage\\policies\\artifacts-prefix-guard.json",
+    "Status": "✔",
+    "Evidence": "Bucket=lifebook-artifacts-354630286254-us-east-1; KMSKeyId=58765bb9-358d-4187-8ce9-f036bff4fbd6; KMSRotation=True; BucketKeyEnabled=true; Versioning=Enabled; Lifecycle=ArtifactsRetention(IA30d,GLACIER_IR90d,Expire365d,AbortMPU7d); LoggingTarget=lifebook-audit-logs-354630286254-us-east-1; PolicySIDs=DenyInsecureTransport,AllowCIArtifactsPrefix; CIInlinePolicy=ArtifactsWrite; IaC=C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\storage\\artifacts\\artifacts-bucket.tf",
     "Decisions": "",
     "Blockers": "",
-    "Next": [
-      "no artifact buckets by name — create/tag an artifacts bucket"
-    ],
+    "Next": [],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-27T01:57:15Z",
+    "LastUpdated": "2025-10-27T02:03:51Z",
     "History": [
       {
         "patch": {
@@ -1015,6 +1013,23 @@
           "StepID": "STG.ART.02",
           "Decisions": "",
           "Status": "⏳",
+          "Target": "",
+          "StepTitle": "Artifacts follow-ups"
+        }
+      },
+      {
+        "at": "2025-10-27T02:03:51Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "Bucket=lifebook-artifacts-354630286254-us-east-1; KMSKeyId=58765bb9-358d-4187-8ce9-f036bff4fbd6; KMSRotation=True; BucketKeyEnabled=true; Versioning=Enabled; Lifecycle=ArtifactsRetention(IA30d,GLACIER_IR90d,Expire365d,AbortMPU7d); LoggingTarget=lifebook-audit-logs-354630286254-us-east-1; PolicySIDs=DenyInsecureTransport,AllowCIArtifactsPrefix; CIInlinePolicy=ArtifactsWrite; IaC=C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\storage\\artifacts\\artifacts-bucket.tf",
+          "Owner": "Zach",
+          "Phase": "Phase 0 — S3 Artifacts",
+          "Next": [
+            ""
+          ],
+          "StepID": "STG.ART.02",
+          "Decisions": "",
+          "Status": "✔",
           "Target": "",
           "StepTitle": "Artifacts follow-ups"
         }

@@ -8,7 +8,7 @@ Phase 0 — Infra | NET.20 | Bastion follow-ups | ⏳ | NET.20 verify → schedu
 Phase 0 — Infra | EDGE.01 | Edge follow-ups | ✔ | checked=1 dists; no Host forwarded |  |  |  | Zach | 
 Phase 0 — Infra | OPS.11 | Ops follow-ups | ✔ | QuickVerify exit=0;  |  |  |  | Zach | 
 Phase 0 — Synthetics | MON.01 | Synthetics follow-ups | ✔ | region=us-east-1; canaries=0; created=0; updated=0; unchanged=0; topic=arn:aws:sns:us-east-1:354630286254:lifebook-alerts |  |  |  | Zach | 
-Phase 0 — S3 Artifacts | STG.ART.02 | Artifacts follow-ups | ⏳ | Buckets=; BucketKeyEnabled=; TagsApplied=; PolicyApplied=; PolicyBlocked=; IaC=C:\Users\zacha\src\Lifebook-Site\infra\storage\artifacts\artifacts-buckets.tf; Policy=C:\Users\zacha\src\Lifebook-Site\infra\storage\policies\artifacts-prefix-guard.json |  |  | no artifact buckets by name — create/tag an artifacts bucket | Zach | 
+Phase 0 — S3 Artifacts | STG.ART.02 | Artifacts follow-ups | ✔ | Bucket=lifebook-artifacts-354630286254-us-east-1; KMSKeyId=58765bb9-358d-4187-8ce9-f036bff4fbd6; KMSRotation=True; BucketKeyEnabled=true; Versioning=Enabled; Lifecycle=ArtifactsRetention(IA30d,GLACIER_IR90d,Expire365d,AbortMPU7d); LoggingTarget=lifebook-audit-logs-354630286254… |  |  |  | Zach | 
 Phase 0 — Infra | KMS.ROT.01 | Enable key rotation | ✔ | region=us-east-1; alias/lifebook-synthetics=ON; alias/lifebook-s3-prod=ON |  |  |  | Zach | 
 Phase 0 — Infra | IAM.03 | Tighten S3 policy prefixes | ✔ | acct=354630286254; bucket=lifebook.ai; broad /* is read-only (no write/public); ok |  |  |  | Zach | 
 Phase 0 — Infra | PREF.02 | Preflight follow-ups | ✔ | QuickVerify exit=0; CI=.github/workflows/quick-verify.yml; sample= |  |  |  | Zach | 
