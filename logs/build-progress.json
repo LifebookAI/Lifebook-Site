@@ -1295,17 +1295,15 @@
     "StepID": "STG.PROD.02",
     "StepTitle": "Prod S3 follow-ups",
     "Status": "⏳",
-    "Evidence": "",
+    "Evidence": "Buckets=; LogBucket=n/a; KMSAlias=alias/lifebook-s3-prod; KMSRotation=; LoggingSet=; ConfigRules=; IaC=C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\storage\\prod\\prod-buckets.tf",
     "Decisions": "",
     "Blockers": "",
     "Next": [
-      "IaC bucket/VPCE/KMS",
-      "Enable S3 logs + Config rules",
-      "Change alarms + KMS rotation"
+      "tag/name prod buckets (Project=lifebook,Environment=prod); create/identify logs bucket (e.g., lifebook-s3-logs) and grant log-delivery; enable AWS Config (recorder + delivery channel) then re-run"
     ],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-25T00:30:32Z",
+    "LastUpdated": "2025-10-27T01:44:06Z",
     "History": [
       {
         "patch": {
@@ -1325,6 +1323,23 @@
           "Evidence": ""
         },
         "at": "2025-10-25T00:30:32Z"
+      },
+      {
+        "at": "2025-10-27T01:44:06Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "Buckets=; LogBucket=n/a; KMSAlias=alias/lifebook-s3-prod; KMSRotation=; LoggingSet=; ConfigRules=; IaC=C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\storage\\prod\\prod-buckets.tf",
+          "Owner": "Zach",
+          "Phase": "Phase 0 — Prod S3 Data",
+          "Next": [
+            "tag/name prod buckets (Project=lifebook,Environment=prod); create/identify logs bucket (e.g., lifebook-s3-logs) and grant log-delivery; enable AWS Config (recorder + delivery channel) then re-run"
+          ],
+          "StepID": "STG.PROD.02",
+          "Decisions": "",
+          "Status": "⏳",
+          "Target": "",
+          "StepTitle": "Prod S3 follow-ups"
+        }
       }
     ]
   },
