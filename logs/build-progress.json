@@ -939,13 +939,13 @@
     "StepID": "STG.ART.02",
     "StepTitle": "Artifacts follow-ups",
     "Status": "✔",
-    "Evidence": "Bucket=lifebook-artifacts-354630286254-us-east-1; LogsBucket=lifebook-s3-logs-354630286254-us-east-1; Ownership=; SSEAlgo=aws:kms; BucketKey=True; KMSKeyId=58765bb9-358d-4187-8ce9-f036bff4fbd6; KMSRotation=True; LoggingTarget=lifebook-s3-logs-354630286254-us-east-1; PolicySIDs=DenyInsecureTransport,AllowCIArtifactsPrefix(RoleCondition)",
+    "Evidence": "Bucket=lifebook-artifacts-354630286254-us-east-1; Ownership=BucketOwnerPreferred; SSEAlgo=aws:kms; BucketKey=True; KMSKeyId=58765bb9-358d-4187-8ce9-f036bff4fbd6; KMSRotation=True; LoggingTarget=lifebook-s3-logs-354630286254-us-east-1; PolicySIDs=DenyInsecureTransport,DenyUnencryptedObjectUploads,DenyWrongKmsKey",
     "Decisions": "",
     "Blockers": "",
     "Next": [],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-27T02:07:41Z",
+    "LastUpdated": "2025-10-27T02:14:00Z",
     "History": [
       {
         "patch": {
@@ -1039,6 +1039,23 @@
         "patch": {
           "Blockers": "",
           "Evidence": "Bucket=lifebook-artifacts-354630286254-us-east-1; LogsBucket=lifebook-s3-logs-354630286254-us-east-1; Ownership=; SSEAlgo=aws:kms; BucketKey=True; KMSKeyId=58765bb9-358d-4187-8ce9-f036bff4fbd6; KMSRotation=True; LoggingTarget=lifebook-s3-logs-354630286254-us-east-1; PolicySIDs=DenyInsecureTransport,AllowCIArtifactsPrefix(RoleCondition)",
+          "Owner": "Zach",
+          "Phase": "Phase 0 — S3 Artifacts",
+          "Next": [
+            ""
+          ],
+          "StepID": "STG.ART.02",
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "StepTitle": "Artifacts follow-ups"
+        }
+      },
+      {
+        "at": "2025-10-27T02:14:00Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "Bucket=lifebook-artifacts-354630286254-us-east-1; Ownership=BucketOwnerPreferred; SSEAlgo=aws:kms; BucketKey=True; KMSKeyId=58765bb9-358d-4187-8ce9-f036bff4fbd6; KMSRotation=True; LoggingTarget=lifebook-s3-logs-354630286254-us-east-1; PolicySIDs=DenyInsecureTransport,DenyUnencryptedObjectUploads,DenyWrongKmsKey",
           "Owner": "Zach",
           "Phase": "Phase 0 — S3 Artifacts",
           "Next": [
