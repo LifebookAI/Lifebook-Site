@@ -939,17 +939,15 @@
     "StepID": "STG.ART.02",
     "StepTitle": "Artifacts follow-ups",
     "Status": "⏳",
-    "Evidence": "",
+    "Evidence": "STG.ART.02: no artifact buckets discovered by name/tag; nothing changed",
     "Decisions": "",
     "Blockers": "",
     "Next": [
-      "Consider BucketKeyEnabled",
-      "Tag bucket + record in IaC",
-      "Add prefix-scoped conditions"
+      "Tag bucket(s) {Project=lifebook,Component=artifacts}; rerun"
     ],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-25T00:30:30Z",
+    "LastUpdated": "2025-10-27T01:38:18Z",
     "History": [
       {
         "patch": {
@@ -969,6 +967,23 @@
           "Evidence": ""
         },
         "at": "2025-10-25T00:30:30Z"
+      },
+      {
+        "at": "2025-10-27T01:38:18Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "STG.ART.02: no artifact buckets discovered by name/tag; nothing changed",
+          "Owner": "Zach",
+          "Phase": "Phase 0 — S3 Artifacts",
+          "Next": [
+            "Tag bucket(s) {Project=lifebook,Component=artifacts}; rerun"
+          ],
+          "StepID": "STG.ART.02",
+          "Decisions": "",
+          "Status": "⏳",
+          "Target": "",
+          "StepTitle": "Artifacts follow-ups"
+        }
       }
     ]
   },
