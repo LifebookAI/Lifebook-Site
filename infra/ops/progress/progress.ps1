@@ -152,18 +152,33 @@ function Export-MasterSheetBlock($items) {
 }
 
 switch ($Cmd) {
-  'work' {
-    $open = $script:state | Where-Object { $_.Status -ne '✔' } |
-      Sort-Object @{e={ if ($_.Target) { [datetime]$_.Target } else { [datetime]::MaxValue } }; Ascending=$true},
-                  @{e={$_.StepID}; Ascending=$true}
+'work' {
+  $items = @($script:state) |
+    Where-Object { $_ -is [psobject] } |
+    Where-Object { $_.PSObject.Properties['StepID'] -and $_.PSObject.Properties['Status'] }
 
-    if (-not $open) { Write-Host "No open items. Use 'done' to add, or 'sync' to export." ; break }
-    Write-Host "Open items (top 10):"
-    $open | Select-Object -First 10 | ForEach-Object {
-      "{0} | {1} | {2} | target {3} | next: {4}" -f $_.Phase, $_.StepID, $_.StepTitle, ($_.Target ?? '—'), ((@($_.Next) -join '; ') ?? '—')
-    } | Write-Host
-    break
-  }
+  if(-not $items){ Write-Host "No work items in logs/build-progress.json. Use 'done' to add, or 'sync' to export." ; break }
+
+  $open = $items | Where-Object { $_.Status -ne "✔" } |
+    Sort-Object @{e={ if($_.PSObject.Properties['Target'] -and $_.Target){ try{[datetime]$_.Target}catch{[datetime]::MaxValue} } else {[datetime]::MaxValue} }},
+                @{e={$_.StepID}}
+
+  if(-not $open){ Write-Host "No open items. All done 🎉" ; break }
+
+  # Ensure UTF-8 output for em-dash
+  try { [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false) } catch {}
+
+  Write-Host "Open items (top 10):"
+  $open | Select-Object -First 10 | ForEach-Object {
+    $phase = if($_.PSObject.Properties['Phase'])     { $_.Phase } else { '—' }
+    $title = if($_.PSObject.Properties['StepTitle']) { $_.StepTitle } else { '' }
+    $tgt   = if($_.PSObject.Properties['Target'] -and $_.Target){ $_.Target } else { '—' }
+    $nextA = if($_.PSObject.Properties['Next'] -and $_.Next){ (@($_.Next) | ForEach-Object { "$_" }) } else { @() }
+    $next  = if($nextA.Count -gt 0){ $nextA -join '; ' } else { '—' }
+    "{0} | {1} | {2} | target {3} | next: {4}" -f $phase, $_.StepID, $title, $tgt, $next
+  } | Write-Host
+  break
+}
 
   'done' {
     if (-not $StepID) { throw "done: -StepID required" }

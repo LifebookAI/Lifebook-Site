@@ -61,3 +61,17 @@ Thumbs.db
 !infra/ev11/**
 infra/**/*.tfvars
 infra/**/*.auto.tfvars
+# ---- Terraform (keep .terraform.lock.hcl) ----
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+
+# ---- Local/ephemeral outputs ----
+.tmp_*/
+.tmp_alarm_smoke/
+**/smoke.zip
+**/function.zip
+
+# Optional: generic build artefacts
+*.zip
