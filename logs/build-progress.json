@@ -939,13 +939,13 @@
     "StepID": "STG.ART.02",
     "StepTitle": "Artifacts follow-ups",
     "Status": "✔",
-    "Evidence": "Bucket=lifebook-artifacts-354630286254-us-east-1; KMSKeyId=58765bb9-358d-4187-8ce9-f036bff4fbd6; KMSRotation=True; BucketKeyEnabled=true; Versioning=Enabled; Lifecycle=ArtifactsRetention(IA30d,GLACIER_IR90d,Expire365d,AbortMPU7d); LoggingTarget=lifebook-audit-logs-354630286254-us-east-1; PolicySIDs=DenyInsecureTransport,AllowCIArtifactsPrefix; CIInlinePolicy=ArtifactsWrite; IaC=C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\storage\\artifacts\\artifacts-bucket.tf",
+    "Evidence": "Bucket=lifebook-artifacts-354630286254-us-east-1; LogsBucket=lifebook-s3-logs-354630286254-us-east-1; Ownership=; SSEAlgo=aws:kms; BucketKey=True; KMSKeyId=58765bb9-358d-4187-8ce9-f036bff4fbd6; KMSRotation=True; LoggingTarget=lifebook-s3-logs-354630286254-us-east-1; PolicySIDs=DenyInsecureTransport,AllowCIArtifactsPrefix(RoleCondition)",
     "Decisions": "",
     "Blockers": "",
     "Next": [],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-10-27T02:03:51Z",
+    "LastUpdated": "2025-10-27T02:07:41Z",
     "History": [
       {
         "patch": {
@@ -1022,6 +1022,23 @@
         "patch": {
           "Blockers": "",
           "Evidence": "Bucket=lifebook-artifacts-354630286254-us-east-1; KMSKeyId=58765bb9-358d-4187-8ce9-f036bff4fbd6; KMSRotation=True; BucketKeyEnabled=true; Versioning=Enabled; Lifecycle=ArtifactsRetention(IA30d,GLACIER_IR90d,Expire365d,AbortMPU7d); LoggingTarget=lifebook-audit-logs-354630286254-us-east-1; PolicySIDs=DenyInsecureTransport,AllowCIArtifactsPrefix; CIInlinePolicy=ArtifactsWrite; IaC=C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\storage\\artifacts\\artifacts-bucket.tf",
+          "Owner": "Zach",
+          "Phase": "Phase 0 — S3 Artifacts",
+          "Next": [
+            ""
+          ],
+          "StepID": "STG.ART.02",
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "StepTitle": "Artifacts follow-ups"
+        }
+      },
+      {
+        "at": "2025-10-27T02:07:41Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "Bucket=lifebook-artifacts-354630286254-us-east-1; LogsBucket=lifebook-s3-logs-354630286254-us-east-1; Ownership=; SSEAlgo=aws:kms; BucketKey=True; KMSKeyId=58765bb9-358d-4187-8ce9-f036bff4fbd6; KMSRotation=True; LoggingTarget=lifebook-s3-logs-354630286254-us-east-1; PolicySIDs=DenyInsecureTransport,AllowCIArtifactsPrefix(RoleCondition)",
           "Owner": "Zach",
           "Phase": "Phase 0 — S3 Artifacts",
           "Next": [
