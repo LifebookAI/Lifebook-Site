@@ -1,22 +1,9 @@
-# >>> LifebookAI EOL policy START
-*           text=auto eol=lf
+* text=auto eol=lf
 
-# Windows wrappers keep CRLF on checkout
-*.cmd       text eol=crlf
-*.bat       text eol=crlf
-
-# Scripts & infra — LF for cross-platform CI/actions
-*.ps1       text eol=lf
-*.psm1      text eol=lf
-*.psd1      text eol=lf
-*.sh        text eol=lf
-
-# Markup & data — LF
-*.md        text eol=lf
-*.json      text eol=lf
-*.yml       text eol=lf
-*.yaml      text eol=lf
-*.tf        text eol=lf
-*.tfvars    text eol=lf
-# <<< LifebookAI EOL policy END
-
+# binaries
+*.zip binary
+*.exe binary
+*.png binary
+*.jpg binary
+*.gif binary
+*.pdf binary

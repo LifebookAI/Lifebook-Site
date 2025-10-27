@@ -1,7 +1,10 @@
-## Summary
-<!-- What does this change do? -->
+## What’s in this PR?
+- Short summary
+- Evidence / screenshots
+- Risk & rollback plan
 
-## Checklist
-- [ ] Code builds locally (`npm run build` or `pnpm build`)
-- [ ] Lints/tests pass if present
-- [ ] EOL policy respected (LF) and CI green
+**Checklist**
+- [ ] Tests / smokes pass
+- [ ] Docs updated (README / Master Sheet refs)
+- [ ] Links issues: Closes #xxxx
+

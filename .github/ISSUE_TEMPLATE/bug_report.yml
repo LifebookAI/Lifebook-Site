@@ -1,0 +1,12 @@
+name: Bug report
+description: Something broke or behaved unexpectedly
+title: "bug: "
+labels: [app]
+body:
+  - type: textarea
+    id: what
+    attributes: { label: What happened?, description: Steps, expected vs actual }
+    validations: { required: true }
+  - type: textarea
+    id: evidence
+    attributes: { label: Evidence, description: Logs/screens, links }
