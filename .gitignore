@@ -75,3 +75,5 @@ infra/**/*.auto.tfvars
 
 # Optional: generic build artefacts
 *.zip
+
+infra/.ci-nudge-*
