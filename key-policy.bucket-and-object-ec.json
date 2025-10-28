@@ -1,0 +1,89 @@
+{
+  "Version": "2012-10-17",
+  "Id": "key-default-1",
+  "Statement": [
+    {
+      "Sid": "Enable IAM User Permissions",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::354630286254:root"
+      },
+      "Action": "kms:*",
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowS3UseForBucket",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "s3.amazonaws.com"
+      },
+      "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:GenerateDataKey*",
+        "kms:Encrypt",
+        "kms:ReEncrypt*"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceArn": "arn:aws:s3:::lifebook.ai",
+          "aws:SourceAccount": "354630286254"
+        },
+        "StringLike": {
+          "kms:ViaService": "s3.us-east-1.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Sid": "AllowCloudFrontDecryptViaS3",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "cloudfront.amazonaws.com"
+      },
+      "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::/E2D7FJLA6YQUNP"
+        },
+        "StringLike": {
+          "kms:ViaService": "s3.us-east-1.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*"
+      ],
+      "Effect": "Allow",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": "354630286254",
+          "kms:ViaService": [
+            "s3.us-east-1.amazonaws.com",
+            "s3.amazonaws.com"
+          ]
+        },
+        "ArnLike": {
+          "kms:EncryptionContext:aws:s3:arn": [
+            "arn:aws:s3:::lifebook.ai",
+            "arn:aws:s3:::lifebook.ai/*"
+          ]
+        }
+      },
+      "Sid": "AllowS3UseOfKeyForBucketObjects",
+      "Principal": {
+        "Service": "s3.amazonaws.com"
+      },
+      "Resource": "*"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyNonKmsPuts",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::lifebook.ai/*",
+      "Condition": {
+        "StringNotEquals": {
+          "s3:x-amz-server-side-encryption": "aws:kms"
+        }
+      }
+    },
+    {
+      "Sid": "DenyWrongKmsKey",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::lifebook.ai/*",
+      "Condition": {
+        "StringNotEquals": {
+          "s3:x-amz-server-side-encryption-aws-kms-key-id": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a"
+        }
+      }
+    },
+    {
+      "Sid": "AllowCloudFrontReadViaOAC_AWS",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "cloudfront.amazonaws.com"
+      },
+      "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion"
+      ],
+      "Resource": "arn:aws:s3:::lifebook.ai/*",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceAccount": "354630286254",
+          "AWS:SourceArn": "arn:aws:cloudfront::354630286254:distribution/E2D7FJLA6YQUNP"
+        }
+      }
+    },
+    {
+      "Sid": "AllowCloudFrontReadViaOAC_aws",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "cloudfront.amazonaws.com"
+      },
+      "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion"
+      ],
+      "Resource": "arn:aws:s3:::lifebook.ai/*",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceArn": "arn:aws:cloudfront::354630286254:distribution/E2D7FJLA6YQUNP",
+          "aws:SourceAccount": "354630286254"
+        }
+      }
+    }
+  ]
+}

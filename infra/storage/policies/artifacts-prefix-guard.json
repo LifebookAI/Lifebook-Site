@@ -1,0 +1,28 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "s3:PutObject",
+        "s3:AbortMultipartUpload",
+        "s3:ListBucketMultipartUploads"
+      ],
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::/GitHubActionsOIDC"
+      },
+      "Resource": null,
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "true"
+        },
+        "StringLike": {
+          "s3:prefix": [
+            "artifacts/*"
+          ]
+        }
+      },
+      "Sid": "ArtifactsPrefixGuard"
+    }
+  ]
+}

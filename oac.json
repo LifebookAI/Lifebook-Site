@@ -1,0 +1,7 @@
+{
+  "Name": "oac-lifebook.ai.s3.us-east-1.amazonaws.com-meoh0tt3atm",
+  "Description": "Created by CloudFront",
+  "OriginAccessControlOriginType": "s3",
+  "SigningBehavior": "always",
+  "SigningProtocol": "sigv4"
+}

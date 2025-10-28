@@ -1,0 +1,12 @@
+name: Task
+description: Track a unit of work
+title: "task: "
+labels: [infra]
+body:
+  - type: textarea
+    id: goal
+    attributes: { label: Goal, description: Definition of done }
+    validations: { required: true }
+  - type: textarea
+    id: plan
+    attributes: { label: Plan, description: Steps / owners }

@@ -1,0 +1,27 @@
+name: Terraform
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  validate-ev11:
+    name: validate-ev11
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: infra/ev11 } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform fmt -check -recursive
+      - run: terraform init -backend=false
+      - run: terraform validate
+  validate-storage:
+    name: validate-storage
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: infra/storage } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform fmt -check -recursive
+      - run: terraform init -backend=false
+      - run: terraform validate

@@ -1,0 +1,76 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "EnableIamUserPermissions",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::354630286254:root"
+      },
+      "Action": "kms:*",
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowS3UseOfKeyForLifebookBucket",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "s3.amazonaws.com"
+      },
+      "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey",
+        "kms:CreateGrant"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "ForAnyValue:StringEquals": {
+          "kms:ViaService": [
+            "s3.us-east-1.amazonaws.com",
+            "s3.amazonaws.com",
+            "s3-external-1.amazonaws.com"
+          ]
+        },
+        "ForAnyValue:StringLike": {
+          "kms:EncryptionContext:aws:s3:arn": [
+            "arn:aws:s3:::lifebook.ai",
+            "arn:aws:s3:::lifebook.ai/*"
+          ]
+        },
+        "Bool": {
+          "kms:GrantIsForAWSResource": true
+        }
+      }
+    },
+    {
+      "Sid": "AllowCloudFrontUseOfKey-E2D7FJLA6YQUNP",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "cloudfront.amazonaws.com"
+      },
+      "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::354630286254:distribution/E2D7FJLA6YQUNP"
+        },
+        "ForAnyValue:StringEquals": {
+          "kms:ViaService": [
+            "s3.us-east-1.amazonaws.com",
+            "s3.amazonaws.com"
+          ]
+        },
+        "ForAnyValue:StringLike": {
+          "kms:EncryptionContext:aws:s3:arn": [
+            "arn:aws:s3:::lifebook.ai",
+            "arn:aws:s3:::lifebook.ai/*"
+          ]
+        }
+      }
+    }
+  ]
+}
