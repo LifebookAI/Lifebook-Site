@@ -11,8 +11,8 @@
     "ci:verify": "npm run lint -- --max-warnings=0 && npm run typecheck"
   },
   "dependencies": {
-    "next": "16.0.0",
-    "react": "19.1.0",
+    "next": "15.4.6",
+    "react": "19.2.0",
     "react-dom": "19.2.0"
   },
   "devDependencies": {
