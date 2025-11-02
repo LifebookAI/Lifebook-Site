@@ -1,0 +1,95 @@
+{
+  "Version" : "2012-10-17",
+  "Id" : "key-default-1",
+  "Statement" : [ {
+    "Sid" : "Enable IAM User Permissions",
+    "Effect" : "Allow",
+    "Principal" : {
+      "AWS" : "arn:aws:iam::354630286254:root"
+    },
+    "Action" : "kms:*",
+    "Resource" : "*"
+  }, {
+    "Sid" : "AllowSNSUseOfKeyForAlertsTopic",
+    "Effect" : "Allow",
+    "Principal" : {
+      "Service" : "sns.amazonaws.com"
+    },
+    "Action" : [ "kms:Decrypt", "kms:GenerateDataKey*" ],
+    "Resource" : "*",
+    "Condition" : {
+      "StringEquals" : {
+        "aws:SourceAccount" : "354630286254",
+        "kms:EncryptionContext:aws:sns:topicArn" : "arn:aws:sns:us-east-1:-alerts"
+      },
+      "StringEqualsIfExists" : {
+        "kms:ViaService" : "sns.us-east-1.amazonaws.com"
+      }
+    }
+  }, {
+    "Sid" : "allow-sns-and-events-for-topic-lifebook-alerts",
+    "Effect" : "Allow",
+    "Principal" : {
+      "Service" : [ "sns.amazonaws.com", "events.amazonaws.com" ]
+    },
+    "Action" : [ "kms:GenerateDataKey*", "kms:Decrypt" ],
+    "Resource" : "*",
+    "Condition" : {
+      "StringEquals" : {
+        "kms:ViaService" : "sns.us-east-1.amazonaws.com",
+        "kms:EncryptionContext:aws:sns:topicArn" : "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+        "kms:CallerAccount" : "354630286254"
+      }
+    }
+  }, {
+    "Sid" : "allow-sns-for-topic-lifebook-alerts",
+    "Effect" : "Allow",
+    "Principal" : {
+      "Service" : "sns.amazonaws.com"
+    },
+    "Action" : [ "kms:GenerateDataKey", "kms:GenerateDataKey*", "kms:Decrypt", "kms:DescribeKey", "kms:CreateGrant" ],
+    "Resource" : "*",
+    "Condition" : {
+      "StringEquals" : {
+        "kms:ViaService" : "sns.us-east-1.amazonaws.com",
+        "kms:EncryptionContext:aws:sns:topicArn" : "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+        "kms:CallerAccount" : "354630286254",
+        "kms:GrantIsForAWSResource" : "true"
+      }
+    }
+  }, {
+    "Sid" : "AllowSNSUseOfKeyForTopic_lifebook-alerts",
+    "Effect" : "Allow",
+    "Principal" : {
+      "Service" : "sns.amazonaws.com"
+    },
+    "Action" : [ "kms:Decrypt", "kms:GenerateDataKey*", "kms:DescribeKey" ],
+    "Resource" : "*",
+    "Condition" : {
+      "StringEquals" : {
+        "aws:SourceAccount" : "354630286254",
+        "kms:ViaService" : "sns.us-east-1.amazonaws.com"
+      },
+      "StringEqualsIfExists" : {
+        "kms:EncryptionContext:aws:sns:topicArn" : "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
+      }
+    }
+  }, {
+    "Sid" : "AllowSNSCreateGrantForTopic_lifebook-alerts",
+    "Effect" : "Allow",
+    "Principal" : {
+      "Service" : "sns.amazonaws.com"
+    },
+    "Action" : "kms:CreateGrant",
+    "Resource" : "*",
+    "Condition" : {
+      "StringEquals" : {
+        "aws:SourceAccount" : "354630286254",
+        "kms:ViaService" : "sns.us-east-1.amazonaws.com"
+      },
+      "Bool" : {
+        "kms:GrantIsForAWSResource" : "true"
+      }
+    }
+  } ]
+}

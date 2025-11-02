@@ -1,0 +1,32 @@
+name: Terraform
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+permissions:
+  contents: read
+  pull-requests: read
+jobs:
+  validate-ev11:
+    name: validate-ev11
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - name: Init (no backend) + Validate
+        working-directory: infra/ev11
+        run: |
+          terraform init -backend=false
+          terraform fmt -check -recursive || exit 1
+          terraform validate
+  validate-storage:
+    name: validate-storage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - name: Init (no backend) + Validate
+        working-directory: infra/storage
+        run: |
+          terraform init -backend=false
+          terraform fmt -check -recursive || exit 1
+          terraform validate

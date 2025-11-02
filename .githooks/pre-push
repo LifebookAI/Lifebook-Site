@@ -1,0 +1,4 @@
+#!/bin/sh
+REPO=$(git rev-parse --show-toplevel)
+SCRIPT="$REPO/infra/ops/progress/progress.ps1"
+exec pwsh -NoLogo -NoProfile -File "$SCRIPT" guard

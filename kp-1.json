@@ -1,0 +1,10 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Sid": "EnableIamUserPermissions",
+    "Effect": "Allow",
+    "Principal": { "AWS": ["354630286254","arn:::"] },
+    "Action": "kms:*",
+    "Resource": "*"
+  }]
+}

@@ -1,0 +1,34 @@
+name: e2e-pr-smoke
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: us-east-1
+      AWS_OIDC_ROLE_ARN: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+      PRESIGN_API_BASE:  ${{ secrets.PRESIGN_API_BASE }}
+      PRESIGN_METHOD:    ${{ secrets.PRESIGN_METHOD }}
+      PRESIGN_PATH:      ${{ secrets.PRESIGN_PATH }}
+      PRESIGN_API_KEY:   ${{ secrets.PRESIGN_API_KEY }}
+      PRESIGN_HMAC_SECRET: ${{ secrets.PRESIGN_HMAC_SECRET }}
+      CF_BASE_URL:       ${{ secrets.CF_BASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure AWS creds via OIDC
+        if: ${{ env.AWS_OIDC_ROLE_ARN != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          audience: sts.amazonaws.com
+      - name: Presign smoke
+        uses: ./.github/actions/presign-smoke

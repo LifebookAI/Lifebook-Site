@@ -1,0 +1,12 @@
+{
+  "AUP": {
+    "policy": "AUP",
+    "version": "0.11",
+    "status": "draft",
+    "review": {
+      "end": "2025-10-31",
+      "start": "2025-10-26"
+    },
+    "path": "legal/AUP.md"
+  }
+}

@@ -1,0 +1,31 @@
+name: QuickVerify (nightly)
+
+on:
+  schedule:
+    - cron: '15 09 * * *'   # 09:15 UTC nightly
+  workflow_dispatch: {}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  quick-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::354630286254:role/GitHubActionsOIDC
+          aws-region: us-east-1
+
+      - name: AWS CLI version
+        run: aws --version
+
+      - name: QuickVerify
+        shell: pwsh
+        run: |
+          Set-Location (git rev-parse --show-toplevel)
+          ./infra/ops/Invoke-LifebookOps.ps1 QuickVerify
