@@ -4,5 +4,10 @@
   "main": "index.js",
   "type": "commonjs",
   "license": "UNLICENSED",
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "next": "15.4.7"
+  }
 }
