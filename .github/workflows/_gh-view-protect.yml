@@ -1,0 +1,198 @@
+name: Enforce branch protections
+
+on:
+  workf
+low_dispatch: {}
+  workflow_dispatch:
+  sched
+ule:
+    - cron: "*/30 * * * *"
+  create: {}
+
+jobs:
+  protect:
+    # For `create`, only act
+ on branches. For schedule/dispatch, always r
+un.
+    if: github.event_name != 'create' ||
+github.ref_type == 'branch'
+    runs-on: ubun
+tu-latest
+    permissions:
+      contents: re
+ad
+    env:
+      GH_TOKEN: ${{ secrets.REPO_
+ADMIN_TOKEN }}
+      OWNER: LifebookAI
+
+REPO: Lifebook-Site
+      SOURCE_BRANCH: main
+
+      REQUIRE_APPROVALS: "0"          # solo
+ flow
+      REQUIRE_LAST_PUSH: "false"      #
+ solo flow
+      MATCH_GLOBS: "release/* hotf
+ix/*"
+    steps:
+      - name: gh and jq vers
+ions
+        run: |
+          gh --version
+
+        jq --version
+
+      - name: Compute t
+arget branch list
+        id: branches
+
+  shell: bash
+        run: |
+          set -e
+uo pipefail
+          targets=("$SOURCE_BRANC
+H")
+          if [[ "${{ github.event_name }}
+" == "create" && "${{ github.ref_type }}" ==
+"branch" ]]; then
+            targets+=("${{
+github.ref_name }}")
+          fi
+          m
+apfile -t all_branches < <(gh api "/repos/$OW
+NER/$REPO/branches?per_page=100" -q '.[].name
+')
+          for b in "${all_branches[@]}"; d
+o
+            for g in $MATCH_GLOBS; do
+
+         case "$b" in
+                $g) tar
+gets+=("$b");;
+              esac
+
+ done
+          done
+          jq -n --argjso
+n arr "$(printf '%s\n' "${targets[@]}" | sort
+ -u | jq -R . | jq -s .)" '$arr' | tee target
+s.json
+          echo "list=$(cat targets.jso
+n)" >> "$GITHUB_OUTPUT"
+
+      - name: Build
+payload from SOURCE_BRANCH protections
+
+  id: payload
+        shell: bash
+        run
+: |
+          set -euo pipefail
+          bp=
+"$(gh api "/repos/$OWNER/$REPO/branches/$SOUR
+CE_BRANCH/protection")" || bp=""
+          ch
+ecks_lines="$(echo "$bp" | jq -r '.required_s
+tatus_checks.checks // [] | .[].context')"
+
+        if [[ -z "$checks_lines" || "$checks_
+lines" == "null" ]]; then
+            checks_
+lines="$(echo "$bp" | jq -r '.required_status
+_checks.contexts // [] | .[]')"
+          fi
+
+          if [[ -z "$checks_lines" || "$check
+s_lines" == "null" ]]; then
+            check
+s_lines=$'EOL guard (LF only) / eol'
+
+  fi
+          checks_json="$(printf '%s\n' "
+$checks_lines" | jq -R '{context:.}' | jq -s
+.)"
+          jq -n \
+            --argjson c
+hecks "$checks_json" \
+            --arg appr
+ovals   "${REQUIRE_APPROVALS}" \
+
+--argjson lastPush ${REQUIRE_LAST_PUSH} \
+
+         '{
+              required_status_che
+cks: { strict: true, checks: $checks },
+
+         enforce_admins: true,
+
+required_pull_request_reviews: {
+
+    required_approving_review_count: ($approv
+als|tonumber),
+                dismiss_stale_
+reviews: true,
+                require_code_o
+wner_reviews: false,
+                require_
+last_push_approval: $lastPush
+              }
+,
+              required_linear_history: true
+,
+              required_conversation_resolut
+ion: true,
+              restrictions: null
+
+           }' | tee payload.json
+          ec
+ho "path=payload.json" >> "$GITHUB_OUTPUT"
+
+
+     - name: Apply protections to targets
+
+     shell: bash
+        run: |
+          set
+ -euo pipefail
+          payload="$(cat "${{
+steps.payload.outputs.path }}")"
+          jq
+ -r '.[]' <<< '${{ steps.branches.outputs.lis
+t }}' | while read -r b; do
+            echo
+"Protecting $b …"
+            printf '%s' "
+$payload" | gh api --method PUT -H "Accept: a
+pplication/vnd.github+json" \
+              "
+/repos/$OWNER/$REPO/branches/$b/protection" -
+-input -
+            gh api --method POST "/r
+epos/$OWNER/$REPO/branches/$b/protection/requ
+ired_signatures" >/dev/null 2>&1 || true
+
+      done
+
+      - name: Summary
+        she
+ll: bash
+        run: |
+          echo "== Su
+mmary =="
+          jq -r '.[]' <<< '${{ step
+s.branches.outputs.list }}' | while read -r b
+; do
+            gh api "/repos/$OWNER/$REPO/
+branches/$b/protection" \
+              -q "{
+branch:\"$b\",checks:(.required_status_checks
+.checks // []) | map(.context),strict:.requir
+ed_status_checks.strict,admins:.enforce_admin
+s.enabled,approvals:.required_pull_request_re
+views.required_approving_review_count,lastPus
+h:.required_pull_request_reviews.require_last
+_push_approval,linear:.required_linear_histor
+y.enabled,convo:.required_conversation_resolu
+tion.enabled}"
+          done

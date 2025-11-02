@@ -1,0 +1,5 @@
+{
+  "MD013": false,  // long lines ok for now (READMEs / tables)
+  "MD041": false,  // don't require top-level heading as first line
+  "MD033": { "allowed_elements": ["br","code","details","summary","evidence","ID"] }
+}

@@ -1,0 +1,50 @@
+name: EOL guard (LF only)
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  eol:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fail if CRLF appears in LF-enforced files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config core.autocrlf false
+
+          # Build list of LF-enforced files based on .gitattributes
+          mapfile -d '' ALL < <(git ls-files -z)
+          LF=()
+          for f in "${ALL[@]}"; do
+            if git check-attr eol -- "$f" | grep -qE 'eol:\s*lf$'; then
+              LF+=("$f")
+            fi
+          done
+
+          # Scan only those files for CR (0x0D). Exempt *.cmd/*.bat.
+          offenders=()
+          for f in "${LF[@]}"; do
+            [[ "$f" =~ \.(cmd|bat)$ ]] && continue
+            # Grep CR; return code 0 if found, 1 if not found
+            if grep -Iq $'\r' -- "$f"; then
+              offenders+=("$f")
+            fi
+          done
+
+          if (( ${#offenders[@]} )); then
+            echo "::error::CRLF detected in LF-enforced files:"
+            printf ' - %s\n' "${offenders[@]}"
+            echo "Hints:"
+            echo "  * git add --renormalize ."
+            echo "  * or: dos2unix <file>; git add <file>"
+            exit 1
+          fi
+
+          echo "OK: No CRLF in LF-enforced files."

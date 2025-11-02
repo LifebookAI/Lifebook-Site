@@ -1,0 +1,13 @@
+{
+  "Attributes": {
+    "Policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"AllowEventBridgeToPublish\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"events.amazonaws.com\"},\"Action\":\"sns:Publish\",\"Resource\":\"arn:aws:sns:us-east-1:354630286254:lifebook-alerts\",\"Condition\":{\"StringEquals\":{\"aws:SourceAccount\":\"354630286254\"},\"ArnEquals\":{\"aws:SourceArn\":[\"arn:aws:events:us-east-1:354630286254:rule/lifebook-ssm-rc-fail\",\"arn:aws:events:us-east-1:354630286254:rule/lifebook-ssm-sm-fail\"]}}},{\"Sid\":\"AllowCloudWatchAlarmsToPublish\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudwatch.amazonaws.com\"},\"Action\":\"sns:Publish\",\"Resource\":\"arn:aws:sns:us-east-1:354630286254:lifebook-alerts\",\"Condition\":{\"StringEquals\":{\"aws:SourceAccount\":\"354630286254\"},\"ArnEquals\":{\"aws:SourceArn\":[\"arn:aws:cloudwatch:us-east-1:354630286254:alarm:lifebook-events-lifebook-ssm-rc-fail-FailedInvocations-5m-1of1\",\"arn:aws:cloudwatch:us-east-1:354630286254:alarm:lifebook-events-lifebook-ssm-sm-fail-FailedInvocations-5m-1of1\"]}}}]}",
+    "Owner": "354630286254",
+    "SubscriptionsPending": "0",
+    "KmsMasterKeyId": "arn:aws:kms:us-east-1:354630286254:key/0586aab9-60ae-4931-b8dd-e0da232f6b1e",
+    "TopicArn": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+    "EffectiveDeliveryPolicy": "{\"http\":{\"defaultHealthyRetryPolicy\":{\"minDelayTarget\":20,\"maxDelayTarget\":20,\"numRetries\":3,\"numMaxDelayRetries\":0,\"numNoDelayRetries\":0,\"numMinDelayRetries\":0,\"backoffFunction\":\"linear\"},\"disableSubscriptionOverrides\":false,\"defaultRequestPolicy\":{\"headerContentType\":\"text/plain; charset=UTF-8\"}}}",
+    "SubscriptionsConfirmed": "3",
+    "DisplayName": "",
+    "SubscriptionsDeleted": "0"
+  }
+}

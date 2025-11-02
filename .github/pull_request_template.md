@@ -1,26 +1,13 @@
-\## What
+# Pull request
 
-\- Brief summary
+## What’s in this PR?
 
+- Short summary
+- Evidence / screenshots
+- Risk & rollback plan
 
+## Checklist
 
-\## Why
-
-\- Reason / context
-
-
-
-\## Test
-
-\- \[ ] CI (PR) smoke is green
-
-\- \[ ] Manually opened VERIFY URL if relevant
-
-
-
-\## Notes
-
-\- Risks / follow-ups
-
-
-
+- [ ] Tests / smokes pass
+- [ ] Docs updated (README / Master Sheet refs)
+- [ ] Links issues: Closes #xxxx
