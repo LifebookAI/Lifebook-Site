@@ -1623,5 +1623,54 @@
         "at": "2025-10-25T04:02:24Z"
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "P1.S1",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "PR #55 merged; workflows (dependabot-nightly.yml, codeql.yml) on main; branch protection requires CodeQL; Dependabot=0; checkpoint build-checkpoints.json",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      ""
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "LastUpdated": "2025-11-03T04:48:33Z",
+    "History": [
+      {
+        "at": "2025-11-03T04:48:33Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "PR #55 merged; workflows (dependabot-nightly.yml, codeql.yml) on main; branch protection requires CodeQL; Dependabot=0; checkpoint build-checkpoints.json",
+          "Owner": "Zach",
+          "Phase": null,
+          "Next": [
+            ""
+          ],
+          "StepID": "P1.S1",
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "StepTitle": null
+        }
+      }
+    ]
+  },
+  {
+    "ts": "2025-11-03T09:27:48.4993724-05:00",
+    "kind": "security-guardrails",
+    "pr": {
+      "number": 55,
+      "merged": true
+    },
+    "required_contexts": [
+      "Hygiene / precommit",
+      "Terraform / validate-ev11",
+      "Terraform / validate-storage",
+      "CodeQL"
+    ],
+    "dependabot_open": 0
   }
 ]
