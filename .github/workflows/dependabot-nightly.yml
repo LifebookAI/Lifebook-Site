@@ -1,0 +1,41 @@
+name: Dependabot Nightly Check
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "10 7 * * *"
+permissions:
+  contents: read
+  security-events: read
+  issues: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Count Dependabot alerts
+        id: count
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          COUNT=$(gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository }}/dependabot/alerts --paginate -q '.[] | 1' | wc -l | tr -d ' ')
+          echo "count=$COUNT" >> $GITHUB_OUTPUT
+      - name: Open/update issue when alerts > 0
+        if: steps.count.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE="🛡️ Dependabot alerts: ${{ steps.count.outputs.count }} open"
+          BODY="Automated nightly check detected ${{ steps.count.outputs.count }} open Dependabot alerts."
+          ISSUE=$(gh issue list --state open --search "$TITLE in:title" --json number --jq '.[0].number' || true)
+          if [ -z "$ISSUE" ]; then
+            gh issue create --title "$TITLE" --body "$BODY"
+          else
+            gh issue comment "$ISSUE" --body "$BODY"
+          fi
+      - name: Close prior issues when count is 0
+        if: steps.count.outputs.count == '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue list --state open --json number,title \
+            --jq '.[] | select(.title|test("^🛡️ Dependabot alerts:")) | .number' | \
+            xargs -r -n1 gh issue close -r completed -c "Back to zero. ✅"
