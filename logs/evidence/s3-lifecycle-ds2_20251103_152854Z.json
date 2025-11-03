@@ -1,0 +1,12 @@
+{
+  "bucket": "lifebook.ai",
+  "prefixes": [
+    "catalog/transcripts/",
+    "catalog/keyframes/",
+    "catalog/proxies/",
+    "catalog/masters/"
+  ],
+  "checks": "PENDING (lifecycle not visible yet)",
+  "error": "No lifecycle configuration on bucket lifebook.ai.",
+  "when_utc": "2025-11-03T15:29:12Z"
+}

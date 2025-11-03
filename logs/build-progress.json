@@ -1672,5 +1672,102 @@
       "CodeQL"
     ],
     "dependabot_open": 0
+  },
+  {
+    "timestamp": "2025-11-03T15:25:17Z",
+    "step": "D.S2 S3 lifecycle + CODEOWNERS",
+    "repo": "LifebookAI/Lifebook-Site",
+    "pr": "#",
+    "merge_commit": "",
+    "contexts": [
+      "Hygiene / precommit",
+      "Terraform / validate-ev11",
+      "Terraform / validate-storage",
+      "CodeQL"
+    ]
+  },
+  {
+    "timestamp": "2025-11-03T15:28:54Z",
+    "step": "D.S2 S3 lifecycle + CODEOWNERS",
+    "repo": "LifebookAI/Lifebook-Site",
+    "pr": "#",
+    "merge_commit": "",
+    "contexts": [
+      "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]"
+    ]
+  },
+  {
+    "timestamp": "2025-11-03T15:31:41Z",
+    "step": "D.S2 S3 lifecycle + CODEOWNERS",
+    "repo": "LifebookAI/Lifebook-Site",
+    "pr": "#58",
+    "merge_commit": "",
+    "contexts": [
+      "Hygiene / precommit",
+      "Terraform / validate-ev11",
+      "Terraform / validate-storage",
+      "CodeQL"
+    ]
+  },
+  {
+    "timestamp": "2025-11-03T15:36:12Z",
+    "step": "D.S2 S3 lifecycle + CODEOWNERS",
+    "repo": "LifebookAI/Lifebook-Site",
+    "pr": "#58",
+    "merge_commit": "",
+    "contexts": [
+      "Hygiene / precommit",
+      "Terraform / validate-ev11",
+      "Terraform / validate-storage",
+      "CodeQL"
+    ]
+  },
+  {
+    "timestamp": "2025-11-03T15:39:00Z",
+    "step": "D.S2 S3 lifecycle + CODEOWNERS",
+    "repo": "LifebookAI/Lifebook-Site",
+    "pr": "#58",
+    "merge_commit": "",
+    "contexts": "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]"
+  },
+  {
+    "timestamp": "2025-11-03T15:49:57Z",
+    "step": "D.S2 S3 lifecycle + CODEOWNERS",
+    "repo": "LifebookAI/Lifebook-Site",
+    "pr": "#58",
+    "merge_commit": "",
+    "contexts": "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]"
+  },
+  {
+    "timestamp": "2025-11-03T16:01:43Z",
+    "step": "D.S2 S3 lifecycle + CODEOWNERS",
+    "repo": "LifebookAI/Lifebook-Site",
+    "pr": "#58",
+    "merge_commit": "",
+    "contexts": "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]"
+  },
+  {
+    "timestamp": "2025-11-03T16:05:08Z",
+    "step": "D.S2 S3 lifecycle + CODEOWNERS",
+    "repo": "LifebookAI/Lifebook-Site",
+    "pr": "#58",
+    "merge_commit": "",
+    "contexts": "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]"
+  },
+  {
+    "timestamp": "2025-11-03T16:17:48Z",
+    "step": "D.S2 S3 lifecycle + CODEOWNERS",
+    "repo": "LifebookAI/Lifebook-Site",
+    "pr": "#58",
+    "merge_commit": "",
+    "contexts": "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]"
+  },
+  {
+    "timestamp": "2025-11-03T16:31:22Z",
+    "step": "D.S2 S3 lifecycle + CODEOWNERS",
+    "repo": "LifebookAI/Lifebook-Site",
+    "pr": "#58",
+    "merge_commit": "",
+    "contexts": "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]"
   }
 ]

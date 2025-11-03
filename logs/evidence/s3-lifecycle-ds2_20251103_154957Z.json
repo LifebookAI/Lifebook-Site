@@ -1,0 +1,12 @@
+{
+  "bucket": "lifebook.ai",
+  "prefixes": [
+    "catalog/transcripts/",
+    "catalog/keyframes/",
+    "catalog/proxies/",
+    "catalog/masters/"
+  ],
+  "checks": "PENDING (PR not merged yet)",
+  "error": "The property 'Prefix' cannot be found on this object. Verify that the property exists.",
+  "when_utc": "2025-11-03T15:58:10Z"
+}

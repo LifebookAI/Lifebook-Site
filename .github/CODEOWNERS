@@ -1,1 +1,4 @@
-* @LifebookAI
+﻿# Lifebook.AI — CODEOWNERS
+# Infra & Ops default owner
+/infra/**    @LifebookAI
+/ops/**      @LifebookAI
