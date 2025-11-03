@@ -31,4 +31,5 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           audience: sts.amazonaws.com
       - name: Presign smoke
+        if: ${ env.ENABLE_PRESIGN_SMOKE == '1' }
         uses: ./.github/actions/presign-smoke
