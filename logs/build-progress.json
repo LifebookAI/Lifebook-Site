@@ -1777,5 +1777,19 @@
     "pr": "#58",
     "merge_commit": "f4c8584b4c5c6605fdb638dffc03e57b29ecb068",
     "contexts": "[\"precommit\",\"validate-ev11\",\"validate-storage\",\"CodeQL\"]"
+  },
+  {
+    "timestamp": "2025-11-03T17:22:33Z",
+    "step": "Guardrails: required contexts updated",
+    "repo": "LifebookAI/Lifebook-Site",
+    "branch": "main",
+    "contexts": [
+      "precommit",
+      "validate-ev11",
+      "validate-storage",
+      "CodeQL",
+      "e2e",
+      "Presign + upload (PowerShell)"
+    ]
   }
 ]
