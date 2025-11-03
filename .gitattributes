@@ -7,3 +7,10 @@
 *.jpg binary
 *.gif binary
 *.pdf binary
+*.yml text eol=lf
+
+*.yaml text eol=lf
+
+*.ps1 text eol=lf
+
+*.md text eol=lf

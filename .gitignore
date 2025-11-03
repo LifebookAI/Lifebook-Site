@@ -77,3 +77,5 @@ infra/**/*.auto.tfvars
 *.zip
 
 infra/.ci-nudge-*
+
+logs/ci/

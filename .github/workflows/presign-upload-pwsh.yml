@@ -1,0 +1,38 @@
+name: Presign + upload (PowerShell)
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  presign_upload:
+    name: Presign + upload (PowerShell)
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup AWS CLI v2
+        uses: aws-actions/setup-aws-cli@v4
+      - name: Configure AWS (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::354630286254:role/GitHubOIDC_LifebookSite
+          aws-region: us-east-1
+      - name: Presign smoke
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          aws --version
+          $RunId = "${{ github.run_id }}"
+          $Key   = "synthetic/ci/presign_$RunId.txt"
+          $Tmp   = New-TemporaryFile; 'hello from CI' | Set-Content -Path $Tmp -Encoding UTF8
+          aws s3api put-object --bucket lifebook.ai --key $Key --body $Tmp `
+            --server-side-encryption aws:kms `
+            --ssekms-key-id arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a | Out-Null
+          aws s3api head-object --bucket lifebook.ai --key $Key | Out-Null
+          Write-Host "Uploaded s3://lifebook.ai/$Key"
