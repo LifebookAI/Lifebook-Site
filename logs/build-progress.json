@@ -1771,10 +1771,10 @@
     "StepID": "D.S2 S3 lifecycle + CODEOWNERS"
   },
   {
-    "Phase": "D",
-    "StepTitle": "S3 lifecycle DS2 — catalog proxies IA30→GIR180; masters IA30→GIR90",
+    "Phase": "Storage",
+    "StepTitle": "Catalog lifecycle: proxies IA30→GIR180; masters IA30→GIR90; abort-MPU ~7d",
     "Status": "✔",
-    "Evidence": "DS2 in S3 2025-11-03; Rules: catalog-proxies-ia30-glacierir180, catalog-masters-ia30-glacierir90; AbortMPU=abort-mpu-7d",
+    "Evidence": "PR#62, PR#63; Rules: catalog-proxies-ia30-glacierir180, catalog-masters-ia30-glacierir90; WF: storage-ds2-verify; https://github.com/LifebookAI/Lifebook-Site/actions/runs/19055544232",
     "Decisions": "",
     "Blockers": "",
     "Next": "",
