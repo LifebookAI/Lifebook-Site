@@ -7,8 +7,16 @@
 $ErrorActionPreference = "Stop"; Set-StrictMode -Version Latest
 
 # Resolve defaults safely
-if (-not $Profile) { $Profile = $env:AWS_PROFILE }
-if (-not $Profile) { $Profile = "lifebook-sso" }
+# --- CI-aware profile resolver ---
+# Normalize empty -> $null
+if ($Profile -is [string] -and [string]::IsNullOrWhiteSpace($Profile)) { $Profile = $null }
+$IsCI = ($env:GITHUB_ACTIONS -eq 'true' -or $env:CI -eq 'true' -or -not [string]::IsNullOrWhiteSpace($env:AWS_ACCESS_KEY_ID))
+# In CI (OIDC creds), do NOT use a named profile
+if (-not $IsCI) {
+  if (-not $Profile -and -not [string]::IsNullOrWhiteSpace($env:AWS_PROFILE)) { $Profile = $env:AWS_PROFILE }
+  if (-not $Profile) { $Profile = 'lifebook-sso' }
+}
+# ---------------------------------
 if (-not $Region)  { $Region  = $env:AWS_REGION }
 if (-not $Region)  { $Region  = "us-east-1" }
 
@@ -29,7 +37,7 @@ function Get-LcPrefix([object]$r){
 
 # Build AWS CLI call with optional --profile
 $cmd = @('s3api','get-bucket-lifecycle-configuration','--bucket', $Bucket,'--region',$Region)
-if ($Profile) { $cmd += @('--profile', $Profile) }
+if ($Profile -and -not [string]::IsNullOrWhiteSpace($Profile)) { $cmd += @('--profile', $Profile) }
 $raw = aws @cmd | ConvertFrom-Json
 $rules = @($raw.Rules)
 if(-not $rules){ throw "No lifecycle rules returned for bucket '$Bucket' in region '$Region'." }

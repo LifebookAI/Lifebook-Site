@@ -26,16 +26,31 @@ jobs:
           aws-region: us-east-1
 
       - name: Verify DS2
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          $env:AWS_PROFILE = ''  # OIDC creds, no profile
-          $env:AWS_REGION  = 'us-east-1'
-          $json = pwsh -File infra/ops/storage/verify-ds2.ps1 -Region $env:AWS_REGION -Bucket lifebook.ai -Json
-          $obj  = $json | ConvertFrom-Json
-          "# DS2 verification — " + ($obj.Pass ? "PASS" : "FAIL") | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
-          "Bucket: $($obj.Bucket)  Region: $($obj.Region)"        | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
-          "- Proxies: $($obj.Proxies) → $($obj.IA_P), $($obj.COLD_P)" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
-          "- Masters: $($obj.Masters) → $($obj.IA_M), $($obj.COLD_M)" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
-          "- Abort MPU: $($obj.AbortMPU) (~7d)"                   | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
-          if (-not $obj.Pass) { throw 'DS2 verification failed' }
+  shell: pwsh
+  run: |
+    $ErrorActionPreference = "Stop"
+    $env:AWS_PROFILE = ""     # OIDC creds
+    $env:AWS_REGION  = "us-east-1"
+    aws --version
+    aws sts get-caller-identity
+    # Print raw lifecycle JSON to step logs for audit
+    aws s3api get-bucket-lifecycle-configuration --bucket lifebook.ai --region $env:AWS_REGION | Out-String | Write-Host
+
+    # Run verifier; capture any incidental noise; sanitize to strict JSON
+    function Convert-StrictJson([string]$text){
+      $s = $text.IndexOf('{'); if($s -lt 0){ throw "Verifier did not emit JSON." }
+      $e = $text.LastIndexOf('}'); if($e -lt $s){ throw "Malformed JSON from verifier." }
+      $slice = $text.Substring($s, $e - $s + 1)
+      return $slice | ConvertFrom-Json
+    }
+
+    $raw = pwsh -NoProfile -File infra/ops/storage/verify-ds2.ps1 -Region $env:AWS_REGION -Bucket lifebook.ai -Json | Out-String
+    $obj = Convert-StrictJson $raw
+
+    "# DS2 verification — " + ($obj.Pass ? "PASS" : "FAIL") | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+    "Bucket: $($obj.Bucket)  Region: $($obj.Region)" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+    "- Proxies: $($obj.Proxies) → $($obj.IA_P), $($obj.COLD_P)" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+    "- Masters: $($obj.Masters) → $($obj.IA_M), $($obj.COLD_M)" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+    "- Abort MPU: $($obj.AbortMPU) (~7d)" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+    if(-not $obj.Pass){ throw "DS2 verification failed" }
+
