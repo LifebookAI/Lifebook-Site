@@ -1769,5 +1769,17 @@
     "pr": "#58",
     "merge_commit": "",
     "contexts": "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]"
+  },
+  {
+    "Phase": "D",
+    "StepID": "D.S2",
+    "StepTitle": "S3 lifecycle DS2 — catalog proxies IA30→GIR180; masters IA30→GIR90",
+    "Status": "✔",
+    "Evidence": "DS2 in S3 2025-11-03; Rules: catalog-proxies-ia30-glacierir180, catalog-masters-ia30-glacierir90; AbortMPU=abort-mpu-7d",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": "",
+    "Owner": "Zach",
+    "Target": "2025-11-03"
   }
 ]
