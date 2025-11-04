@@ -1,0 +1,36 @@
+name: presign-upload-rawpwsh
+on:
+  workflow_dispatch: {}
+permissions:
+  id-token: write
+  contents: read
+env:
+  AWS_REGION: us-east-1
+  AWS_ROLE_ARN: arn:aws:iam::354630286254:role/GitHubOIDC_LifebookSite
+  S3_BUCKET: lifebook.ai
+  KMS_KEY_ARN: arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a
+jobs:
+  write:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write object via OIDC + AWS CLI (raw pwsh)
+        shell: pwsh
+        run: |
+          # exact literal required:
+          $aud = "sts.amazonaws.com"
+          # fetch OIDC id-token for that audience
+          $url  = "$env:ACTIONS_ID_TOKEN_REQUEST_URL&audience=$([uri]::EscapeDataString($aud))"
+          $jwt  = $env:ACTIONS_ID_TOKEN_REQUEST_TOKEN
+          $idtk = (Invoke-RestMethod -Method Get -Headers @{ Authorization = "bearer $jwt" } -Uri $url).value
+          # exchange for AWS creds
+          $assume = aws sts assume-role-with-web-identity --role-arn $env:AWS_ROLE_ARN --role-session-name "gha-$([Environment]::GetEnvironmentVariable('GITHUB_RUN_ID'))" --web-identity-token $idtk --duration-seconds 900 | ConvertFrom-Json
+          $c = $assume.Credentials
+          aws configure set aws_access_key_id     $c.AccessKeyId
+          aws configure set aws_secret_access_key $c.SecretAccessKey
+          aws configure set aws_session_token     $c.SessionToken
+          aws configure set region $env:AWS_REGION
+          # write object
+          $key = "synthetic/rawpwsh_$([Environment]::GetEnvironmentVariable('GITHUB_RUN_ID')).txt"
+          "run=$([Environment]::GetEnvironmentVariable('GITHUB_RUN_ID')) ts=$(Get-Date -Format o)" | Out-File "$env:RUNNER_TEMP/p.txt" -Encoding utf8
+          aws s3 cp "$env:RUNNER_TEMP/p.txt" "s3://$env:S3_BUCKET/$key" --sse aws:kms --sse-kms-key-id $env:KMS_KEY_ARN
+          Write-Host "WROTE s3://$env:S3_BUCKET/$key"
