@@ -53,4 +53,3 @@ jobs:
     "- Masters: $($obj.Masters) → $($obj.IA_M), $($obj.COLD_M)" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
     "- Abort MPU: $($obj.AbortMPU) (~7d)" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
     if(-not $obj.Pass){ throw "DS2 verification failed" }
-
