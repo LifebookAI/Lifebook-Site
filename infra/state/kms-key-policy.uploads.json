@@ -1,0 +1,135 @@
+{
+  "Version": "2012-10-17",
+  "Id": "cf-s3-oac",
+  "Statement": [
+    {
+      "Sid": "EnableIamPermissions",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::354630286254:root"
+      },
+      "Action": "kms:*",
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowUseFromS3",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:GenerateDataKey*",
+        "kms:Encrypt",
+        "kms:ReEncrypt*"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringLike": {
+          "kms:ViaService": "s3.us-east-1.amazonaws.com"
+        },
+        "ForAnyValue:StringLike": {
+          "kms:EncryptionContext:aws:s3:arn": [
+            "arn:aws:s3:::lifebook.ai",
+            "arn:aws:s3:::lifebook.ai/*"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "AllowS3CreateGrant",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "kms:CreateGrant",
+      "Resource": "*",
+      "Condition": {
+        "StringLike": {
+          "kms:ViaService": "s3.us-east-1.amazonaws.com"
+        },
+        "Bool": {
+          "kms:GrantIsForAWSResource": "true"
+        },
+        "ForAnyValue:StringLike": {
+          "kms:EncryptionContext:aws:s3:arn": [
+            "arn:aws:s3:::lifebook.ai",
+            "arn:aws:s3:::lifebook.ai/*"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "AllowS3RepRoleDecrypt",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::354630286254:role/lifebook-s3-replication-role"
+      },
+      "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowHeartbeatLambdaEncrypt",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::354630286254:role/lifebook-heartbeat-writer-role"
+      },
+      "Action": [
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowUseFromS3ForTheseBucketsOnly",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "*"
+      },
+      "Action": [
+        "kms:Encrypt",
+        "kms:Decrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "kms:CallerAccount": "354630286254",
+          "kms:ViaService": "s3.us-east-1.amazonaws.com"
+        },
+        "ForAnyValue:StringLike": {
+          "kms:EncryptionContext:aws:s3:arn": [
+            "arn:aws:s3:::lifebook-354630286254-prod-uploads",
+            "arn:aws:s3:::lifebook-354630286254-prod-uploads/*",
+            "arn:aws:s3:::lifebook-354630286254-prod-processed",
+            "arn:aws:s3:::lifebook-354630286254-prod-processed/*"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "AllowGithubOIDCEncryptForS3Synthetic",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::354630286254:role/GitHubOIDC_LifebookSite"
+      },
+      "Action": [
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "kms:ViaService": "s3.us-east-1.amazonaws.com"
+        },
+        "ForAnyValue:StringLike": {
+          "kms:EncryptionContext:aws:s3:arn": "arn:aws:s3:::lifebook.ai/synthetic/*"
+        }
+      }
+    }
+  ]
+}
