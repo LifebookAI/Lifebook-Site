@@ -1,0 +1,41 @@
+name: storage-ds2-verify
+on:
+  pull_request:
+    paths:
+      - "infra/aws/s3/**"
+      - "infra/ops/storage/**"
+  schedule:
+    - cron: "0 14 * * *"   # 09:00 ET (14:00 UTC)
+  workflow_dispatch: {}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  verify-ds2:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::354630286254:role/GitHubOIDC_LifebookSite
+          aws-region: us-east-1
+
+      - name: Verify DS2
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $env:AWS_PROFILE = ''  # OIDC creds, no profile
+          $env:AWS_REGION  = 'us-east-1'
+          $json = pwsh -File infra/ops/storage/verify-ds2.ps1 -Region $env:AWS_REGION -Bucket lifebook.ai -Json
+          $obj  = $json | ConvertFrom-Json
+          "# DS2 verification — " + ($obj.Pass ? "PASS" : "FAIL") | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+          "Bucket: $($obj.Bucket)  Region: $($obj.Region)"        | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+          "- Proxies: $($obj.Proxies) → $($obj.IA_P), $($obj.COLD_P)" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+          "- Masters: $($obj.Masters) → $($obj.IA_M), $($obj.COLD_M)" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+          "- Abort MPU: $($obj.AbortMPU) (~7d)"                   | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+          if (-not $obj.Pass) { throw 'DS2 verification failed' }

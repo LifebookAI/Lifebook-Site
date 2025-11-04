@@ -1,4 +1,4 @@
-﻿#requires -Version 7
+#requires -Version 7
 <#
 Usage:
   pwsh infra/ops/progress/progress.ps1 work
@@ -185,12 +185,7 @@ switch ($Cmd) {
     if (-not $Status) { $Status = '✔' }
     if (-not $Next -and $NextCsv) { $Next = $NextCsv -split '\s*\|\s*' }
 
-    $maybe     = $script:state | Where-Object {
-  ($_.PSObject.Properties['StepID']?.Value -eq $StepID) -or
-  ($_.PSObject.Properties['StepId']?.Value -eq $StepID) -or
-  ($_.PSObject.Properties['ID']?.Value     -eq $StepID) -or
-  ($_.PSObject.Properties['Step']?.Value   -eq $StepID)
-} | Select-Object -First 1
+    $maybe     = $script:state | Where-Object { $_.StepID -eq $StepID } | Select-Object -First 1
     $phaseEff  = if ($Phase) { $Phase } elseif ($maybe) { $maybe.Phase } else { $null }
     $titleEff  = if ($StepTitle) { $StepTitle } elseif ($maybe) { $maybe.StepTitle } else { $null }
 

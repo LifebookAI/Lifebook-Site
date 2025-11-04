@@ -1,7 +1,6 @@
 [
   {
     "Phase": "Phase 0 — Infra",
-    "StepID": "OPS.00",
     "StepTitle": "Progress infra",
     "Status": "✔",
     "Evidence": "progress.ps1 reset clean; guard auto-syncs MD",
@@ -106,11 +105,11 @@
         },
         "at": "2025-10-25T00:12:45Z"
       }
-    ]
+    ],
+    "StepID": "OPS.00"
   },
   {
     "Phase": "Phase 0 — Lifebook-Site",
-    "StepID": "REP.31",
     "StepTitle": "Protect-branches enforcer",
     "Status": "✔",
     "Evidence": "BPR id=BPR_kwDOPc61NM4EHhPz pattern=release/*; default=main prot=True; release/* protected=True",
@@ -233,11 +232,11 @@
           "StepTitle": "Protect-branches enforcer"
         }
       }
-    ]
+    ],
+    "StepID": "REP.31"
   },
   {
     "Phase": "Phase 0 — Infra",
-    "StepID": "EVT.05",
     "StepTitle": "EB→SNS KMS role+grant",
     "Status": "✔",
     "Evidence": "Role arn:aws:iam::354630286254:role/lifebook-eb-to-sns; topic policy allow-eb-role-publish-lifebook-eb-to-sns; KMS grant on 0586aab9… with EC=topicArn; DLQ removed; matched=2 invoked=2 failed=0",
@@ -308,11 +307,11 @@
         },
         "at": "2025-10-25T00:30:28Z"
       }
-    ]
+    ],
+    "StepID": "EVT.05"
   },
   {
     "Phase": "Phase 0 — Infra",
-    "StepID": "EVT.10",
     "StepTitle": "Eventing/alerts baseline green",
     "Status": "✔",
     "Evidence": "EB rules lifebook-ssm-rc-fail/sm-fail enabled; SNS arn:aws:sns:us-east-1:354630286254:lifebook-alerts; KMS key arn:aws:kms:us-east-1:354630286254:key/0586aab9-60ae-4931-b8dd-e0da232f6b1e; CW alarms wired; founder@uselifebook.ai subscribed",
@@ -338,11 +337,11 @@
         },
         "at": "2025-10-25T00:30:27Z"
       }
-    ]
+    ],
+    "StepID": "EVT.10"
   },
   {
     "Phase": "Phase 0 — Infra",
-    "StepID": "EVT.11",
     "StepTitle": "Eventing IaC + alarms follow-ups",
     "Status": "✔",
     "Evidence": "acct=354630286254; region=us-east-1; KMS-rotation=ON; EB(lifebook-cw-alarm-smoke-nightly)=ENABLED cron(15 9 * * ? *); SNS AllowEventBridge ArnEquals empty?=NO",
@@ -389,11 +388,11 @@
           "StepTitle": "Eventing IaC + alarms follow-ups"
         }
       }
-    ]
+    ],
+    "StepID": "EVT.11"
   },
   {
     "Phase": "Phase 0",
-    "StepID": "AUTH.SSO.01",
     "StepTitle": "Admin SSO lifebook-admin validated; dev pending",
     "Status": "✔",
     "Evidence": "Profile=lifebook-dev; StartURL=https://d-906629e799.awsapps.com/start; AccountAlias=n/a; Caller=arn:aws:sts::354630286254:assumed-role/AWSReservedSSO_AdministratorAccess_218fc3a66a7afc34/Founder; STSAccount=354630286254; Region=us-east-1",
@@ -440,11 +439,11 @@
           "StepTitle": "Admin SSO lifebook-admin validated; dev pending"
         }
       }
-    ]
+    ],
+    "StepID": "AUTH.SSO.01"
   },
   {
     "Phase": "Phase 0",
-    "StepID": "LEG.00",
     "StepTitle": "AUP / 0.7, 0.11",
     "Status": "✔",
     "Evidence": "AUP v0.11 draft at legal/AUP.md; review=2025-10-26→2025-10-31 tracked in ops/gates-status.json",
@@ -491,11 +490,11 @@
           "StepTitle": "AUP / 0.7, 0.11"
         }
       }
-    ]
+    ],
+    "StepID": "LEG.00"
   },
   {
     "Phase": "Phase 0 — Infra",
-    "StepID": "NET.10",
     "StepTitle": "Endpoints + routing applied",
     "Status": "✔",
     "Evidence": "S3 vpce-0a35ebea30f84a18b; DDB vpce-08c4ee079043266a1; RTB rtb-00a137769be488048; scripts scaffolded",
@@ -521,11 +520,11 @@
         },
         "at": "2025-10-25T00:30:28Z"
       }
-    ]
+    ],
+    "StepID": "NET.10"
   },
   {
     "Phase": "Phase 0 — Infra",
-    "StepID": "NET.20",
     "StepTitle": "Bastion follow-ups",
     "Status": "⏳",
     "Evidence": "NET.20 verify → scheduler-role-missing, no-bastion",
@@ -659,11 +658,11 @@
           "StepTitle": "Bastion follow-ups"
         }
       }
-    ]
+    ],
+    "StepID": "NET.20"
   },
   {
     "Phase": "Phase 0 — Infra",
-    "StepID": "EDGE.00",
     "StepTitle": "CloudFront behaviors + OAC on S3 origin",
     "Status": "✔",
     "Evidence": "Origin lifebook.ai.s3.us-east-1.amazonaws.com via OAC; no viewer headers; default root index.html; ViaService decrypts",
@@ -689,11 +688,11 @@
         },
         "at": "2025-10-25T00:30:29Z"
       }
-    ]
+    ],
+    "StepID": "EDGE.00"
   },
   {
     "Phase": "Phase 0 — Infra",
-    "StepID": "EDGE.01",
     "StepTitle": "Edge follow-ups",
     "Status": "✔",
     "Evidence": "checked=1 dists; no Host forwarded",
@@ -740,11 +739,11 @@
           "StepTitle": "Edge follow-ups"
         }
       }
-    ]
+    ],
+    "StepID": "EDGE.01"
   },
   {
     "Phase": "Phase 0 — Infra",
-    "StepID": "OPS.10",
     "StepTitle": "Paste-only workflow + heartbeat verifier",
     "Status": "✔",
     "Evidence": "infra/ops/heartbeat/verify-heartbeat.ps1; no stored secrets; idempotent flags",
@@ -770,11 +769,11 @@
         },
         "at": "2025-10-25T00:30:29Z"
       }
-    ]
+    ],
+    "StepID": "OPS.10"
   },
   {
     "Phase": "Phase 0 — Infra",
-    "StepID": "OPS.11",
     "StepTitle": "Ops follow-ups",
     "Status": "✔",
     "Evidence": "QuickVerify exit=0; ",
@@ -821,11 +820,11 @@
           "StepTitle": "Ops follow-ups"
         }
       }
-    ]
+    ],
+    "StepID": "OPS.11"
   },
   {
     "Phase": "Phase 0 — Synthetics",
-    "StepID": "MON.00",
     "StepTitle": "lifebook-cf-health canary healthy",
     "Status": "✔",
     "Evidence": "rate(5m), syn-nodejs-puppeteer-11.0; SuccessPercent & LatencyHigh OK; LG retention 30d; artifacts in s3://lifebook-synthetics-…",
@@ -851,11 +850,11 @@
         },
         "at": "2025-10-25T00:30:29Z"
       }
-    ]
+    ],
+    "StepID": "MON.00"
   },
   {
     "Phase": "Phase 0 — Synthetics",
-    "StepID": "MON.01",
     "StepTitle": "Synthetics follow-ups",
     "Status": "✔",
     "Evidence": "region=us-east-1; canaries=0; created=0; updated=0; unchanged=0; topic=arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
@@ -902,11 +901,11 @@
           "StepTitle": "Synthetics follow-ups"
         }
       }
-    ]
+    ],
+    "StepID": "MON.01"
   },
   {
     "Phase": "Phase 0 — S3 Artifacts",
-    "StepID": "STG.ART.01",
     "StepTitle": "Synthetics bucket hardened",
     "Status": "✔",
     "Evidence": "SSE-KMS default; PAB all true; new artifacts use key 0586aab9-…",
@@ -932,11 +931,11 @@
         },
         "at": "2025-10-25T00:30:30Z"
       }
-    ]
+    ],
+    "StepID": "STG.ART.01"
   },
   {
     "Phase": "Phase 0 — S3 Artifacts",
-    "StepID": "STG.ART.02",
     "StepTitle": "Artifacts follow-ups",
     "Status": "✔",
     "Evidence": "Bucket=lifebook-artifacts-354630286254-us-east-1; LogsBucket=lifebook-s3-logs-354630286254-us-east-1; Ownership=BucketOwnerPreferred; SSEAlgo=aws:kms; BucketKey=True; KMSAllow=arn:aws:kms:us-east-1:354630286254:key/97531fff-036c-4b72-b7b3-a1ad685110b4|97531fff-036c-4b72-b7b3-a1ad685110b4|arn:aws:kms:us-east-1:354630286254:alias/lifebook-s3-artifacts|alias/lifebook-s3-artifacts; PolicySIDs=DenyInsecureTransport,DenyIncorrectSSEHeader,DenyMissingSSEHeader,DenyWrongKmsKey,DenyMissingKmsKeyId; CloudTrailS3DataEvents=True",
@@ -1085,11 +1084,11 @@
           "StepTitle": "Artifacts follow-ups"
         }
       }
-    ]
+    ],
+    "StepID": "STG.ART.02"
   },
   {
     "Phase": "Phase 0 — Infra",
-    "StepID": "KMS.00",
     "StepTitle": "alias/lifebook-synthetics in use",
     "Status": "✔",
     "Evidence": "Key arn …0586aab9… used by SNS alerts + synthetics artifacts",
@@ -1115,11 +1114,11 @@
         },
         "at": "2025-10-25T00:30:30Z"
       }
-    ]
+    ],
+    "StepID": "KMS.00"
   },
   {
     "Phase": "Phase 0 — Infra",
-    "StepID": "KMS.ROT.01",
     "StepTitle": "Enable key rotation",
     "Status": "✔",
     "Evidence": "region=us-east-1; alias/lifebook-synthetics=ON; alias/lifebook-s3-prod=ON",
@@ -1166,11 +1165,11 @@
           "StepTitle": "Enable key rotation"
         }
       }
-    ]
+    ],
+    "StepID": "KMS.ROT.01"
   },
   {
     "Phase": "Phase 0 — Infra",
-    "StepID": "IAM.00",
     "StepTitle": "Canary role updated",
     "Status": "✔",
     "Evidence": "AWSLambdaBasicExecutionRole; CloudWatchSyntheticsFullAccess; inline metrics+KMS; trust: lambda + synthetics",
@@ -1196,11 +1195,11 @@
         },
         "at": "2025-10-25T00:30:30Z"
       }
-    ]
+    ],
+    "StepID": "IAM.00"
   },
   {
     "Phase": "Phase 0 — Infra",
-    "StepID": "IAM.03",
     "StepTitle": "Tighten S3 policy prefixes",
     "Status": "✔",
     "Evidence": "acct=354630286254; bucket=lifebook.ai; broad /* is read-only (no write/public); ok",
@@ -1247,11 +1246,11 @@
           "StepTitle": "Tighten S3 policy prefixes"
         }
       }
-    ]
+    ],
+    "StepID": "IAM.03"
   },
   {
     "Phase": "Phase 0 — Lifebook-Site",
-    "StepID": "SITE.CI.01",
     "StepTitle": "CI/Security hardening landed",
     "Status": "✔",
     "Evidence": "ci.yml, CodeQL, Dependabot, SECURITY.md, PR template, EOL guard; SSH signing; main protections with exact checks",
@@ -1277,11 +1276,11 @@
         },
         "at": "2025-10-25T00:30:31Z"
       }
-    ]
+    ],
+    "StepID": "SITE.CI.01"
   },
   {
     "Phase": "Phase 0 — Infra",
-    "StepID": "PREF.01",
     "StepTitle": "Preflight fixed and clean",
     "Status": "✔",
     "Evidence": "scripts/Preflight.ps1 -AllJson; strict-mode split; LF-only normalized",
@@ -1307,11 +1306,11 @@
         },
         "at": "2025-10-25T00:30:31Z"
       }
-    ]
+    ],
+    "StepID": "PREF.01"
   },
   {
     "Phase": "Phase 0 — Infra",
-    "StepID": "PREF.02",
     "StepTitle": "Preflight follow-ups",
     "Status": "✔",
     "Evidence": "QuickVerify exit=0; CI=.github/workflows/quick-verify.yml; sample=",
@@ -1358,11 +1357,11 @@
           "StepTitle": "Preflight follow-ups"
         }
       }
-    ]
+    ],
+    "StepID": "PREF.02"
   },
   {
     "Phase": "Phase 0 — Prod S3 Data",
-    "StepID": "STG.PROD.01",
     "StepTitle": "Prod buckets locked (Green)",
     "Status": "✔",
     "Evidence": "TLS-only; VPCE-only (vpce-0a35ebee30f84a18b); PutObject requires key 58765bb9-…; ViaService+EC; inside-VPC allowed/outside denied",
@@ -1388,11 +1387,11 @@
         },
         "at": "2025-10-25T00:30:32Z"
       }
-    ]
+    ],
+    "StepID": "STG.PROD.01"
   },
   {
     "Phase": "Phase 0 — Prod S3 Data",
-    "StepID": "STG.PROD.02",
     "StepTitle": "Prod S3 follow-ups",
     "Status": "✔",
     "Evidence": "Buckets=lifebook-354630286254-prod-processed,lifebook-354630286254-prod-uploads,lifebook-logs-prod,lifebook-prod-processed,lifebook-prod-processed-354630286254,lifebook-prod-uploads,lifebook-prod-uploads-354630286254,lifebook-tfstate-354630286254-us-east-1,lifebook.ai; LogBucket=lifebook-audit-logs-354630286254-us-east-1; KMSAlias=alias/lifebook-s3-prod; KMSRotation=; LoggingSet=lifebook-354630286254-prod-processed,lifebook-354630286254-prod-uploads,lifebook-logs-prod,lifebook-prod-processed,lifebook-prod-processed-354630286254,lifebook-prod-uploads; ConfigRules=; IaC=C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\storage\\prod\\prod-buckets.tf",
@@ -1456,11 +1455,11 @@
           "StepTitle": "Prod S3 follow-ups"
         }
       }
-    ]
+    ],
+    "StepID": "STG.PROD.02"
   },
   {
     "Phase": "Phase D.S2 — Catalog prefixes",
-    "StepID": "LFC.DS2",
     "StepTitle": "Catalog lifecycle",
     "Status": "✔",
     "Evidence": "acct=354630286254; region=us-east-1; lifecycle=ops/s3-lifecycle-catalog.json; lifebook-354630286254-prod-processed:OK(1); lifebook-354630286254-prod-uploads:OK(1); lifebook-logs-prod:OK(3); lifebook-prod-processed:OK(1); lifebook-prod-processed-354630286254:OK(1); lifebook-prod-uploads:OK(1); lifebook-prod-uploads-354630286254:OK(1)",
@@ -1507,11 +1506,11 @@
           "StepTitle": "Catalog lifecycle"
         }
       }
-    ]
+    ],
+    "StepID": "LFC.DS2"
   },
   {
     "Phase": "Phase 3 — 13A",
-    "StepID": "OIDC.01",
     "StepTitle": "GitHub OIDC secretless deploys",
     "Status": "✔",
     "Evidence": "Trust scoped to repo/env; session TTL ≤1h",
@@ -1537,11 +1536,11 @@
         },
         "at": "2025-10-25T00:30:32Z"
       }
-    ]
+    ],
+    "StepID": "OIDC.01"
   },
   {
     "Phase": "Phase 3 — 13A",
-    "StepID": "OIDC.02",
     "StepTitle": "Wire OIDC in workflow + docs",
     "Status": "✔",
     "Evidence": "provider=arn:aws:iam::354630286254:oidc-provider/token.actions.githubusercontent.com; role=arn:aws:iam::354630286254:role/GitHubActionsOIDC; repo=LifebookAI/Lifebook-Site; region=us-east-1",
@@ -1588,11 +1587,11 @@
           "StepTitle": "Wire OIDC in workflow + docs"
         }
       }
-    ]
+    ],
+    "StepID": "OIDC.02"
   },
   {
     "Phase": "Phase 0 — Infra",
-    "StepID": "OPS.12",
     "StepTitle": "Ops orchestrator committed (verify-retry + CW shape-safe)",
     "Status": "✔",
     "Evidence": "infra/ops/Invoke-LifebookOps.ps1 + run-LifebookOps.ps1; non-blocking 'Attempted' fallback; local state at %LOCALAPPDATA%\\Lifebook\\ops_state.json",
@@ -1622,11 +1621,11 @@
         },
         "at": "2025-10-25T04:02:24Z"
       }
-    ]
+    ],
+    "StepID": "OPS.12"
   },
   {
     "Phase": "Phase 0 — Infra",
-    "StepID": "P1.S1",
     "StepTitle": "",
     "Status": "✔",
     "Evidence": "PR #55 merged; workflows (dependabot-nightly.yml, codeql.yml) on main; branch protection requires CodeQL; Dependabot=0; checkpoint build-checkpoints.json",
@@ -1656,7 +1655,8 @@
           "StepTitle": null
         }
       }
-    ]
+    ],
+    "StepID": "P1.S1"
   },
   {
     "ts": "2025-11-03T09:27:48.4993724-05:00",
@@ -1675,7 +1675,6 @@
   },
   {
     "timestamp": "2025-11-03T15:25:17Z",
-    "step": "D.S2 S3 lifecycle + CODEOWNERS",
     "repo": "LifebookAI/Lifebook-Site",
     "pr": "#",
     "merge_commit": "",
@@ -1684,21 +1683,21 @@
       "Terraform / validate-ev11",
       "Terraform / validate-storage",
       "CodeQL"
-    ]
+    ],
+    "StepID": "D.S2 S3 lifecycle + CODEOWNERS"
   },
   {
     "timestamp": "2025-11-03T15:28:54Z",
-    "step": "D.S2 S3 lifecycle + CODEOWNERS",
     "repo": "LifebookAI/Lifebook-Site",
     "pr": "#",
     "merge_commit": "",
     "contexts": [
       "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]"
-    ]
+    ],
+    "StepID": "D.S2 S3 lifecycle + CODEOWNERS"
   },
   {
     "timestamp": "2025-11-03T15:31:41Z",
-    "step": "D.S2 S3 lifecycle + CODEOWNERS",
     "repo": "LifebookAI/Lifebook-Site",
     "pr": "#58",
     "merge_commit": "",
@@ -1707,11 +1706,11 @@
       "Terraform / validate-ev11",
       "Terraform / validate-storage",
       "CodeQL"
-    ]
+    ],
+    "StepID": "D.S2 S3 lifecycle + CODEOWNERS"
   },
   {
     "timestamp": "2025-11-03T15:36:12Z",
-    "step": "D.S2 S3 lifecycle + CODEOWNERS",
     "repo": "LifebookAI/Lifebook-Site",
     "pr": "#58",
     "merge_commit": "",
@@ -1720,59 +1719,59 @@
       "Terraform / validate-ev11",
       "Terraform / validate-storage",
       "CodeQL"
-    ]
+    ],
+    "StepID": "D.S2 S3 lifecycle + CODEOWNERS"
   },
   {
     "timestamp": "2025-11-03T15:39:00Z",
-    "step": "D.S2 S3 lifecycle + CODEOWNERS",
     "repo": "LifebookAI/Lifebook-Site",
     "pr": "#58",
     "merge_commit": "",
-    "contexts": "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]"
+    "contexts": "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]",
+    "StepID": "D.S2 S3 lifecycle + CODEOWNERS"
   },
   {
     "timestamp": "2025-11-03T15:49:57Z",
-    "step": "D.S2 S3 lifecycle + CODEOWNERS",
     "repo": "LifebookAI/Lifebook-Site",
     "pr": "#58",
     "merge_commit": "",
-    "contexts": "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]"
+    "contexts": "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]",
+    "StepID": "D.S2 S3 lifecycle + CODEOWNERS"
   },
   {
     "timestamp": "2025-11-03T16:01:43Z",
-    "step": "D.S2 S3 lifecycle + CODEOWNERS",
     "repo": "LifebookAI/Lifebook-Site",
     "pr": "#58",
     "merge_commit": "",
-    "contexts": "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]"
+    "contexts": "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]",
+    "StepID": "D.S2 S3 lifecycle + CODEOWNERS"
   },
   {
     "timestamp": "2025-11-03T16:05:08Z",
-    "step": "D.S2 S3 lifecycle + CODEOWNERS",
     "repo": "LifebookAI/Lifebook-Site",
     "pr": "#58",
     "merge_commit": "",
-    "contexts": "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]"
+    "contexts": "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]",
+    "StepID": "D.S2 S3 lifecycle + CODEOWNERS"
   },
   {
     "timestamp": "2025-11-03T16:17:48Z",
-    "step": "D.S2 S3 lifecycle + CODEOWNERS",
     "repo": "LifebookAI/Lifebook-Site",
     "pr": "#58",
     "merge_commit": "",
-    "contexts": "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]"
+    "contexts": "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]",
+    "StepID": "D.S2 S3 lifecycle + CODEOWNERS"
   },
   {
     "timestamp": "2025-11-03T16:31:22Z",
-    "step": "D.S2 S3 lifecycle + CODEOWNERS",
     "repo": "LifebookAI/Lifebook-Site",
     "pr": "#58",
     "merge_commit": "",
-    "contexts": "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]"
+    "contexts": "[\"Hygiene / precommit\",\"Terraform / validate-ev11\",\"Terraform / validate-storage\",\"CodeQL\"]",
+    "StepID": "D.S2 S3 lifecycle + CODEOWNERS"
   },
   {
     "Phase": "D",
-    "StepID": "D.S2",
     "StepTitle": "S3 lifecycle DS2 — catalog proxies IA30→GIR180; masters IA30→GIR90",
     "Status": "✔",
     "Evidence": "DS2 in S3 2025-11-03; Rules: catalog-proxies-ia30-glacierir180, catalog-masters-ia30-glacierir90; AbortMPU=abort-mpu-7d",
@@ -1780,6 +1779,7 @@
     "Blockers": "",
     "Next": "",
     "Owner": "Zach",
-    "Target": "2025-11-03"
+    "Target": "2025-11-03",
+    "StepID": "D.S2"
   }
 ]
