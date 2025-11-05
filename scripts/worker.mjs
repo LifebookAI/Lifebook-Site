@@ -4,6 +4,20 @@ import { handleTranscribe } from "./handlers/transcribe.mjs";
 
 const region = process.env.AWS_REGION || "us-east-1";
 const stage = process.env.APP_STAGE || (process.env.NODE_ENV === "production" ? "prod" : "dev");
+const cw = new CloudWatchClient({ region });
+async function emitJobMetrics(kind, stage, startedAtMs){
+  try {
+    const now = Date.now();
+    const latency = Math.max(0, now - (startedAtMs||now));
+    await cw.send(new PutMetricDataCommand({
+      Namespace: 'Lifebook/Jobs',
+      MetricData: [
+        { MetricName: 'TranscribeCompleted', Dimensions:[{Name:'Stage',Value:stage}], Timestamp: new Date(), Unit: 'Count', Value: 1 },
+        { MetricName: 'TranscribeLatencyMs', Dimensions:[{Name:'Stage',Value:stage}], Timestamp: new Date(), Unit: 'Milliseconds', Value: latency }
+      ]
+    }));
+  } catch(e){ console.warn('[metrics] put failed', e?.message||e); }
+}
 const secretName = process.env.APP_SECRETS_NAME || `lifebook/${stage}/app`;
 
 async function getSecretJson(name) {
@@ -33,7 +47,7 @@ async function main() {
     }));
     if (!Messages || Messages.length === 0) continue;
 
-    for (const m of Messages) {
+    for (const m of Messages) {\n      const startedAtMs = Date.now();
       try {
         const body = JSON.parse(m.Body ?? "{}");
         const name = body.name ?? "unknown";
