@@ -21,7 +21,6 @@ const nextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
-          // Report-Only in dev; tighten later to enforce
           { key: "Content-Security-Policy-Report-Only", value: csp }
         ]
       }

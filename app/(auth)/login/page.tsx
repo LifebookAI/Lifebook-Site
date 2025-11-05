@@ -5,7 +5,8 @@ export default function Page() {
   async function devLoginAction(formData: FormData) {
     'use server';
     const maxAge = 60 * 60 * 24;
-    cookies().set('lifebook_session', 'dev', { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge });
+    const c = await cookies(); // Next 15 server actions: cookies() is async
+    c.set('lifebook_session', 'dev', { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge });
     redirect('/dashboard');
   }
   return (
