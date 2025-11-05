@@ -43,3 +43,4 @@ Phase 0 — Infra | P1.S1 |  | ✔ | PR #55 merged; workflows (dependabot-nightl
 - 2025-11-04T23:44:50-05:00 — PR #67 reopened (if closed), checks nudged, auto-merge armed.
 - 2025-11-04T23:47:25-05:00 — PR #67 merged; protections verified; cleaned PR head.
 - 2025-11-04T23:50:53-05:00 — Cleaned local 'ci/guard-audit'; pruned remotes.
+- 2025-11-05T09:56:32-05:00 — Jan-1 Closed-Beta MVP plan created: milestone 'Beta Jan 1, 2026 (Closed Beta MVP)'; issues .
