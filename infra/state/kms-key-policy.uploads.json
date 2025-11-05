@@ -97,8 +97,8 @@
       "Resource": "*",
       "Condition": {
         "StringEquals": {
-          "kms:CallerAccount": "354630286254",
-          "kms:ViaService": "s3.us-east-1.amazonaws.com"
+          "kms:ViaService": "s3.us-east-1.amazonaws.com",
+          "kms:CallerAccount": "354630286254"
         },
         "ForAnyValue:StringLike": {
           "kms:EncryptionContext:aws:s3:arn": [

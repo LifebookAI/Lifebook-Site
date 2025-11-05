@@ -1,1 +1,21 @@
-"{\"Statement\":[{\"Condition\":{\"StringLike\":{\"token.actions.githubusercontent.com:sub\":[\"repo:LifebookAI/Lifebook-Site:ref:refs/heads/main\",\"repo:LifebookAI/Lifebook-Site:pull_request\"]},\"StringEquals\":{\"token.actions.githubusercontent.com:aud\":\"sts.amazonaws.com\"}},\"Action\":\"sts:AssumeRoleWithWebIdentity\",\"Effect\":\"Allow\",\"Principal\":{\"Federated\":null}}],\"Version\":\"2012-10-17\"}"
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "GitHubOIDCTrust",
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn:aws:iam::354630286254:oidc-provider/token.actions.githubusercontent.com"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+        },
+        "StringLike": {
+          "token.actions.githubusercontent.com:sub": "repo:LifebookAI/Lifebook-Site:*"
+        }
+      }
+    }
+  ]
+}
