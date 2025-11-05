@@ -1,5 +1,6 @@
 import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 
+type Jsonish = Record<string, unknown>;
 type JsonRecord = Record<string, string>;
 const _cache = new Map<string, JsonRecord>();
 
@@ -15,14 +16,13 @@ export async function getJsonSecret(
 
   const text =
     res.SecretString ??
-    (res.SecretBinary ? Buffer.from(res.SecretBinary as Uint8Array).toString('utf8') : '{}');
+    (res.SecretBinary ? Buffer.from(res.SecretBinary).toString('utf8') : '{}');
 
-  // Parse to unknown, then narrow to plain object and coerce values to string
   const parsed: unknown = JSON.parse(text);
   const out: JsonRecord = {};
   if (parsed && typeof parsed === 'object') {
-    for (const [k, v] of Object.entries(parsed as Record<string, unknown>)) {
-      out[k] = String(v);
+    for (const [k, v] of Object.entries(parsed as Jsonish)) {
+      out[k] = typeof v === 'string' ? v : JSON.stringify(v);
     }
   }
   _cache.set(name, out);
