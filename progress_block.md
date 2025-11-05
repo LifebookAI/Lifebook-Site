@@ -13,3 +13,8 @@ Phase 0 — Infra | P1.S1 |  | ✔ | PR #55 merged; workflows (dependabot-nightl
 - 2025-11-04T20:26:27-05:00 — EOL locked: repo renormalized to LF under .gitattributes + .editorconfig.
 - 2025-11-04T20:29:41-05:00 — Pre-commit hardening: pretty-format-json (build-progress) + forbid-CR hook; repo verified clean.
 - 2025-11-04T20:32:25-05:00 — Pre-commit local hooks added: pretty-build-progress-json + forbid-cr; LF/UTF-8 enforced.
+- 2025-11-04T20:49:22-05:00 — Pre-commit hardened (valid YAML + local hooks); repo LF-only; CR scans clean.
+- 2025-11-04T20:53:44-05:00 — Branch protection enforced on main (checks: pre-commit, CodeQL, EOL guard; PR review=1; linear history; admins enforced; signatures attempted).
+- 2025-11-04T20:56:41-05:00 — Branch protection tightened (checks: pre-commit, CodeQL, EOL guard; conv. resolution ON; admins enforced; linear history; signatures attempted).
+- 2025-11-04T21:00:43-05:00 — Guard aligned: contexts=[pre-commit, CodeQL, EOL guard (LF only)]; protection verified; retriggered guard.
+- 2025-11-04T21:06:12-05:00 — Guard audit workflow installed (expects ⊇ [pre-commit, CodeQL, EOL guard (LF only)] + admins/linear/conv-res/signatures); dispatched run.

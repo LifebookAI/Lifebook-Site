@@ -44,3 +44,82 @@
     "recover_rebase": true
   }
 }
+{
+  "timestamp": "2025-11-04T20:49:21-05:00",
+  "step": "OPS.PRECOMMIT",
+  "commit": "689236ed9cbb",
+  "settings": {
+    "pull.rebase": "true",
+    "merge.conflictStyle": "zdiff3",
+    "rebase.autoStash": "true",
+    "rerere.enabled": "true",
+    "core.safecrlf": "warn",
+    "core.autocrlf": "false"
+  },
+  "files": {
+    "precommit_yaml": true,
+    "forbid_hook": true,
+    "pretty_hook": true
+  }
+}
+{
+  "timestamp": "2025-11-04T20:53:44-05:00",
+  "step": "OPS.PROTECT",
+  "branch": "main",
+  "settings": {
+    "required_signatures_attempted": true,
+    "linear_history": true,
+    "enforce_admins": true,
+    "contexts": [
+      "pre-commit",
+      "CodeQL",
+      "EOL guard (LF only)"
+    ],
+    "pr_reviews": "1+ review; dismiss stale"
+  }
+}
+{
+  "timestamp": "2025-11-04T20:56:41-05:00",
+  "step": "OPS.PROTECT",
+  "branch": "main",
+  "settings": {
+    "contexts": [
+      "pre-commit",
+      "CodeQL",
+      "EOL guard (LF only)"
+    ],
+    "enforce_admins": true,
+    "pr_reviews": "1+ review; dismiss stale",
+    "linear_history": true,
+    "conv_resolution": true,
+    "signatures_attempted": true
+  }
+}
+{
+  "timestamp": "2025-11-04T21:00:43-05:00",
+  "step": "OPS.GUARD.ALIGN",
+  "branch": "main",
+  "commit": "bd64b44a847b",
+  "contexts": [
+    "pre-commit",
+    "CodeQL",
+    "EOL guard (LF only)"
+  ]
+}
+{
+  "timestamp": "2025-11-04T21:06:12-05:00",
+  "step": "OPS.GUARD.WORKFLOW",
+  "branch": "main",
+  "workflow": "_gh-view-protect.yml",
+  "asserts": {
+    "contexts_subset": [
+      "pre-commit",
+      "CodeQL",
+      "EOL guard (LF only)"
+    ],
+    "conv_resolution": true,
+    "admins_enforced": true,
+    "signatures": true,
+    "linear_history": true
+  }
+}

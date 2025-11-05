@@ -1,198 +1,61 @@
-name: Enforce branch protections
-
+name: view-protect (branch protection audit)
 on:
-  workf
-low_dispatch: {}
   workflow_dispatch:
-  sched
-ule:
-    - cron: "*/30 * * * *"
-  create: {}
-
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+permissions:
+  contents: read
+  actions: read
+  administration: read
 jobs:
-  protect:
-    # For `create`, only act
- on branches. For schedule/dispatch, always r
-un.
-    if: github.event_name != 'create' ||
-github.ref_type == 'branch'
-    runs-on: ubun
-tu-latest
-    permissions:
-      contents: re
-ad
-    env:
-      GH_TOKEN: ${{ secrets.REPO_
-ADMIN_TOKEN }}
-      OWNER: LifebookAI
-
-REPO: Lifebook-Site
-      SOURCE_BRANCH: main
-
-      REQUIRE_APPROVALS: "0"          # solo
- flow
-      REQUIRE_LAST_PUSH: "false"      #
- solo flow
-      MATCH_GLOBS: "release/* hotf
-ix/*"
+  audit:
+    runs-on: ubuntu-latest
     steps:
-      - name: gh and jq vers
-ions
-        run: |
-          gh --version
+      - name: Check branch protection
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const branch = 'main';
+            const expectedContexts = ["pre-commit","CodeQL","EOL guard (LF only)"];
+            function require(cond, msg){ if(!cond){ core.setFailed(msg); throw new Error(msg); } }
 
-        jq --version
+            const prot = await github.request('GET /repos/{owner}/{repo}/branches/{branch}/protection', {
+              owner: context.repo.owner, repo: context.repo.repo, branch
+            });
 
-      - name: Compute t
-arget branch list
-        id: branches
+            const p = prot.data;
+            const strict   = p.required_status_checks?.strict === true;
+            const contexts = p.required_status_checks?.contexts || [];
+            const admins   = p.enforce_admins?.enabled === true;
+            const linear   = p.required_linear_history?.enabled === true;
+            const convRes  = p.required_conversation_resolution?.enabled === true;
+            const reviews  = p.required_pull_request_reviews?.required_approving_review_count ?? 0;
+            const dismiss  = p.required_pull_request_reviews?.dismiss_stale_reviews === true;
 
-  shell: bash
-        run: |
-          set -e
-uo pipefail
-          targets=("$SOURCE_BRANC
-H")
-          if [[ "${{ github.event_name }}
-" == "create" && "${{ github.ref_type }}" ==
-"branch" ]]; then
-            targets+=("${{
-github.ref_name }}")
-          fi
-          m
-apfile -t all_branches < <(gh api "/repos/$OW
-NER/$REPO/branches?per_page=100" -q '.[].name
-')
-          for b in "${all_branches[@]}"; d
-o
-            for g in $MATCH_GLOBS; do
+            // Required signed commits (200 or 204 => enabled)
+            let signaturesEnabled = false;
+            try {
+              await github.request('GET /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures', {
+                owner: context.repo.owner, repo: context.repo.repo, branch
+              });
+              signaturesEnabled = true;
+            } catch (e) {
+              if (e.status === 204) signaturesEnabled = true;
+            }
 
-         case "$b" in
-                $g) tar
-gets+=("$b");;
-              esac
+            const missing = expectedContexts.filter(c => !contexts.includes(c));
 
- done
-          done
-          jq -n --argjso
-n arr "$(printf '%s\n' "${targets[@]}" | sort
- -u | jq -R . | jq -s .)" '$arr' | tee target
-s.json
-          echo "list=$(cat targets.jso
-n)" >> "$GITHUB_OUTPUT"
+            core.info(`strict=${strict} admins=${admins} linear=${linear} convRes=${convRes} reviews=${reviews} dismissStale=${dismiss} signatures=${signaturesEnabled}`);
+            core.info(`contexts=[${contexts.join(', ')}] expected=[${expectedContexts.join(', ')}]`);
 
-      - name: Build
-payload from SOURCE_BRANCH protections
+            require(strict, 'Required status checks must be strict.');
+            require(admins, 'Admins enforcement must be enabled.');
+            require(linear, 'Linear history must be enabled.');
+            require(convRes, 'Conversation resolution must be enabled.');
+            require(signaturesEnabled, 'Required signed commits must be enabled.');
+            require(reviews >= 1 && dismiss, 'At least 1 approving review and dismiss stale reviews are required.');
+            require(missing.length === 0, `Missing required check contexts: ${missing.join(', ')}`);
 
-  id: payload
-        shell: bash
-        run
-: |
-          set -euo pipefail
-          bp=
-"$(gh api "/repos/$OWNER/$REPO/branches/$SOUR
-CE_BRANCH/protection")" || bp=""
-          ch
-ecks_lines="$(echo "$bp" | jq -r '.required_s
-tatus_checks.checks // [] | .[].context')"
-
-        if [[ -z "$checks_lines" || "$checks_
-lines" == "null" ]]; then
-            checks_
-lines="$(echo "$bp" | jq -r '.required_status
-_checks.contexts // [] | .[]')"
-          fi
-
-          if [[ -z "$checks_lines" || "$check
-s_lines" == "null" ]]; then
-            check
-s_lines=$'EOL guard (LF only) / eol'
-
-  fi
-          checks_json="$(printf '%s\n' "
-$checks_lines" | jq -R '{context:.}' | jq -s
-.)"
-          jq -n \
-            --argjson c
-hecks "$checks_json" \
-            --arg appr
-ovals   "${REQUIRE_APPROVALS}" \
-
---argjson lastPush ${REQUIRE_LAST_PUSH} \
-
-         '{
-              required_status_che
-cks: { strict: true, checks: $checks },
-
-         enforce_admins: true,
-
-required_pull_request_reviews: {
-
-    required_approving_review_count: ($approv
-als|tonumber),
-                dismiss_stale_
-reviews: true,
-                require_code_o
-wner_reviews: false,
-                require_
-last_push_approval: $lastPush
-              }
-,
-              required_linear_history: true
-,
-              required_conversation_resolut
-ion: true,
-              restrictions: null
-
-           }' | tee payload.json
-          ec
-ho "path=payload.json" >> "$GITHUB_OUTPUT"
-
-
-     - name: Apply protections to targets
-
-     shell: bash
-        run: |
-          set
- -euo pipefail
-          payload="$(cat "${{
-steps.payload.outputs.path }}")"
-          jq
- -r '.[]' <<< '${{ steps.branches.outputs.lis
-t }}' | while read -r b; do
-            echo
-"Protecting $b …"
-            printf '%s' "
-$payload" | gh api --method PUT -H "Accept: a
-pplication/vnd.github+json" \
-              "
-/repos/$OWNER/$REPO/branches/$b/protection" -
--input -
-            gh api --method POST "/r
-epos/$OWNER/$REPO/branches/$b/protection/requ
-ired_signatures" >/dev/null 2>&1 || true
-
-      done
-
-      - name: Summary
-        she
-ll: bash
-        run: |
-          echo "== Su
-mmary =="
-          jq -r '.[]' <<< '${{ step
-s.branches.outputs.list }}' | while read -r b
-; do
-            gh api "/repos/$OWNER/$REPO/
-branches/$b/protection" \
-              -q "{
-branch:\"$b\",checks:(.required_status_checks
-.checks // []) | map(.context),strict:.requir
-ed_status_checks.strict,admins:.enforce_admin
-s.enabled,approvals:.required_pull_request_re
-views.required_approving_review_count,lastPus
-h:.required_pull_request_reviews.require_last
-_push_approval,linear:.required_linear_histor
-y.enabled,convo:.required_conversation_resolu
-tion.enabled}"
-          done
+            core.notice('Branch protection audit passed.');
