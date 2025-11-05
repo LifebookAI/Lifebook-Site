@@ -1,87 +1,174 @@
-{
-  "timestamp": "2025-11-05T11:07:08",
-  "tag": "checkpoint/phase4.step18/20251105_1107",
-  "branch": "ops/beta-plan-jan1-20251105-095634",
-  "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
-  "step": "Phase4.Step18",
-  "title": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
-  "status": "✔",
-  "evidence": {
-    "node": "v22.18.0",
-    "npm": "10.9.3",
-    "secrets": [
-      "lifebook/dev/app",
-      "lifebook/prod/app"
+[
+  {
+    "timestamp": "2025-11-05T11:07:08",
+    "tag": "checkpoint/phase4.step18/20251105_1107",
+    "branch": "ops/beta-plan-jan1-20251105-095634",
+    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+    "step": "Phase4.Step18",
+    "title": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
+    "status": "✔",
+    "evidence": {
+      "node": "v22.18.0",
+      "npm": "10.9.3",
+      "secrets": [
+        "lifebook/dev/app",
+        "lifebook/prod/app"
+      ],
+      "hashes": [
+        {
+          "file": "package.json",
+          "sha256": "BB5DB004272F24F2B4971B033FA6ACB22D9659E237638FD330D9E17847380AA1"
+        },
+        {
+          "file": "tsconfig.json",
+          "sha256": "B1AFF0E999D3096A80067EE3E27119088259766BCABDA9F4A5DE9248E2B215B9"
+        },
+        {
+          "file": "next.config.mjs",
+          "sha256": "D89E67505BDD63929298457CB668B6F0A78A8B1C3920F648C7211C42177A7112"
+        },
+        {
+          "file": ".nvmrc",
+          "sha256": "1FBB92631D52373701BB35D0A63CF732C210AB8ABE2430D79FF7EEA3CDAC9EC2"
+        },
+        {
+          "file": ".gitignore",
+          "sha256": "649971C9856A2A3567E73CB9C0913C439A626A25F365AFCBEB716D92565BDCC1"
+        },
+        {
+          "file": "app/layout.tsx",
+          "sha256": "E47B2BE4287F463E9D1A13A60679EC53825E7275EA4ACEC5ADD2FCB806BF98E4"
+        },
+        {
+          "file": "app/page.tsx",
+          "sha256": "2442FC7B4EAC6965B9641EEDF13082070E0A93A7C6797758696ECF1241935900"
+        },
+        {
+          "file": "app/dashboard/page.tsx",
+          "sha256": "084C70D7D5066863D662828DE4C79261284B6A6E685FDFFC892EFB74FEAC171C"
+        },
+        {
+          "file": "app/(auth)/login/page.tsx",
+          "sha256": "D4B268AE084A989834B972ECE6CFB3909060117EB14FF8E104C89AF013D4DED2"
+        },
+        {
+          "file": "app/api/health/route.ts",
+          "sha256": "A18F29B259AA13B2CD352B08E9D45BF53A240A7BCFB84C1914B785000D7AD93E"
+        },
+        {
+          "file": "lib/env.ts",
+          "sha256": "42D31417B9ABC4171D57F6F879651D7AD04D0DFFE3298274169BCCB757548733"
+        },
+        {
+          "file": "lib/aws/secrets.ts",
+          "sha256": "585DC70D34B4B50B19045BCE181A0867CA03AA3863855B5572E91A681D417CCB"
+        },
+        {
+          "file": "styles/globals.css",
+          "sha256": "BC916BB8E935CA431D557AF55081DE97C27B5984B1F17C43BE6F13A2C1F3ED18"
+        },
+        {
+          "file": "middleware.ts",
+          "sha256": "5E1D15D050936F4F5546726CDAA703E5C9A9475109F00ECC057E1A4C2DBC94DF"
+        }
+      ],
+      "pkgTree": "@lifebook/site@0.1.0 C:\\Users\\zacha\\src\\Lifebook-Site\r\n+-- @aws-sdk/client-secrets-manager@3.922.0\r\n+-- @emnapi/runtime@1.6.0 extraneous\r\n+-- @eslint/eslintrc@3.3.1\r\n+-- @tailwindcss/postcss@4.1.16\r\n+-- @types/node@20.19.19\r\n+-- @types/react-dom@19.2.0\r\n+-- @types/react@19.2.0\r\n+-- eslint-config-next@15.5.4\r\n+-- eslint@9.37.0\r\n+-- next@15.4.7\r\n+-- react-dom@19.2.0\r\n+-- react@19.2.0\r\n+-- tailwindcss@4.1.16\r\n+-- typescript-eslint@8.45.0\r\n`-- typescript@5.9.3\r\n\r\n",
+      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+    },
+    "decisions": [
+      "Zod strict env with Secrets Manager fallback (USE_AWS_SECRETS=1 or prod).",
+      "CSP Report-Only in dev via next.config.mjs; enforce later per 0.4.",
+      "Middleware cookie-guard protects /dashboard until Step 17 auth."
     ],
-    "hashes": [
-      {
-        "file": "package.json",
-        "sha256": "BB5DB004272F24F2B4971B033FA6ACB22D9659E237638FD330D9E17847380AA1"
-      },
-      {
-        "file": "tsconfig.json",
-        "sha256": "B1AFF0E999D3096A80067EE3E27119088259766BCABDA9F4A5DE9248E2B215B9"
-      },
-      {
-        "file": "next.config.mjs",
-        "sha256": "D89E67505BDD63929298457CB668B6F0A78A8B1C3920F648C7211C42177A7112"
-      },
-      {
-        "file": ".nvmrc",
-        "sha256": "1FBB92631D52373701BB35D0A63CF732C210AB8ABE2430D79FF7EEA3CDAC9EC2"
-      },
-      {
-        "file": ".gitignore",
-        "sha256": "649971C9856A2A3567E73CB9C0913C439A626A25F365AFCBEB716D92565BDCC1"
-      },
-      {
-        "file": "app/layout.tsx",
-        "sha256": "E47B2BE4287F463E9D1A13A60679EC53825E7275EA4ACEC5ADD2FCB806BF98E4"
-      },
-      {
-        "file": "app/page.tsx",
-        "sha256": "2442FC7B4EAC6965B9641EEDF13082070E0A93A7C6797758696ECF1241935900"
-      },
-      {
-        "file": "app/dashboard/page.tsx",
-        "sha256": "084C70D7D5066863D662828DE4C79261284B6A6E685FDFFC892EFB74FEAC171C"
-      },
-      {
-        "file": "app/(auth)/login/page.tsx",
-        "sha256": "D4B268AE084A989834B972ECE6CFB3909060117EB14FF8E104C89AF013D4DED2"
-      },
-      {
-        "file": "app/api/health/route.ts",
-        "sha256": "A18F29B259AA13B2CD352B08E9D45BF53A240A7BCFB84C1914B785000D7AD93E"
-      },
-      {
-        "file": "lib/env.ts",
-        "sha256": "42D31417B9ABC4171D57F6F879651D7AD04D0DFFE3298274169BCCB757548733"
-      },
-      {
-        "file": "lib/aws/secrets.ts",
-        "sha256": "585DC70D34B4B50B19045BCE181A0867CA03AA3863855B5572E91A681D417CCB"
-      },
-      {
-        "file": "styles/globals.css",
-        "sha256": "BC916BB8E935CA431D557AF55081DE97C27B5984B1F17C43BE6F13A2C1F3ED18"
-      },
-      {
-        "file": "middleware.ts",
-        "sha256": "5E1D15D050936F4F5546726CDAA703E5C9A9475109F00ECC057E1A4C2DBC94DF"
-      }
-    ],
-    "pkgTree": "@lifebook/site@0.1.0 C:\\Users\\zacha\\src\\Lifebook-Site\r\n+-- @aws-sdk/client-secrets-manager@3.922.0\r\n+-- @emnapi/runtime@1.6.0 extraneous\r\n+-- @eslint/eslintrc@3.3.1\r\n+-- @tailwindcss/postcss@4.1.16\r\n+-- @types/node@20.19.19\r\n+-- @types/react-dom@19.2.0\r\n+-- @types/react@19.2.0\r\n+-- eslint-config-next@15.5.4\r\n+-- eslint@9.37.0\r\n+-- next@15.4.7\r\n+-- react-dom@19.2.0\r\n+-- react@19.2.0\r\n+-- tailwindcss@4.1.16\r\n+-- typescript-eslint@8.45.0\r\n`-- typescript@5.9.3\r\n\r\n",
-    "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+    "next": [
+      "18A — Job orchestration & idempotency (SQS + worker baseline).",
+      "19 — Transcription pipeline skeleton (Whisper v3 stub) behind feature flag.",
+      "Wire CI check for typecheck/build on PRs."
+    ]
   },
-  "decisions": [
-    "Zod strict env with Secrets Manager fallback (USE_AWS_SECRETS=1 or prod).",
-    "CSP Report-Only in dev via next.config.mjs; enforce later per 0.4.",
-    "Middleware cookie-guard protects /dashboard until Step 17 auth."
-  ],
-  "next": [
-    "18A — Job orchestration & idempotency (SQS + worker baseline).",
-    "19 — Transcription pipeline skeleton (Whisper v3 stub) behind feature flag.",
-    "Wire CI check for typecheck/build on PRs."
-  ]
-}
+  {
+    "timestamp": "2025-11-05T11:13:26",
+    "tag": "checkpoint/phase4.step18/20251105_1113",
+    "branch": "ops/beta-plan-jan1-20251105-095634",
+    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+    "step": "Phase4.Step18",
+    "title": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
+    "status": "✔",
+    "evidence": {
+      "node": "v22.18.0",
+      "npm": "10.9.3",
+      "deps": [
+        "zod",
+        "dotenv"
+      ],
+      "hashes": [
+        {
+          "file": "package.json",
+          "sha256": "94D030E96B6416F500A25166FED2B4E6C693253D36B4F30D4E0273788C556342"
+        },
+        {
+          "file": "tsconfig.json",
+          "sha256": "B1AFF0E999D3096A80067EE3E27119088259766BCABDA9F4A5DE9248E2B215B9"
+        },
+        {
+          "file": "next.config.mjs",
+          "sha256": "D89E67505BDD63929298457CB668B6F0A78A8B1C3920F648C7211C42177A7112"
+        },
+        {
+          "file": ".nvmrc",
+          "sha256": "1FBB92631D52373701BB35D0A63CF732C210AB8ABE2430D79FF7EEA3CDAC9EC2"
+        },
+        {
+          "file": ".gitignore",
+          "sha256": "649971C9856A2A3567E73CB9C0913C439A626A25F365AFCBEB716D92565BDCC1"
+        },
+        {
+          "file": "app/layout.tsx",
+          "sha256": "E47B2BE4287F463E9D1A13A60679EC53825E7275EA4ACEC5ADD2FCB806BF98E4"
+        },
+        {
+          "file": "app/page.tsx",
+          "sha256": "2442FC7B4EAC6965B9641EEDF13082070E0A93A7C6797758696ECF1241935900"
+        },
+        {
+          "file": "app/dashboard/page.tsx",
+          "sha256": "084C70D7D5066863D662828DE4C79261284B6A6E685FDFFC892EFB74FEAC171C"
+        },
+        {
+          "file": "app/(auth)/login/page.tsx",
+          "sha256": "D4B268AE084A989834B972ECE6CFB3909060117EB14FF8E104C89AF013D4DED2"
+        },
+        {
+          "file": "app/api/health/route.ts",
+          "sha256": "A18F29B259AA13B2CD352B08E9D45BF53A240A7BCFB84C1914B785000D7AD93E"
+        },
+        {
+          "file": "lib/env.ts",
+          "sha256": "42D31417B9ABC4171D57F6F879651D7AD04D0DFFE3298274169BCCB757548733"
+        },
+        {
+          "file": "lib/aws/secrets.ts",
+          "sha256": "585DC70D34B4B50B19045BCE181A0867CA03AA3863855B5572E91A681D417CCB"
+        },
+        {
+          "file": "styles/globals.css",
+          "sha256": "BC916BB8E935CA431D557AF55081DE97C27B5984B1F17C43BE6F13A2C1F3ED18"
+        },
+        {
+          "file": "middleware.ts",
+          "sha256": "5E1D15D050936F4F5546726CDAA703E5C9A9475109F00ECC057E1A4C2DBC94DF"
+        }
+      ],
+      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+    },
+    "decisions": [
+      "Add zod + dotenv to satisfy env schema + dev .env load.",
+      "Keep CSP in Report-Only until hardening step."
+    ],
+    "next": [
+      "18A — Job orchestration & idempotency (SQS + worker baseline).",
+      "19 — Transcription pipeline skeleton behind feature flag.",
+      "CI: add typecheck/build job on PRs."
+    ]
+  }
+]

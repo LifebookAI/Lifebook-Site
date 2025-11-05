@@ -48,5 +48,28 @@
       "Wire CI check for typecheck/build on PRs."
     ],
     "Timestamp": "2025-11-05T11:07:08"
+  },
+  {
+    "Phase": 4,
+    "StepID": "18",
+    "StepTitle": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
+    "Status": "✔",
+    "Owner": "Founder",
+    "Target": "2026-01-01 (Closed Beta MVP)",
+    "Evidence": [
+      "Typecheck + build green after installing zod + dotenv",
+      "Branch pushed: ops/beta-plan-jan1-20251105-095634",
+      "Tag exists: checkpoint/phase4.step18/20251105_1113"
+    ],
+    "Decisions": [
+      "Add zod + dotenv to satisfy env schema + dev .env load.",
+      "Keep CSP in Report-Only until hardening step."
+    ],
+    "Next": [
+      "18A — Job orchestration & idempotency (SQS + worker baseline).",
+      "19 — Transcription pipeline skeleton behind feature flag.",
+      "CI: add typecheck/build job on PRs."
+    ],
+    "Timestamp": "2025-11-05T11:13:26"
   }
 ]

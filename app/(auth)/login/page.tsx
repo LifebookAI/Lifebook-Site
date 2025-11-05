@@ -2,10 +2,10 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 export default function Page() {
-  async function devLoginAction(formData: FormData) {
+  async function devLoginAction(_formData: FormData) {
     'use server';
     const maxAge = 60 * 60 * 24;
-    const c = await cookies(); // Next 15 server actions: cookies() is async
+    const c = await cookies(); // Next 15 server actions: cookies() returns a Promise
     c.set('lifebook_session', 'dev', { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge });
     redirect('/dashboard');
   }
