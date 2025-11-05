@@ -1,16 +1,33 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: v4.6.0
     hooks:
       - id: check-merge-conflict
+        name: check for merge conflicts
       - id: end-of-file-fixer
+        name: fix end of files
       - id: trailing-whitespace
+        name: trim trailing whitespace
       - id: mixed-line-ending
+        name: mixed line ending
       - id: check-added-large-files
+        name: check for added large files
+
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.45.0
+    rev: v0.39.0
     hooks:
       - id: markdownlint
-        args: ["--fix"]
-        additional_dependencies:
-          - "markdownlint-rule-search-replace@1.0.0"
+
+  - repo: local
+    hooks:
+      - id: pretty-build-progress-json
+        name: Pretty JSON for logs/build-progress.json
+        entry: python tools/precommit/pretty_build_progress.py
+        language: python
+        files: ^logs/build-progress\.json$
+
+      - id: forbid-cr
+        name: Forbid carriage return characters in text files
+        entry: python tools/precommit/forbid_cr.py
+        language: python
+        types: [text]

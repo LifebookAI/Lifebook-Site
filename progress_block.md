@@ -11,3 +11,5 @@ Phase 0 — Infra | P1.S1 |  | ✔ | PR #55 merged; workflows (dependabot-nightl
 - 2025-11-04T19:40:42-05:00 — EVT.11 green: OIDC trust OK; VPCE Deny carved out via NotResource=synthetic/*; KMS via S3 OK; run **19085788940** wrote **s3://lifebook.ai/synthetic/rawpwsh_19085788940.txt** (ETag "3069cd1b6b16bdd58535d0d94d84185a").
 - 2025-11-04T20:16:48-05:00 — Repo guardrails set (pull.rebase, autoStash, rerere, zdiff3, safecrlf, autocrlf=false); added **scripts/recover-rebase.ps1** (continue/abort + swap cleanup).
 - 2025-11-04T20:26:27-05:00 — EOL locked: repo renormalized to LF under .gitattributes + .editorconfig.
+- 2025-11-04T20:29:41-05:00 — Pre-commit hardening: pretty-format-json (build-progress) + forbid-CR hook; repo verified clean.
+- 2025-11-04T20:32:25-05:00 — Pre-commit local hooks added: pretty-build-progress-json + forbid-cr; LF/UTF-8 enforced.
