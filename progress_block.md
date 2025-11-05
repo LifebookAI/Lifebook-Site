@@ -9,3 +9,4 @@ Phase 0 — Infra | P1.S1 |  | ✔ | PR #55 merged; workflows (dependabot-nightl
 - 2025-11-04T18:16:22-05:00 — Zero-actions CI on **main**: run **19085788940**; verified **s3://lifebook.ai/synthetic/rawpwsh_19085788940.txt**.
 - 2025-11-04T19:38:47-05:00 — EVT.11 green: OIDC trust OK; VPCE Deny carved out via NotResource=synthetic/*; KMS via S3 OK; run **19085788940** wrote **s3://lifebook.ai/synthetic/rawpwsh_19085788940.txt** (ETag "3069cd1b6b16bdd58535d0d94d84185a").
 - 2025-11-04T19:40:42-05:00 — EVT.11 green: OIDC trust OK; VPCE Deny carved out via NotResource=synthetic/*; KMS via S3 OK; run **19085788940** wrote **s3://lifebook.ai/synthetic/rawpwsh_19085788940.txt** (ETag "3069cd1b6b16bdd58535d0d94d84185a").
+- 2025-11-04T20:16:48-05:00 — Repo guardrails set (pull.rebase, autoStash, rerere, zdiff3, safecrlf, autocrlf=false); added **scripts/recover-rebase.ps1** (continue/abort + swap cleanup).
