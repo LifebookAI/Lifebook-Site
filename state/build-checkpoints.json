@@ -27,3 +27,20 @@
   "vpce_carve": true,
   "kms_ok": true
 }
+{
+  "timestamp": "2025-11-04T20:18:07-05:00",
+  "step": "OPS.GUARDRAILS",
+  "branch": "main",
+  "settings": {
+    "pull.rebase": "true",
+    "merge.conflictStyle": "zdiff3",
+    "rebase.autoStash": "true",
+    "rerere.enabled": "true",
+    "core.safecrlf": "warn",
+    "core.autocrlf": "false"
+  },
+  "files": {
+    "gitattributes": true,
+    "recover_rebase": true
+  }
+}
