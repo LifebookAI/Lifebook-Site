@@ -1,4 +1,5 @@
 import { SQSClient, ReceiveMessageCommand, DeleteMessageCommand, ChangeMessageVisibilityCommand } from "@aws-sdk/client-sqs";
+import { CloudWatchClient, PutMetricDataCommand } from "@aws-sdk/client-cloudwatch";
 import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
 import { handleTranscribe } from "./handlers/transcribe.mjs";
 
@@ -47,7 +48,8 @@ async function main() {
     }));
     if (!Messages || Messages.length === 0) continue;
 
-    for (const m of Messages) {\n      const startedAtMs = Date.now();
+    for (const m of Messages) {
+      const startedAtMs = Date.now();\n      const startedAtMs = Date.now();
       try {
         const body = JSON.parse(m.Body ?? "{}");
         const name = body.name ?? "unknown";
