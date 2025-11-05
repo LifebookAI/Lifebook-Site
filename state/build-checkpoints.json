@@ -1,0 +1,29 @@
+{
+  "timestamp": "2025-11-04T18:16:22-05:00",
+  "repo": "LifebookAI/Lifebook-Site",
+  "workflow_file": ".github/workflows/presign-upload-rawpwsh.yml",
+  "run_id": 19085788940,
+  "s3_bucket": "lifebook.ai",
+  "s3_key": "synthetic/rawpwsh_19085788940.txt",
+  "region": "us-east-1",
+  "kms_key_arn": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
+  "oidc_role_arn": "arn:aws:iam::354630286254:role/GitHubOIDC_LifebookSite",
+  "verify": {
+    "lastModified": "2025-11-04T18:16:12-05:00",
+    "etag": "\"3069cd1b6b16bdd58535d0d94d84185a\"",
+    "size": 53
+  }
+}
+{
+  "timestamp": "2025-11-04T19:38:47-05:00",
+  "step": "EVT.11",
+  "run_id": 19085788940,
+  "s3_bucket": "lifebook.ai",
+  "s3_key": "synthetic/rawpwsh_19085788940.txt",
+  "etag": "\"3069cd1b6b16bdd58535d0d94d84185a\"",
+  "kms_sse": "aws:kms",
+  "oidc_role": "arn:aws:iam::354630286254:role/GitHubOIDC_LifebookSite",
+  "trust_ok": true,
+  "vpce_carve": true,
+  "kms_ok": true
+}

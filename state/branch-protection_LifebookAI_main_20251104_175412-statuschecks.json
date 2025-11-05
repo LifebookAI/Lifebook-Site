@@ -1,0 +1,64 @@
+{
+  "url": "https://api.github.com/repos/LifebookAI/Lifebook-Site/branches/main/protection/required_status_checks",
+  "strict": true,
+  "contexts": [
+    "build",
+    "lint",
+    "test",
+    "eol",
+    "precommit",
+    "validate-ev11",
+    "validate-storage",
+    "Analyze (javascript)",
+    "storage-ds2-verify",
+    "CodeQL",
+    "storage-ds2-verify / verify-ds2"
+  ],
+  "contexts_url": "https://api.github.com/repos/LifebookAI/Lifebook-Site/branches/main/protection/required_status_checks/contexts",
+  "checks": [
+    {
+      "context": "build",
+      "app_id": 15368
+    },
+    {
+      "context": "lint",
+      "app_id": 15368
+    },
+    {
+      "context": "test",
+      "app_id": 15368
+    },
+    {
+      "context": "eol",
+      "app_id": 15368
+    },
+    {
+      "context": "precommit",
+      "app_id": 15368
+    },
+    {
+      "context": "validate-ev11",
+      "app_id": 15368
+    },
+    {
+      "context": "validate-storage",
+      "app_id": 15368
+    },
+    {
+      "context": "Analyze (javascript)",
+      "app_id": 15368
+    },
+    {
+      "context": "storage-ds2-verify",
+      "app_id": null
+    },
+    {
+      "context": "CodeQL",
+      "app_id": 57789
+    },
+    {
+      "context": "storage-ds2-verify / verify-ds2",
+      "app_id": null
+    }
+  ]
+}

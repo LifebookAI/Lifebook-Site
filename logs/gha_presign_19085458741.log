@@ -1,0 +1,54 @@
+write	Set up job	﻿2025-11-04T23:01:36.6409830Z Current runner version: '2.329.0'
+write	Set up job	2025-11-04T23:01:36.6434048Z ##[group]Runner Image Provisioner
+write	Set up job	2025-11-04T23:01:36.6434857Z Hosted Compute Agent
+write	Set up job	2025-11-04T23:01:36.6435499Z Version: 20251016.436
+write	Set up job	2025-11-04T23:01:36.6436055Z Commit: 8ab8ac8bfd662a3739dab9fe09456aba92132568
+write	Set up job	2025-11-04T23:01:36.6436736Z Build Date: 2025-10-15T20:44:12Z
+write	Set up job	2025-11-04T23:01:36.6437417Z ##[endgroup]
+write	Set up job	2025-11-04T23:01:36.6437909Z ##[group]Operating System
+write	Set up job	2025-11-04T23:01:36.6438461Z Ubuntu
+write	Set up job	2025-11-04T23:01:36.6438992Z 24.04.3
+write	Set up job	2025-11-04T23:01:36.6439499Z LTS
+write	Set up job	2025-11-04T23:01:36.6439915Z ##[endgroup]
+write	Set up job	2025-11-04T23:01:36.6440460Z ##[group]Runner Image
+write	Set up job	2025-11-04T23:01:36.6441325Z Image: ubuntu-24.04
+write	Set up job	2025-11-04T23:01:36.6441849Z Version: 20251030.96.2
+write	Set up job	2025-11-04T23:01:36.6442898Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251030.96/images/ubuntu/Ubuntu2404-Readme.md
+write	Set up job	2025-11-04T23:01:36.6444266Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251030.96
+write	Set up job	2025-11-04T23:01:36.6445487Z ##[endgroup]
+write	Set up job	2025-11-04T23:01:36.6446479Z ##[group]GITHUB_TOKEN Permissions
+write	Set up job	2025-11-04T23:01:36.6448463Z Contents: read
+write	Set up job	2025-11-04T23:01:36.6449421Z Metadata: read
+write	Set up job	2025-11-04T23:01:36.6449910Z ##[endgroup]
+write	Set up job	2025-11-04T23:01:36.6452373Z Secret source: Actions
+write	Set up job	2025-11-04T23:01:36.6453493Z Prepare workflow directory
+write	Set up job	2025-11-04T23:01:36.6839673Z Prepare all required actions
+write	Set up job	2025-11-04T23:01:36.6890143Z Complete job name: write
+write	Write object via OIDC + AWS CLI (raw pwsh)	﻿2025-11-04T23:01:37.2786524Z ##[group]Run # exact literal required:
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.2787528Z [36;1m# exact literal required:[0m
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.2788288Z [36;1m$aud = "sts.amazonaws.com"[0m
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.2789280Z [36;1m$url  = "$env:ACTIONS_ID_TOKEN_REQUEST_URL&audience=$([uri]::EscapeDataString($aud))"[0m
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.2790372Z [36;1m$jwt  = $env:ACTIONS_ID_TOKEN_REQUEST_TOKEN[0m
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.2791717Z [36;1m$idtk = (Invoke-RestMethod -Method Get -Headers @{ Authorization = "bearer $jwt" } -Uri $url).value[0m
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.2793991Z [36;1m$assume = aws sts assume-role-with-web-identity --role-arn $env:AWS_ROLE_ARN --role-session-name "gha-$([Environment]::GetEnvironmentVariable('GITHUB_RUN_ID'))" --web-identity-token $idtk --duration-seconds 900 | ConvertFrom-Json[0m
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.2795953Z [36;1m$c = $assume.Credentials[0m
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.2796847Z [36;1maws configure set aws_access_key_id     $c.AccessKeyId[0m
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.2797878Z [36;1maws configure set aws_secret_access_key $c.SecretAccessKey[0m
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.2799075Z [36;1maws configure set aws_session_token     $c.SessionToken[0m
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.2799989Z [36;1maws configure set region $env:AWS_REGION[0m
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.2801231Z [36;1m$key = "synthetic/rawpwsh_$([Environment]::GetEnvironmentVariable('GITHUB_RUN_ID')).txt"[0m
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.2802906Z [36;1m"run=$([Environment]::GetEnvironmentVariable('GITHUB_RUN_ID')) ts=$(Get-Date -Format o)" | Out-File "$env:RUNNER_TEMP/p.txt" -Encoding utf8[0m
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.2804546Z [36;1maws s3 cp "$env:RUNNER_TEMP/p.txt" "s3://$env:S3_BUCKET/$key" --sse aws:kms --sse-kms-key-id $env:KMS_KEY_ARN[0m
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.2805689Z [36;1mWrite-Host "WROTE s3://$env:S3_BUCKET/$key"[0m
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.3940659Z shell: /usr/bin/pwsh -command ". '{0}'"
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.3942301Z env:
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.3942892Z   AWS_REGION: us-east-1
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.3943597Z   AWS_ROLE_ARN: arn:aws:iam::354630286254:role/GitHubOIDC_LifebookSite
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.3944496Z   S3_BUCKET: lifebook.ai
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.3945322Z   KMS_KEY_ARN: arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:37.3946277Z ##[endgroup]
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:50.2442405Z upload failed: ../../_temp/p.txt to s3://lifebook.ai/synthetic/rawpwsh_19085458741.txt An error occurred (AccessDenied) when calling the PutObject operation: User: arn:aws:sts::354630286254:assumed-role/GitHubOIDC_LifebookSite/gha-19085458741 is not authorized to perform: s3:PutObject on resource: "arn:aws:s3:::lifebook.ai/synthetic/rawpwsh_19085458741.txt" with an explicit deny in a resource-based policy
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:50.3279429Z Completed 53 Bytes/53 Bytes (356 Bytes/s) with 1 file(s) remaining
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:50.3280658Z WROTE s3://lifebook.ai/synthetic/rawpwsh_19085458741.txt
+write	Write object via OIDC + AWS CLI (raw pwsh)	2025-11-04T23:01:50.6431755Z ##[error]Process completed with exit code 1.
+write	Complete job	﻿2025-11-04T23:01:50.6535200Z Cleaning up orphan processes
