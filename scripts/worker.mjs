@@ -1,4 +1,4 @@
-import { SQSClient, ReceiveMessageCommand, DeleteMessageCommand } from "@aws-sdk/client-sqs";
+import { SQSClient, ReceiveMessageCommand, DeleteMessageCommand, ChangeMessageVisibilityCommand } from "@aws-sdk/client-sqs";
 import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
 
 const region = process.env.AWS_REGION || "us-east-1";
@@ -11,31 +11,53 @@ async function getSecretJson(name) {
   const text = res.SecretString ?? (res.SecretBinary ? Buffer.from(res.SecretBinary).toString("utf8") : "{}");
   return JSON.parse(text);
 }
+function toBool(v) {
+  if (typeof v === "boolean") return v;
+  const s = String(v ?? "").toLowerCase().trim();
+  return s === "1" || s === "true" || s === "yes";
+}
 
 async function main() {
   const sec = await getSecretJson(secretName).catch(() => ({}));
   const queueUrl = process.env.JOBS_QUEUE_URL || sec.JOBS_QUEUE_URL;
-  if (!queueUrl) {
-    console.error("JOBS_QUEUE_URL not found (env or secret)."); process.exit(2);
-  }
+  if (!queueUrl) { console.error("JOBS_QUEUE_URL not found (env or secret)."); process.exit(2); }
+
+  const featureTranscribe = toBool(process.env.FEATURE_TRANSCRIBE ?? sec.FEATURE_TRANSCRIBE);
   const sqs = new SQSClient({ region });
-  console.log(`[worker] listening on ${queueUrl} (region=${region}) — CTRL+C to stop`);
+  console.log(`[worker] listening on ${queueUrl} (region=${region}) — feature.transcribe=${featureTranscribe} — CTRL+C to stop`);
 
   while (true) {
     const { Messages } = await sqs.send(new ReceiveMessageCommand({
-      QueueUrl: queueUrl,
-      MaxNumberOfMessages: 5,
-      WaitTimeSeconds: 10,
-      VisibilityTimeout: 60
+      QueueUrl: queueUrl, MaxNumberOfMessages: 5, WaitTimeSeconds: 10, VisibilityTimeout: 60
     }));
     if (!Messages || Messages.length === 0) continue;
 
     for (const m of Messages) {
       try {
         const body = JSON.parse(m.Body ?? "{}");
-        console.log("[job]", body.name ?? "unknown", body.payload ?? {});
-        // TODO: dispatch by body.name
-        await sqs.send(new DeleteMessageCommand({ QueueUrl: queueUrl, ReceiptHandle: m.ReceiptHandle }));
+        const name = body.name ?? "unknown";
+        const payload = body.payload ?? {};
+
+        switch (name) {
+          case "transcribe": {
+            if (!featureTranscribe) {
+              console.log("[skip] transcribe disabled by FEATURE_TRANSCRIBE");
+              // Give us time to flip the flag without losing the job
+              await sqs.send(new ChangeMessageVisibilityCommand({ QueueUrl: queueUrl, ReceiptHandle: m.ReceiptHandle, VisibilityTimeout: 10 }));
+              break;
+            }
+            // ---- STUB IMPLEMENTATION ----
+            const s3Key = payload.s3Key || "(missing)";
+            console.log(`[transcribe] stub: would enqueue STT for key='${s3Key}'`);
+            // In real step: write a child-job or publish to the STT worker queue
+            await sqs.send(new DeleteMessageCommand({ QueueUrl: queueUrl, ReceiptHandle: m.ReceiptHandle }));
+            break;
+          }
+          default: {
+            console.log("[job]", name, payload);
+            await sqs.send(new DeleteMessageCommand({ QueueUrl: queueUrl, ReceiptHandle: m.ReceiptHandle }));
+          }
+        }
       } catch (err) {
         console.error("[error] processing message", err);
       }
