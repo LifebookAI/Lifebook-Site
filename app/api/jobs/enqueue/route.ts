@@ -9,10 +9,15 @@ const BodySchema = z.object({
   payload: z.record(z.string(), z.unknown()).default({}),
   idempotencyKey: z.string().optional()
 });
+type Body = z.infer<typeof BodySchema>;
 
 export async function POST(req: Request) {
-  const json = await req.json().catch(() => ({}));
-  const body = BodySchema.parse(json);
+  const jsonUnknown: unknown = await req.json().catch(() => ({}));
+  const parsed = BodySchema.safeParse(jsonUnknown);
+  if (!parsed.success) {
+    return NextResponse.json({ ok: false, error: 'Invalid body' }, { status: 400 });
+  }
+  const body: Body = parsed.data;
   await enqueueJob(body.name, body.payload, body.idempotencyKey);
   return NextResponse.json({ ok: true, enqueued: true }, { status: 202 });
 }
