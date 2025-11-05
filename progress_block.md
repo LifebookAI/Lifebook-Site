@@ -18,3 +18,5 @@ Phase 0 — Infra | P1.S1 |  | ✔ | PR #55 merged; workflows (dependabot-nightl
 - 2025-11-04T20:56:41-05:00 — Branch protection tightened (checks: pre-commit, CodeQL, EOL guard; conv. resolution ON; admins enforced; linear history; signatures attempted).
 - 2025-11-04T21:00:43-05:00 — Guard aligned: contexts=[pre-commit, CodeQL, EOL guard (LF only)]; protection verified; retriggered guard.
 - 2025-11-04T21:06:12-05:00 — Guard audit workflow installed (expects ⊇ [pre-commit, CodeQL, EOL guard (LF only)] + admins/linear/conv-res/signatures); dispatched run.
+- 2025-11-05T00:11:39-05:00 — PR #68 guard flow: checks green → temp reviews=0 (if needed) → merged → restore reviews=1 → cleanup branch.
+- 2025-11-05T00:15:32-05:00 — PR #68 merged; local cleaned; auto-delete on; protections verified.

@@ -123,3 +123,26 @@
     "linear_history": true
   }
 }
+{
+  "timestamp": "2025-11-05T00:11:39-05:00",
+  "step": "OPS.GUARD.PR",
+  "pr": "#68",
+  "actions": [
+    "checks green",
+    "temp reviews=0 (if needed)",
+    "merged",
+    "restore reviews=1",
+    "cleanup branch"
+  ]
+}
+{
+  "timestamp": "2025-11-05T00:15:32-05:00",
+  "step": "OPS.GUARD.PR",
+  "pr": "#68",
+  "actions": [
+    "merged",
+    "local cleanup",
+    "enable auto-delete-on-merge",
+    "verify protections"
+  ]
+}
