@@ -1,13 +1,13 @@
 {
-  "name": "lifebook-site",
+  "name": "@lifebook/site",
   "version": "0.1.0",
-  "private": true,
+  "private": "true",
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -noEmit",
     "ci:verify": "npm run lint -- --max-warnings=0 && npm run typecheck"
   },
   "dependencies": {
@@ -26,5 +26,9 @@
     "tailwindcss": "^4",
     "typescript": "5.9.3",
     "typescript-eslint": "^8.45.0"
-  }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "type": "module"
 }
