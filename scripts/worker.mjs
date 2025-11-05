@@ -1,5 +1,6 @@
 import { SQSClient, ReceiveMessageCommand, DeleteMessageCommand, ChangeMessageVisibilityCommand } from "@aws-sdk/client-sqs";
 import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
+import { handleTranscribe } from "./handlers/transcribe.mjs";
 
 const region = process.env.AWS_REGION || "us-east-1";
 const stage = process.env.APP_STAGE || (process.env.NODE_ENV === "production" ? "prod" : "dev");
@@ -42,14 +43,11 @@ async function main() {
           case "transcribe": {
             if (!featureTranscribe) {
               console.log("[skip] transcribe disabled by FEATURE_TRANSCRIBE");
-              // Give us time to flip the flag without losing the job
               await sqs.send(new ChangeMessageVisibilityCommand({ QueueUrl: queueUrl, ReceiptHandle: m.ReceiptHandle, VisibilityTimeout: 10 }));
               break;
             }
-            // ---- STUB IMPLEMENTATION ----
-            const s3Key = payload.s3Key || "(missing)";
-            console.log(`[transcribe] stub: would enqueue STT for key='${s3Key}'`);
-            // In real step: write a child-job or publish to the STT worker queue
+            const res = await handleTranscribe(payload, { region, stage, secret: sec });
+            console.log(`[transcribe] stub wrote request record s3://${res.bucket}/${res.key} (jobId=${res.jobId})`);
             await sqs.send(new DeleteMessageCommand({ QueueUrl: queueUrl, ReceiptHandle: m.ReceiptHandle }));
             break;
           }
