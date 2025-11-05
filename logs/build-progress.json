@@ -1,25 +1,52 @@
-{
-  "Phase": 4,
-  "StepID": "18",
-  "StepTitle": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
-  "Status": "✔",
-  "Owner": "Founder",
-  "Target": "2026-01-01 (Closed Beta MVP)",
-  "Evidence": [
-    "Build success (npm run build)",
-    "Secrets upserted: lifebook/dev/app, lifebook/prod/app",
-    "Tag: checkpoint/phase4.step18/20251105_1052",
-    "PR: https://github.com/LifebookAI/Lifebook-Site/pull/69"
-  ],
-  "Decisions": [
-    "Use Zod strict env loader with SM fallback (USE_AWS_SECRETS=1 or prod).",
-    "CSP set to Report-Only in dev via next.config.mjs headers(); tighten later per 0.4.",
-    "Cookie-guarded middleware protects /dashboard until Step 17 auth."
-  ],
-  "Next": [
-    "18A — Job orchestration & idempotency (SQS + worker baseline).",
-    "19 — Transcription pipeline skeleton (Whisper v3 stub) behind feature flag.",
-    "Wire CI check for typecheck/build on PRs (GitHub Actions)."
-  ],
-  "Timestamp": "2025-11-05T10:52:05"
-}
+[
+  {
+    "Phase": 4,
+    "StepID": "18",
+    "StepTitle": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
+    "Status": "✔",
+    "Owner": "Founder",
+    "Target": "2026-01-01 (Closed Beta MVP)",
+    "Evidence": [
+      "Build success (npm run build)",
+      "Secrets upserted: lifebook/dev/app, lifebook/prod/app",
+      "Tag: checkpoint/phase4.step18/20251105_1052",
+      "PR: https://github.com/LifebookAI/Lifebook-Site/pull/69"
+    ],
+    "Decisions": [
+      "Use Zod strict env loader with SM fallback (USE_AWS_SECRETS=1 or prod).",
+      "CSP set to Report-Only in dev via next.config.mjs headers(); tighten later per 0.4.",
+      "Cookie-guarded middleware protects /dashboard until Step 17 auth."
+    ],
+    "Next": [
+      "18A — Job orchestration & idempotency (SQS + worker baseline).",
+      "19 — Transcription pipeline skeleton (Whisper v3 stub) behind feature flag.",
+      "Wire CI check for typecheck/build on PRs (GitHub Actions)."
+    ],
+    "Timestamp": "2025-11-05T10:52:05"
+  },
+  {
+    "Phase": 4,
+    "StepID": "18",
+    "StepTitle": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
+    "Status": "✔",
+    "Owner": "Founder",
+    "Target": "2026-01-01 (Closed Beta MVP)",
+    "Evidence": [
+      "Build success (npm run build)",
+      "Secrets upserted: lifebook/dev/app, lifebook/prod/app",
+      "Tag: checkpoint/phase4.step18/20251105_1107",
+      "PR: https://github.com/LifebookAI/Lifebook-Site/pull/69"
+    ],
+    "Decisions": [
+      "Zod strict env with Secrets Manager fallback (USE_AWS_SECRETS=1 or prod).",
+      "CSP Report-Only in dev via next.config.mjs; enforce later per 0.4.",
+      "Middleware cookie-guard protects /dashboard until Step 17 auth."
+    ],
+    "Next": [
+      "18A — Job orchestration & idempotency (SQS + worker baseline).",
+      "19 — Transcription pipeline skeleton (Whisper v3 stub) behind feature flag.",
+      "Wire CI check for typecheck/build on PRs."
+    ],
+    "Timestamp": "2025-11-05T11:07:08"
+  }
+]
