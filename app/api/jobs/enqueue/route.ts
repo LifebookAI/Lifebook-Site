@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 const BodySchema = z.object({
   name: z.string().min(1),
-  payload: z.record(z.unknown()).default({}),
+  payload: z.record(z.string(), z.unknown()).default({}),
   idempotencyKey: z.string().optional()
 });
 
