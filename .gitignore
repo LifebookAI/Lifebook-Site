@@ -79,3 +79,8 @@ infra/**/*.auto.tfvars
 infra/.ci-nudge-*
 
 logs/ci/
+/logs/*.log
+/scripts/*.bak_*
+/scripts/worker.mjs.bak_*
+/bucket-policy.backup.*.json
+/bucket-policy.patched.*.json
