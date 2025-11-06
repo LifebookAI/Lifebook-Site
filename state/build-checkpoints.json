@@ -170,5 +170,365 @@
       "19 — Transcription pipeline skeleton behind feature flag.",
       "CI: add typecheck/build job on PRs."
     ]
+  },
+  {
+    "timestamp": "2025-11-05T11:17:31",
+    "tag": "checkpoint/phase4.step18/20251105_1117",
+    "branch": "ops/beta-plan-jan1-20251105-095634",
+    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+    "step": "Phase4.Step18",
+    "title": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
+    "status": "✔",
+    "evidence": {
+      "node": "v22.18.0",
+      "npm": "10.9.3",
+      "hashes": [
+        {
+          "file": "package.json",
+          "sha256": "94D030E96B6416F500A25166FED2B4E6C693253D36B4F30D4E0273788C556342"
+        },
+        {
+          "file": "tsconfig.json",
+          "sha256": "B1AFF0E999D3096A80067EE3E27119088259766BCABDA9F4A5DE9248E2B215B9"
+        },
+        {
+          "file": "next.config.mjs",
+          "sha256": "D89E67505BDD63929298457CB668B6F0A78A8B1C3920F648C7211C42177A7112"
+        },
+        {
+          "file": ".nvmrc",
+          "sha256": "1FBB92631D52373701BB35D0A63CF732C210AB8ABE2430D79FF7EEA3CDAC9EC2"
+        },
+        {
+          "file": ".gitignore",
+          "sha256": "649971C9856A2A3567E73CB9C0913C439A626A25F365AFCBEB716D92565BDCC1"
+        },
+        {
+          "file": "app/layout.tsx",
+          "sha256": "E47B2BE4287F463E9D1A13A60679EC53825E7275EA4ACEC5ADD2FCB806BF98E4"
+        },
+        {
+          "file": "app/page.tsx",
+          "sha256": "2442FC7B4EAC6965B9641EEDF13082070E0A93A7C6797758696ECF1241935900"
+        },
+        {
+          "file": "app/dashboard/page.tsx",
+          "sha256": "F0A179FE3D712622B383667854F62CB46F7468E95BAA877434DE3BF9A2E71672"
+        },
+        {
+          "file": "app/(auth)/login/page.tsx",
+          "sha256": "E5E0180C371E448B145875701F8A3C58DB445E603DDCC00ACDBBEBB09C70C282"
+        },
+        {
+          "file": "app/api/health/route.ts",
+          "sha256": "481D54430CB3ADBE0E902AD9D3E0F24E74AF7B31E956EE46A8B3FEBDB1FC1D42"
+        },
+        {
+          "file": "lib/env.ts",
+          "sha256": "D37C4833DE9913B0AD96EF17D7133D2939C668466D178CF3E7605295CEFAE57C"
+        },
+        {
+          "file": "lib/aws/secrets.ts",
+          "sha256": "398CE15917C82BC923A9725BF89E4B65EB1FFB9DAD2D9330CBAC4835495B0B07"
+        },
+        {
+          "file": "styles/globals.css",
+          "sha256": "BC916BB8E935CA431D557AF55081DE97C27B5984B1F17C43BE6F13A2C1F3ED18"
+        },
+        {
+          "file": "middleware.ts",
+          "sha256": "5E1D15D050936F4F5546726CDAA703E5C9A9475109F00ECC057E1A4C2DBC94DF"
+        }
+      ],
+      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+    },
+    "decisions": [
+      "ESLint compliance without disabling rules.",
+      "Type-safe Secrets Manager utility returning Record<string,string>."
+    ],
+    "next": [
+      "18A — SQS job orchestrator + idempotency baseline.",
+      "19 — Transcription pipeline stub behind feature flag.",
+      "CI: add typecheck/build job on PRs."
+    ]
+  },
+  {
+    "timestamp": "2025-11-05T11:20:42",
+    "tag": "checkpoint/phase4.step18/20251105_1120",
+    "branch": "ops/beta-plan-jan1-20251105-095634",
+    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+    "step": "Phase4.Step18",
+    "title": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
+    "status": "✔",
+    "evidence": {
+      "node": "v22.18.0",
+      "npm": "10.9.3",
+      "file": "lib/aws/secrets.ts",
+      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+    },
+    "decisions": [
+      "Avoid base-to-string by JSON.stringify for non-strings; rely on control-flow narrowing for SecretBinary."
+    ],
+    "next": [
+      "18A — SQS job orchestrator + idempotency baseline.",
+      "19 — Transcription pipeline stub behind feature flag.",
+      "CI: add typecheck/build job on PRs."
+    ]
+  },
+  {
+    "timestamp": "2025-11-05T11:28:05",
+    "tag": "checkpoint/phase4.step18a/20251105_1128",
+    "branch": "ops/beta-plan-jan1-20251105-095634",
+    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+    "step": "Phase4.Step18A",
+    "title": "Job orchestration & idempotency (SQS FIFO + enqueue API + worker)",
+    "status": "✔",
+    "evidence": {
+      "node": "v22.18.0",
+      "npm": "10.9.3",
+      "queues": [
+        {
+          "url": null,
+          "stage": "dev"
+        },
+        {
+          "url": null,
+          "stage": "prod"
+        }
+      ],
+      "files": [
+        "lib/aws/queue.ts",
+        "app/api/jobs/enqueue/route.ts",
+        "scripts/worker.mjs"
+      ],
+      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+    },
+    "decisions": [
+      "Use SQS FIFO + MessageDeduplicationId for idempotency; group by job name.",
+      "Persist JOBS_QUEUE_URL in Secrets lifebook/{stage}/app."
+    ],
+    "next": [
+      "19 — Transcription pipeline stub behind feature flag.",
+      "CI: gate PRs on typecheck/build.",
+      "Wire a simple job handler switch inside worker (e.g., 'transcribe')."
+    ]
+  },
+  {
+    "timestamp": "2025-11-05T11:33:52",
+    "tag": "checkpoint/phase4.step18a-fix/20251105_1133",
+    "branch": "ops/beta-plan-jan1-20251105-095634",
+    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+    "step": "Phase4.Step18A-fix",
+    "title": "18A repair (SQS create/tag/redrive + zod + pkg script)",
+    "status": "✔",
+    "evidence": {
+      "node": "v22.18.0",
+      "npm": "10.9.3",
+      "queues": [
+        {
+          "url": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-dev-jobs.fifo",
+          "stage": "dev"
+        },
+        {
+          "url": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-prod-jobs.fifo",
+          "stage": "prod"
+        }
+      ],
+      "secretsUpdated": [
+        "lifebook/dev/app",
+        "lifebook/prod/app"
+      ],
+      "files": [
+        "app/api/jobs/enqueue/route.ts",
+        "package.json"
+      ],
+      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+    },
+    "decisions": [
+      "Avoid inline JSON quoting by using file:// for RedrivePolicy.",
+      "Tag queues with aws sqs tag-queue post-create for reliability on Windows."
+    ],
+    "next": [
+      "Wire worker switch (e.g., 'transcribe') behind feature flag.",
+      "CI: add typecheck/build gate on PRs."
+    ]
+  },
+  {
+    "timestamp": "2025-11-05T11:38:04",
+    "tag": "checkpoint/phase4.step18a-finish/20251105_1138",
+    "branch": "ops/beta-plan-jan1-20251105-095634",
+    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+    "step": "Phase4.Step18A-finish",
+    "title": "18A finish (SQS tag via JSON + enqueue safeParse)",
+    "status": "✔",
+    "evidence": {
+      "node": "v22.18.0",
+      "npm": "10.9.3",
+      "queues": [
+        {
+          "url": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-dev-jobs.fifo",
+          "stage": "dev"
+        },
+        {
+          "url": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-prod-jobs.fifo",
+          "stage": "prod"
+        }
+      ],
+      "files": [
+        "app/api/jobs/enqueue/route.ts"
+      ],
+      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+    },
+    "decisions": [
+      "Use file:// JSON for SQS tag-queue to avoid CLI quoting issues on Windows.",
+      "Use zod.safeParse to guarantee typed body without eslint unsafe-assignment."
+    ],
+    "next": [
+      "Add worker switch (e.g., 'transcribe') behind a feature flag.",
+      "CI: gate PRs on typecheck/build."
+    ]
+  },
+  {
+    "timestamp": "2025-11-05T11:41:33",
+    "tag": "checkpoint/phase4.step19/20251105_1141",
+    "branch": "ops/beta-plan-jan1-20251105-095634",
+    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+    "step": "Phase4.Step19",
+    "title": "Transcription pipeline stub (feature-flagged)",
+    "status": "✔",
+    "evidence": {
+      "node": "v22.18.0",
+      "npm": "10.9.3",
+      "files": [
+        "scripts/worker.mjs",
+        ".github/workflows/ci.yml",
+        ".env.local"
+      ],
+      "ciWorkflow": "ci.yml",
+      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+    },
+    "decisions": [
+      "Gate real STT behind FEATURE_TRANSCRIBE for safe rollout.",
+      "Add CI workflow to require typecheck/build on PRs."
+    ],
+    "next": [
+      "19A — wire real STT path (Whisper v3) behind the flag.",
+      "20 — job-level metrics & DLQ alarm (SQS/Lambda path)."
+    ]
+  },
+  {
+    "timestamp": "2025-11-05T11:46:17",
+    "tag": "checkpoint/phase4.step19a/20251105_1146",
+    "branch": "ops/beta-plan-jan1-20251105-095634",
+    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+    "step": "Phase4.Step19A",
+    "title": "Transcription pipeline stub → S3 request record (feature-flagged)",
+    "status": "✔",
+    "evidence": {
+      "node": "v22.18.0",
+      "npm": "10.9.3",
+      "files": [
+        "scripts/handlers/transcribe.mjs",
+        "scripts/worker.mjs"
+      ],
+      "s3PathExample": "catalog/transcripts/requests/req-<uuid>.json",
+      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+    },
+    "decisions": [
+      "Persist STT requests in S3 (catalog/transcripts/requests) for audit/idempotency.",
+      "Keep FEATURE_TRANSCRIBE gate; no external STT call yet."
+    ],
+    "next": [
+      "19B — wire actual Whisper v3 call; write transcript artifact to catalog/transcripts/results/.",
+      "20 — job-level metrics + DLQ alarms."
+    ]
+  },
+  {
+    "timestamp": "2025-11-05T11:50:53",
+    "tag": "checkpoint/phase4.step19b/20251105_1150",
+    "branch": "ops/beta-plan-jan1-20251105-095634",
+    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+    "step": "Phase4.Step19B",
+    "title": "Transcription stub → request+result artifacts (feature-flagged)",
+    "status": "✔",
+    "evidence": {
+      "files": [
+        "scripts/handlers/transcribe.mjs"
+      ],
+      "requestPrefix": "catalog/transcripts/requests/",
+      "resultPrefix": "catalog/transcripts/results/",
+      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+    },
+    "decisions": [
+      "Record lifecycle: requests/* → results/*, update request with completion + link.",
+      "Keep the real STT call behind FEATURE_TRANSCRIBE until 19C."
+    ],
+    "next": [
+      "19C — replace stub with real Whisper v3 call (adapter), same result contract.",
+      "20 — add SQS DLQ alarm + basic job metrics (count, latency)."
+    ]
+  },
+  {
+    "timestamp": "2025-11-05T11:55:15",
+    "tag": "checkpoint/phase4.step19c/20251105_1155",
+    "branch": "ops/beta-plan-jan1-20251105-095634",
+    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+    "step": "Phase4.Step19C",
+    "title": "Transcription → OpenAI adapter (feature-flagged, dry-run if no key)",
+    "status": "✔",
+    "evidence": {
+      "files": [
+        "scripts/stt/openai.mjs",
+        "scripts/handlers/transcribe.mjs"
+      ],
+      "requestPrefix": "catalog/transcripts/requests/",
+      "resultPrefix": "catalog/transcripts/results/",
+      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+    },
+    "decisions": [
+      "Introduce provider adapter layer: OpenAI primary, stub fallback if no key.",
+      "Keep behind FEATURE_TRANSCRIBE for controlled rollout."
+    ],
+    "next": [
+      "20 — SQS DLQ alarm + basic job metrics (count/latency); wire into dashboard.",
+      "21 — persist transcript → chapterizer/summary pipeline entry (stub first)."
+    ]
+  },
+  {
+    "timestamp": "2025-11-05T11:59:27",
+    "tag": "checkpoint/phase4.step20/20251105_1159",
+    "branch": "ops/beta-plan-jan1-20251105-095634",
+    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+    "step": "Phase4.Step20",
+    "title": "SQS alarms + dashboard + worker metrics",
+    "status": "✔",
+    "evidence": {
+      "alarms": [
+        "lifebook-dev-jobs-dlq-not-empty",
+        "lifebook-prod-jobs-dlq-not-empty",
+        "lifebook-dev-jobs-age-high",
+        "lifebook-prod-jobs-age-high"
+      ],
+      "dashboard": "Lifebook-Jobs",
+      "files": [
+        "scripts/worker.mjs"
+      ]
+    },
+    "decisions": [
+      "Alert on DLQ>0 (1 datapoint @60s) and backlog age>=300s (5/5 datapoints).",
+      "Emit basic job metrics from worker (Completed, LatencyMs) under Lifebook/Jobs."
+    ],
+    "next": [
+      "21 — pipe transcript → chapterizer/summary (stub) writing to catalog/chapters & catalog/summaries.",
+      "22 — PR gate: require CI green + alarms present (light policy check)."
+    ]
+  },
+  {
+    "Timestamp": "2025-11-05T19:27:56",
+    "Step": "wrk.ephemeral-drain.verify",
+    "Stage": "dev",
+    "VerifiedKeys": null,
+    "Completed30m": 0.0,
+    "LatencyMs": null
   }
 ]
