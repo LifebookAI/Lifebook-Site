@@ -1,3 +1,4 @@
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { SQSClient, ReceiveMessageCommand, DeleteMessageCommand, ChangeMessageVisibilityCommand } from "@aws-sdk/client-sqs";
 import { CloudWatchClient, PutMetricDataCommand } from "@aws-sdk/client-cloudwatch";
 import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
@@ -49,8 +50,8 @@ async function main() {
     if (!Messages || Messages.length === 0) continue;
 
     for (const m of Messages) {
-      const startedAtMs = Date.now();\n      const startedAtMs = Date.now();
-      try {
+                  const startedAtMs = Date.now();
+try {
         const body = JSON.parse(m.Body ?? "{}");
         const name = body.name ?? "unknown";
         const payload = body.payload ?? {};

@@ -361,5 +361,73 @@
         "at": "2025-11-06T00:27:57Z"
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "repo.eol-policy",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "LF enforced via .gitattributes; files normalized; pre-commit green.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      ""
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "LastUpdated": "2025-11-06T00:34:09Z",
+    "History": [
+      {
+        "patch": {
+          "Evidence": "LF enforced via .gitattributes; files normalized; pre-commit green.",
+          "Phase": null,
+          "Next": [
+            ""
+          ],
+          "Decisions": "",
+          "Owner": "Zach",
+          "Blockers": "",
+          "StepID": "repo.eol-policy",
+          "StepTitle": null,
+          "Status": "✔",
+          "Target": ""
+        },
+        "at": "2025-11-06T00:34:09Z"
+      }
+    ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "repo.cleanup-wip",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "Working tree cleaned; ephemeral ignores added;parked on wip/dirty-20251105_193734.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      ""
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "LastUpdated": "2025-11-06T00:37:51Z",
+    "History": [
+      {
+        "patch": {
+          "Evidence": "Working tree cleaned; ephemeral ignores added;parked on wip/dirty-20251105_193734.",
+          "Phase": null,
+          "Next": [
+            ""
+          ],
+          "Decisions": "",
+          "Owner": "Zach",
+          "Blockers": "",
+          "StepID": "repo.cleanup-wip",
+          "StepTitle": null,
+          "Status": "✔",
+          "Target": ""
+        },
+        "at": "2025-11-06T00:37:51Z"
+      }
+    ]
   }
 ]
