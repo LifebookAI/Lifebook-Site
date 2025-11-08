@@ -1,32 +1,47 @@
-﻿{
-  "ts": "2025-11-08T01:11:30",
-  "kind": "ecr_ptc_prewarm",
-  "profile": "lifebook-sso",
-  "region": "us-east-1",
-  "images": [
-    {
-      "Repo": "dkrhub/library/python",
-      "Tag": "3.12-alpine",
-      "Digest": "sha256:d82291d418d5c47f267708393e40599ae836f2260b0519dd38670e9d281657f5",
-      "ImageUri": "354630286254.dkr.ecr.us-east-1.amazonaws.com/dkrhub/library/python:3.12-alpine"
+﻿[
+  {
+    "ts": "2025-11-08T01:11:30",
+    "kind": "ecr_ptc_prewarm",
+    "profile": "lifebook-sso",
+    "region": "us-east-1",
+    "images": [
+      {
+        "Repo": "dkrhub/library/python",
+        "Tag": "3.12-alpine",
+        "Digest": "sha256:d82291d418d5c47f267708393e40599ae836f2260b0519dd38670e9d281657f5",
+        "ImageUri": "354630286254.dkr.ecr.us-east-1.amazonaws.com/dkrhub/library/python:3.12-alpine"
+      },
+      {
+        "Repo": "dkrhub/library/python",
+        "Tag": "3.11-alpine",
+        "Digest": "sha256:610ede222c1fa9675c694c99429f8d2c1b4e243f1982246da9e540eb5800ee4a",
+        "ImageUri": "354630286254.dkr.ecr.us-east-1.amazonaws.com/dkrhub/library/python:3.11-alpine"
+      },
+      {
+        "Repo": "dkrhub/library/ubuntu",
+        "Tag": "22.04",
+        "Digest": "sha256:09506232a8004baa32c47d68f1e5c307d648fdd59f5e7eaa42aaf87914100db3",
+        "ImageUri": "354630286254.dkr.ecr.us-east-1.amazonaws.com/dkrhub/library/ubuntu:22.04"
+      },
+      {
+        "Repo": "dkrhub/library/busybox",
+        "Tag": "stable-glibc",
+        "Digest": "sha256:8fe66e6f43e59abc326f16fa4491708d15591c42a17486235e55fabf18ba5cb6",
+        "ImageUri": "354630286254.dkr.ecr.us-east-1.amazonaws.com/dkrhub/library/busybox:stable-glibc"
+      }
+    ]
+  },
+  {
+    "ts": "2025-11-08T01:47:03",
+    "kind": "repo_eol_normalized",
+    "branch": "main",
+    "hooks": {
+      "forbid_cr": "pass"
     },
-    {
-      "Repo": "dkrhub/library/python",
-      "Tag": "3.11-alpine",
-      "Digest": "sha256:610ede222c1fa9675c694c99429f8d2c1b4e243f1982246da9e540eb5800ee4a",
-      "ImageUri": "354630286254.dkr.ecr.us-east-1.amazonaws.com/dkrhub/library/python:3.11-alpine"
-    },
-    {
-      "Repo": "dkrhub/library/ubuntu",
-      "Tag": "22.04",
-      "Digest": "sha256:09506232a8004baa32c47d68f1e5c307d648fdd59f5e7eaa42aaf87914100db3",
-      "ImageUri": "354630286254.dkr.ecr.us-east-1.amazonaws.com/dkrhub/library/ubuntu:22.04"
-    },
-    {
-      "Repo": "dkrhub/library/busybox",
-      "Tag": "stable-glibc",
-      "Digest": "sha256:8fe66e6f43e59abc326f16fa4491708d15591c42a17486235e55fabf18ba5cb6",
-      "ImageUri": "354630286254.dkr.ecr.us-east-1.amazonaws.com/dkrhub/library/busybox:stable-glibc"
-    }
-  ]
-}
+    "files": [
+      ".gitignore",
+      ".gitattributes",
+      "state/build-checkpoints.json"
+    ]
+  }
+]
