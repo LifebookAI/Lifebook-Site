@@ -62,5 +62,12 @@
     "kind": "pr_opened",
     "branch": "chore/eol-lf-normalize-20251108-1338",
     "pr_url": "https://github.com/LifebookAI/Lifebook-Site/pull/86"
+  },
+  {
+    "ts": "2025-11-08T14:02:30",
+    "kind": "pr_automerge_armed",
+    "pr": "#86",
+    "head": "chore/eol-lf-normalize-20251108-1338",
+    "pr_url": "https://github.com/LifebookAI/Lifebook-Site/pull/86"
   }
 ]
