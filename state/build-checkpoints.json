@@ -530,5 +530,13 @@
     "VerifiedKeys": null,
     "Completed30m": 0.0,
     "LatencyMs": null
+  },
+  {
+    "ts": "2025-11-08T15:06:39",
+    "kind": "pr_merged",
+    "pr": "#@{url=https://api.github.com/repos/LifebookAI/Lifebook-Site/pulls/86; id=2991687269; node_id=PR_kwDOPc61NM6yUYZl; html_url=https://github.com/LifebookAI/Lifebook-Site/pull/86; diff_url=https://github.com/LifebookAI/Lifebook-Site/pull/86.diff; patch_url=https://github.com/LifebookAI/Lifebook-Site/pull/86.patch; issue_url=https://api.github.com/repos/LifebookAI/Lifebook-Site/issues/86; number=86; state=closed; locked=False; title=chore(eol): normalize LF + newline at EOF + checkpoint; user=; body=Normalize LF + ensure newline at EOF for state/build-checkpoints.json; append checkpoint entry; hooks green. No functional code changes.; created_at=11/08/2025 18:56:17; updated_at=11/08/2025 19:59:59; closed_at=11/08/2025 19:59:58; merged_at=11/08/2025 19:59:58; merge_commit_sha=c5808fb1ccf26d2e4108683e27ccdcb070687b92; assignee=; assignees=System.Object[]; requested_reviewers=System.Object[]; requested_teams=System.Object[]; labels=System.Object[]; milestone=; draft=False; commits_url=https://api.github.com/repos/LifebookAI/Lifebook-Site/pulls/86/commits; review_comments_url=https://api.github.com/repos/LifebookAI/Lifebook-Site/pulls/86/comments; review_comment_url=https://api.github.com/repos/LifebookAI/Lifebook-Site/pulls/comments{/number}; comments_url=https://api.github.com/repos/LifebookAI/Lifebook-Site/issues/86/comments; statuses_url=https://api.github.com/repos/LifebookAI/Lifebook-Site/statuses/f5f89289ee2ee7094745339c65147cbbb4f67e4c; head=; base=; _links=; author_association=OWNER; auto_merge=; active_lock_reason=; merged=True; mergeable=; rebaseable=; mergeable_state=unknown; merged_by=; comments=1; review_comments=0; maintainer_can_modify=False; commits=10; additions=771; deletions=378; changed_files=24}",
+    "base": "main",
+    "pr_url": "https://github.com/LifebookAI/Lifebook-Site/pull/86",
+    "merge_sha": "c5808fb1ccf26d2e4108683e27ccdcb070687b92"
   }
 ]
