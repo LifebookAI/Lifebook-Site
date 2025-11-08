@@ -1,4 +1,4 @@
-[
+﻿[
   {
     "timestamp": "2025-11-05T11:07:08",
     "tag": "checkpoint/phase4.step18/20251105_1107",
@@ -6,7 +6,7 @@
     "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
     "step": "Phase4.Step18",
     "title": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
-    "status": "✔",
+    "status": "Γ£ö",
     "evidence": {
       "node": "v22.18.0",
       "npm": "10.9.3",
@@ -81,8 +81,8 @@
       "Middleware cookie-guard protects /dashboard until Step 17 auth."
     ],
     "next": [
-      "18A — Job orchestration & idempotency (SQS + worker baseline).",
-      "19 — Transcription pipeline skeleton (Whisper v3 stub) behind feature flag.",
+      "18A ΓÇö Job orchestration & idempotency (SQS + worker baseline).",
+      "19 ΓÇö Transcription pipeline skeleton (Whisper v3 stub) behind feature flag.",
       "Wire CI check for typecheck/build on PRs."
     ]
   },
@@ -93,7 +93,7 @@
     "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
     "step": "Phase4.Step18",
     "title": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
-    "status": "✔",
+    "status": "Γ£ö",
     "evidence": {
       "node": "v22.18.0",
       "npm": "10.9.3",
@@ -166,8 +166,8 @@
       "Keep CSP in Report-Only until hardening step."
     ],
     "next": [
-      "18A — Job orchestration & idempotency (SQS + worker baseline).",
-      "19 — Transcription pipeline skeleton behind feature flag.",
+      "18A ΓÇö Job orchestration & idempotency (SQS + worker baseline).",
+      "19 ΓÇö Transcription pipeline skeleton behind feature flag.",
       "CI: add typecheck/build job on PRs."
     ]
   },
@@ -178,7 +178,7 @@
     "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
     "step": "Phase4.Step18",
     "title": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
-    "status": "✔",
+    "status": "Γ£ö",
     "evidence": {
       "node": "v22.18.0",
       "npm": "10.9.3",
@@ -247,8 +247,8 @@
       "Type-safe Secrets Manager utility returning Record<string,string>."
     ],
     "next": [
-      "18A — SQS job orchestrator + idempotency baseline.",
-      "19 — Transcription pipeline stub behind feature flag.",
+      "18A ΓÇö SQS job orchestrator + idempotency baseline.",
+      "19 ΓÇö Transcription pipeline stub behind feature flag.",
       "CI: add typecheck/build job on PRs."
     ]
   },
@@ -259,7 +259,7 @@
     "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
     "step": "Phase4.Step18",
     "title": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
-    "status": "✔",
+    "status": "Γ£ö",
     "evidence": {
       "node": "v22.18.0",
       "npm": "10.9.3",
@@ -270,8 +270,8 @@
       "Avoid base-to-string by JSON.stringify for non-strings; rely on control-flow narrowing for SecretBinary."
     ],
     "next": [
-      "18A — SQS job orchestrator + idempotency baseline.",
-      "19 — Transcription pipeline stub behind feature flag.",
+      "18A ΓÇö SQS job orchestrator + idempotency baseline.",
+      "19 ΓÇö Transcription pipeline stub behind feature flag.",
       "CI: add typecheck/build job on PRs."
     ]
   },
@@ -282,7 +282,7 @@
     "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
     "step": "Phase4.Step18A",
     "title": "Job orchestration & idempotency (SQS FIFO + enqueue API + worker)",
-    "status": "✔",
+    "status": "Γ£ö",
     "evidence": {
       "node": "v22.18.0",
       "npm": "10.9.3",
@@ -308,7 +308,7 @@
       "Persist JOBS_QUEUE_URL in Secrets lifebook/{stage}/app."
     ],
     "next": [
-      "19 — Transcription pipeline stub behind feature flag.",
+      "19 ΓÇö Transcription pipeline stub behind feature flag.",
       "CI: gate PRs on typecheck/build.",
       "Wire a simple job handler switch inside worker (e.g., 'transcribe')."
     ]
@@ -320,7 +320,7 @@
     "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
     "step": "Phase4.Step18A-fix",
     "title": "18A repair (SQS create/tag/redrive + zod + pkg script)",
-    "status": "✔",
+    "status": "Γ£ö",
     "evidence": {
       "node": "v22.18.0",
       "npm": "10.9.3",
@@ -360,7 +360,7 @@
     "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
     "step": "Phase4.Step18A-finish",
     "title": "18A finish (SQS tag via JSON + enqueue safeParse)",
-    "status": "✔",
+    "status": "Γ£ö",
     "evidence": {
       "node": "v22.18.0",
       "npm": "10.9.3",
@@ -395,7 +395,7 @@
     "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
     "step": "Phase4.Step19",
     "title": "Transcription pipeline stub (feature-flagged)",
-    "status": "✔",
+    "status": "Γ£ö",
     "evidence": {
       "node": "v22.18.0",
       "npm": "10.9.3",
@@ -412,8 +412,8 @@
       "Add CI workflow to require typecheck/build on PRs."
     ],
     "next": [
-      "19A — wire real STT path (Whisper v3) behind the flag.",
-      "20 — job-level metrics & DLQ alarm (SQS/Lambda path)."
+      "19A ΓÇö wire real STT path (Whisper v3) behind the flag.",
+      "20 ΓÇö job-level metrics & DLQ alarm (SQS/Lambda path)."
     ]
   },
   {
@@ -422,8 +422,8 @@
     "branch": "ops/beta-plan-jan1-20251105-095634",
     "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
     "step": "Phase4.Step19A",
-    "title": "Transcription pipeline stub → S3 request record (feature-flagged)",
-    "status": "✔",
+    "title": "Transcription pipeline stub ΓåÆ S3 request record (feature-flagged)",
+    "status": "Γ£ö",
     "evidence": {
       "node": "v22.18.0",
       "npm": "10.9.3",
@@ -439,8 +439,8 @@
       "Keep FEATURE_TRANSCRIBE gate; no external STT call yet."
     ],
     "next": [
-      "19B — wire actual Whisper v3 call; write transcript artifact to catalog/transcripts/results/.",
-      "20 — job-level metrics + DLQ alarms."
+      "19B ΓÇö wire actual Whisper v3 call; write transcript artifact to catalog/transcripts/results/.",
+      "20 ΓÇö job-level metrics + DLQ alarms."
     ]
   },
   {
@@ -449,8 +449,8 @@
     "branch": "ops/beta-plan-jan1-20251105-095634",
     "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
     "step": "Phase4.Step19B",
-    "title": "Transcription stub → request+result artifacts (feature-flagged)",
-    "status": "✔",
+    "title": "Transcription stub ΓåÆ request+result artifacts (feature-flagged)",
+    "status": "Γ£ö",
     "evidence": {
       "files": [
         "scripts/handlers/transcribe.mjs"
@@ -460,12 +460,12 @@
       "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
     },
     "decisions": [
-      "Record lifecycle: requests/* → results/*, update request with completion + link.",
+      "Record lifecycle: requests/* ΓåÆ results/*, update request with completion + link.",
       "Keep the real STT call behind FEATURE_TRANSCRIBE until 19C."
     ],
     "next": [
-      "19C — replace stub with real Whisper v3 call (adapter), same result contract.",
-      "20 — add SQS DLQ alarm + basic job metrics (count, latency)."
+      "19C ΓÇö replace stub with real Whisper v3 call (adapter), same result contract.",
+      "20 ΓÇö add SQS DLQ alarm + basic job metrics (count, latency)."
     ]
   },
   {
@@ -474,8 +474,8 @@
     "branch": "ops/beta-plan-jan1-20251105-095634",
     "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
     "step": "Phase4.Step19C",
-    "title": "Transcription → OpenAI adapter (feature-flagged, dry-run if no key)",
-    "status": "✔",
+    "title": "Transcription ΓåÆ OpenAI adapter (feature-flagged, dry-run if no key)",
+    "status": "Γ£ö",
     "evidence": {
       "files": [
         "scripts/stt/openai.mjs",
@@ -490,8 +490,8 @@
       "Keep behind FEATURE_TRANSCRIBE for controlled rollout."
     ],
     "next": [
-      "20 — SQS DLQ alarm + basic job metrics (count/latency); wire into dashboard.",
-      "21 — persist transcript → chapterizer/summary pipeline entry (stub first)."
+      "20 ΓÇö SQS DLQ alarm + basic job metrics (count/latency); wire into dashboard.",
+      "21 ΓÇö persist transcript ΓåÆ chapterizer/summary pipeline entry (stub first)."
     ]
   },
   {
@@ -501,7 +501,7 @@
     "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
     "step": "Phase4.Step20",
     "title": "SQS alarms + dashboard + worker metrics",
-    "status": "✔",
+    "status": "Γ£ö",
     "evidence": {
       "alarms": [
         "lifebook-dev-jobs-dlq-not-empty",
@@ -519,8 +519,8 @@
       "Emit basic job metrics from worker (Completed, LatencyMs) under Lifebook/Jobs."
     ],
     "next": [
-      "21 — pipe transcript → chapterizer/summary (stub) writing to catalog/chapters & catalog/summaries.",
-      "22 — PR gate: require CI green + alarms present (light policy check)."
+      "21 ΓÇö pipe transcript ΓåÆ chapterizer/summary (stub) writing to catalog/chapters & catalog/summaries.",
+      "22 ΓÇö PR gate: require CI green + alarms present (light policy check)."
     ]
   },
   {
