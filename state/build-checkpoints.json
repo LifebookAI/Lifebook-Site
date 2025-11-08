@@ -43,5 +43,18 @@
       ".gitattributes",
       "state/build-checkpoints.json"
     ]
+  },
+  {
+    "ts": "2025-11-08T13:30:48",
+    "kind": "repo_eol_normalized",
+    "branch": "main",
+    "hooks": {
+      "forbid_cr": "pass"
+    },
+    "files": [
+      ".gitignore",
+      ".gitattributes",
+      "state/build-checkpoints.json"
+    ]
   }
 ]
