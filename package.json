@@ -1,19 +1,15 @@
 {
-  "name": "lifebook-site",
+  "name": "@lifebook/site",
   "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "ci:verify": "npm run lint -- --max-warnings=0 && npm run typecheck"
-  },
+  "private": "true",
   "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.922.0",
+    "@aws-sdk/client-sqs": "^3.922.0",
+    "dotenv": "^17.2.3",
     "next": "15.4.7",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.0",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
@@ -26,5 +22,18 @@
     "tailwindcss": "^4",
     "typescript": "5.9.3",
     "typescript-eslint": "^8.45.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "start": "next start",
+    "typecheck": "tsc -noEmit",
+    "ci:verify": "npm run lint -- --max-warnings=0 && npm run typecheck",
+    "worker:dev": "node scripts/worker.mjs",
+    "build": "next build",
+    "lint": "next lint"
   }
 }

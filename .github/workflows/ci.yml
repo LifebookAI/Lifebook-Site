@@ -1,86 +1,23 @@
-name: CI (build, lint, test)
+name: CI
 
 on:
   pull_request:
   push:
+    branches: [ main, "**/ops/**", "**/feat/**", "**/fix/**" ]
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  lint:
-    name: lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: ${{ hashFiles('**/pnpm-lock.yaml') != '' && 'pnpm' || 'npm' }}
-      - name: Setup pnpm
-        if: hashFiles('**/pnpm-lock.yaml') != ''
-        uses: pnpm/action-setup@v4
-        with: { version: 9 }
-      - name: Install
-        run: |
-          if [ -f pnpm-lock.yaml ]; then pnpm i --frozen-lockfile; else npm ci; fi
-      - name: Lint (if present)
-        run: |
-          if npm run -s | grep -Eq '(^|[[:space:]])lint([[:space:]]|:)'; then
-            npm run lint
-          else
-            echo "No 'lint' script; skipping."
-          fi
-
-  test:
-    name: test
-    runs-on: ubuntu-latest
-    env: { CI: true }
-    steps:
-      - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: ${{ hashFiles('**/pnpm-lock.yaml') != '' && 'pnpm' || 'npm' }}
-      - name: Setup pnpm
-        if: hashFiles('**/pnpm-lock.yaml') != ''
-        uses: pnpm/action-setup@v4
-        with: { version: 9 }
-      - name: Install
-        run: |
-          if [ -f pnpm-lock.yaml ]; then pnpm i --frozen-lockfile; else npm ci; fi
-      - name: Test (if present)
-        run: |
-          if npm run -s | grep -Eq '(^|[[:space:]])test([[:space:]]|:)'; then
-            npm test --silent
-          else
-            echo "No 'test' script; skipping."
-          fi
-
   build:
-    name: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: ${{ hashFiles('**/pnpm-lock.yaml') != '' && 'pnpm' || 'npm' }}
-      - name: Setup pnpm
-        if: hashFiles('**/pnpm-lock.yaml') != ''
-        uses: pnpm/action-setup@v4
-        with: { version: 9 }
-      - name: Install
-        run: |
-          if [ -f pnpm-lock.yaml ]; then pnpm i --frozen-lockfile; else npm ci; fi
-      - name: Build (if present)
-        run: |
-          if npm run -s | grep -Eq '(^|[[:space:]])build([[:space:]]|:)'; then
-            npm run build
-          else
-            echo "No 'build' script; skipping."
-          fi
+          node-version: "20"
+          cache: "npm"
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build

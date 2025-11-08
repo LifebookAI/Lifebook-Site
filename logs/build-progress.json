@@ -1,1 +1,365 @@
-false
+[
+  {
+    "Phase": 4,
+    "StepID": "18",
+    "StepTitle": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
+    "Status": "✔",
+    "Owner": "Founder",
+    "Target": "2026-01-01 (Closed Beta MVP)",
+    "Evidence": [
+      "Build success (npm run build)",
+      "Secrets upserted: lifebook/dev/app, lifebook/prod/app",
+      "Tag: checkpoint/phase4.step18/20251105_1052",
+      "PR: https://github.com/LifebookAI/Lifebook-Site/pull/69"
+    ],
+    "Decisions": [
+      "Use Zod strict env loader with SM fallback (USE_AWS_SECRETS=1 or prod).",
+      "CSP set to Report-Only in dev via next.config.mjs headers(); tighten later per 0.4.",
+      "Cookie-guarded middleware protects /dashboard until Step 17 auth."
+    ],
+    "Next": [
+      "18A — Job orchestration & idempotency (SQS + worker baseline).",
+      "19 — Transcription pipeline skeleton (Whisper v3 stub) behind feature flag.",
+      "Wire CI check for typecheck/build on PRs (GitHub Actions)."
+    ],
+    "Timestamp": "2025-11-05T10:52:05"
+  },
+  {
+    "Phase": 4,
+    "StepID": "18",
+    "StepTitle": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
+    "Status": "✔",
+    "Owner": "Founder",
+    "Target": "2026-01-01 (Closed Beta MVP)",
+    "Evidence": [
+      "Build success (npm run build)",
+      "Secrets upserted: lifebook/dev/app, lifebook/prod/app",
+      "Tag: checkpoint/phase4.step18/20251105_1107",
+      "PR: https://github.com/LifebookAI/Lifebook-Site/pull/69"
+    ],
+    "Decisions": [
+      "Zod strict env with Secrets Manager fallback (USE_AWS_SECRETS=1 or prod).",
+      "CSP Report-Only in dev via next.config.mjs; enforce later per 0.4.",
+      "Middleware cookie-guard protects /dashboard until Step 17 auth."
+    ],
+    "Next": [
+      "18A — Job orchestration & idempotency (SQS + worker baseline).",
+      "19 — Transcription pipeline skeleton (Whisper v3 stub) behind feature flag.",
+      "Wire CI check for typecheck/build on PRs."
+    ],
+    "Timestamp": "2025-11-05T11:07:08"
+  },
+  {
+    "Phase": 4,
+    "StepID": "18",
+    "StepTitle": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
+    "Status": "✔",
+    "Owner": "Founder",
+    "Target": "2026-01-01 (Closed Beta MVP)",
+    "Evidence": [
+      "Typecheck + build green after installing zod + dotenv",
+      "Branch pushed: ops/beta-plan-jan1-20251105-095634",
+      "Tag exists: checkpoint/phase4.step18/20251105_1113"
+    ],
+    "Decisions": [
+      "Add zod + dotenv to satisfy env schema + dev .env load.",
+      "Keep CSP in Report-Only until hardening step."
+    ],
+    "Next": [
+      "18A — Job orchestration & idempotency (SQS + worker baseline).",
+      "19 — Transcription pipeline skeleton behind feature flag.",
+      "CI: add typecheck/build job on PRs."
+    ],
+    "Timestamp": "2025-11-05T11:13:26"
+  },
+  {
+    "Phase": 4,
+    "StepID": "18",
+    "StepTitle": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
+    "Status": "✔",
+    "Owner": "Founder",
+    "Target": "2026-01-01 (Closed Beta MVP)",
+    "Evidence": [
+      "Next build succeeded with ESLint clean.",
+      "Branch pushed: ops/beta-plan-jan1-20251105-095634",
+      "Tag: checkpoint/phase4.step18/20251105_1117"
+    ],
+    "Decisions": [
+      "ESLint compliance without disabling rules.",
+      "Type-safe Secrets Manager utility returning Record<string,string>."
+    ],
+    "Next": [
+      "18A — SQS job orchestrator + idempotency baseline.",
+      "19 — Transcription pipeline stub behind feature flag.",
+      "CI: add typecheck/build job on PRs."
+    ],
+    "Timestamp": "2025-11-05T11:17:31"
+  },
+  {
+    "Phase": 4,
+    "StepID": "18",
+    "StepTitle": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
+    "Status": "✔",
+    "Owner": "Founder",
+    "Target": "2026-01-01 (Closed Beta MVP)",
+    "Evidence": [
+      "Build succeeded with ESLint clean after secrets.ts patch",
+      "Branch pushed: ops/beta-plan-jan1-20251105-095634",
+      "Tag: checkpoint/phase4.step18/20251105_1120"
+    ],
+    "Decisions": [
+      "Avoid base-to-string by JSON.stringify for non-strings; rely on control-flow narrowing for SecretBinary."
+    ],
+    "Next": [
+      "18A — SQS job orchestrator + idempotency baseline.",
+      "19 — Transcription pipeline stub behind feature flag.",
+      "CI: add typecheck/build job on PRs."
+    ],
+    "Timestamp": "2025-11-05T11:20:42"
+  },
+  {
+    "Phase": 4,
+    "StepID": "18A",
+    "StepTitle": "Job orchestration & idempotency (SQS FIFO + enqueue API + worker)",
+    "Status": "✔",
+    "Owner": "Founder",
+    "Target": "2026-01-01 (Closed Beta MVP)",
+    "Evidence": [
+      "Queues created (dev/prod) with DLQs + KMS",
+      "API /api/jobs/enqueue online",
+      "Local worker script added",
+      "Tag: checkpoint/phase4.step18a/20251105_1128"
+    ],
+    "Decisions": [
+      "Use SQS FIFO + MessageDeduplicationId for idempotency; group by job name.",
+      "Persist JOBS_QUEUE_URL in Secrets lifebook/{stage}/app."
+    ],
+    "Next": [
+      "19 — Transcription pipeline stub behind feature flag.",
+      "CI: gate PRs on typecheck/build.",
+      "Wire a simple job handler switch inside worker (e.g., 'transcribe')."
+    ],
+    "Timestamp": "2025-11-05T11:28:05"
+  },
+  {
+    "Phase": 4,
+    "StepID": "18A-fix",
+    "StepTitle": "18A repair (SQS create/tag/redrive + zod + pkg script)",
+    "Status": "✔",
+    "Owner": "Founder",
+    "Target": "2026-01-01 (Closed Beta MVP)",
+    "Evidence": [
+      "SQS dev/prod + DLQs created/tagged; redrive set",
+      "Secrets updated with JOBS_QUEUE_URL",
+      "Build green",
+      "Tag: checkpoint/phase4.step18a-fix/20251105_1133"
+    ],
+    "Decisions": [
+      "Avoid inline JSON quoting by using file:// for RedrivePolicy.",
+      "Tag queues with aws sqs tag-queue post-create for reliability on Windows."
+    ],
+    "Next": [
+      "Wire worker switch (e.g., 'transcribe') behind feature flag.",
+      "CI: add typecheck/build gate on PRs."
+    ],
+    "Timestamp": "2025-11-05T11:33:52"
+  },
+  {
+    "Phase": 4,
+    "StepID": "18A-finish",
+    "StepTitle": "18A finish (SQS tag via JSON + enqueue safeParse)",
+    "Status": "✔",
+    "Owner": "Founder",
+    "Target": "2026-01-01 (Closed Beta MVP)",
+    "Evidence": [
+      "SQS queues tagged via JSON; redrive ensured",
+      "Build green",
+      "Tag: checkpoint/phase4.step18a-finish/20251105_1138"
+    ],
+    "Decisions": [
+      "Use file:// JSON for SQS tag-queue to avoid CLI quoting issues on Windows.",
+      "Use zod.safeParse to guarantee typed body without eslint unsafe-assignment."
+    ],
+    "Next": [
+      "Add worker switch (e.g., 'transcribe') behind a feature flag.",
+      "CI: gate PRs on typecheck/build."
+    ],
+    "Timestamp": "2025-11-05T11:38:04"
+  },
+  {
+    "Phase": 4,
+    "StepID": "19",
+    "StepTitle": "Transcription pipeline stub (feature-flagged)",
+    "Status": "✔",
+    "Owner": "Founder",
+    "Target": "2026-01-01 (Closed Beta MVP)",
+    "Evidence": [
+      "Worker dispatch with feature-flagged 'transcribe' stub",
+      "CI workflow added (typecheck/build)",
+      "Tag: checkpoint/phase4.step19/20251105_1141"
+    ],
+    "Decisions": [
+      "Gate real STT behind FEATURE_TRANSCRIBE for safe rollout.",
+      "Add CI workflow to require typecheck/build on PRs."
+    ],
+    "Next": [
+      "19A — wire real STT path (Whisper v3) behind the flag.",
+      "20 — job-level metrics & DLQ alarm (SQS/Lambda path)."
+    ],
+    "Timestamp": "2025-11-05T11:41:33"
+  },
+  {
+    "Phase": 4,
+    "StepID": "19A",
+    "StepTitle": "Transcription pipeline stub → S3 request record (feature-flagged)",
+    "Status": "✔",
+    "Owner": "Founder",
+    "Target": "2026-01-01 (Closed Beta MVP)",
+    "Evidence": [
+      "Worker calls handler; S3 request record written behind feature flag",
+      "Tag: checkpoint/phase4.step19a/20251105_1146"
+    ],
+    "Decisions": [
+      "Persist STT requests in S3 (catalog/transcripts/requests) for audit/idempotency.",
+      "Keep FEATURE_TRANSCRIBE gate; no external STT call yet."
+    ],
+    "Next": [
+      "19B — wire actual Whisper v3 call; write transcript artifact to catalog/transcripts/results/.",
+      "20 — job-level metrics + DLQ alarms."
+    ],
+    "Timestamp": "2025-11-05T11:46:17"
+  },
+  {
+    "Phase": 4,
+    "StepID": "19B",
+    "StepTitle": "Transcription stub → request+result artifacts (feature-flagged)",
+    "Status": "✔",
+    "Owner": "Founder",
+    "Target": "2026-01-01 (Closed Beta MVP)",
+    "Evidence": [
+      "S3 artifacts: requests/* queued→completed; results/* written",
+      "Tag: checkpoint/phase4.step19b/20251105_1150"
+    ],
+    "Decisions": [
+      "Record lifecycle: requests/* → results/*, update request with completion + link.",
+      "Keep the real STT call behind FEATURE_TRANSCRIBE until 19C."
+    ],
+    "Next": [
+      "19C — replace stub with real Whisper v3 call (adapter), same result contract.",
+      "20 — add SQS DLQ alarm + basic job metrics (count, latency)."
+    ],
+    "Timestamp": "2025-11-05T11:50:53"
+  },
+  {
+    "Phase": 4,
+    "StepID": "19C",
+    "StepTitle": "Transcription → OpenAI adapter (feature-flagged, dry-run if no key)",
+    "Status": "✔",
+    "Owner": "Founder",
+    "Target": "2026-01-01 (Closed Beta MVP)",
+    "Evidence": [
+      "OpenAI adapter present; dry-run path works without secrets",
+      "Tag: checkpoint/phase4.step19c/20251105_1155"
+    ],
+    "Decisions": [
+      "Introduce provider adapter layer: OpenAI primary, stub fallback if no key.",
+      "Keep behind FEATURE_TRANSCRIBE for controlled rollout."
+    ],
+    "Next": [
+      "20 — SQS DLQ alarm + basic job metrics (count/latency); wire into dashboard.",
+      "21 — persist transcript → chapterizer/summary pipeline entry (stub first)."
+    ],
+    "Timestamp": "2025-11-05T11:55:15"
+  },
+  {
+    "Phase": 4,
+    "StepID": "20",
+    "StepTitle": "SQS alarms + dashboard + worker metrics",
+    "Status": "✔",
+    "Owner": "Founder",
+    "Target": "2026-01-01 (Closed Beta MVP)",
+    "Evidence": [
+      "CloudWatch alarms created (DLQ, backlog age) for dev/prod",
+      "Dashboard 'Lifebook-Jobs' upserted",
+      "Worker emits job metrics",
+      "Tag: checkpoint/phase4.step20/20251105_1159"
+    ],
+    "Decisions": [
+      "Alert on DLQ>0 (1 datapoint @60s) and backlog age>=300s (5/5 datapoints).",
+      "Emit basic job metrics from worker (Completed, LatencyMs) under Lifebook/Jobs."
+    ],
+    "Next": [
+      "21 — pipe transcript → chapterizer/summary (stub) writing to catalog/chapters & catalog/summaries.",
+      "22 — PR gate: require CI green + alarms present (light policy check)."
+    ],
+    "Timestamp": "2025-11-05T11:59:27"
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "wrk.ephemeral-drain",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "Ephemeral worker drained FIFO → PUT s3://lifebook.ai/ (SSE-KMS ok). Completed(30m)=0 LatencyMs≈.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      ""
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "LastUpdated": "2025-11-06T00:19:01Z",
+    "History": [
+      {
+        "patch": {
+          "Evidence": "Ephemeral worker drained FIFO → PUT s3://lifebook.ai/ (SSE-KMS ok). Completed(30m)=0 LatencyMs≈.",
+          "Phase": null,
+          "Next": [
+            ""
+          ],
+          "Decisions": "",
+          "Owner": "Zach",
+          "Blockers": "",
+          "StepID": "wrk.ephemeral-drain",
+          "StepTitle": null,
+          "Status": "✔",
+          "Target": ""
+        },
+        "at": "2025-11-06T00:19:01Z"
+      }
+    ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "wrk.ephemeral-drain.verify",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "Verified SSE-KMS on 0 object(s); latest s3://lifebook.ai/. Completed(30m)=0 LatencyMs≈.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      ""
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "LastUpdated": "2025-11-06T00:27:57Z",
+    "History": [
+      {
+        "patch": {
+          "Evidence": "Verified SSE-KMS on 0 object(s); latest s3://lifebook.ai/. Completed(30m)=0 LatencyMs≈.",
+          "Phase": null,
+          "Next": [
+            ""
+          ],
+          "Decisions": "",
+          "Owner": "Zach",
+          "Blockers": "",
+          "StepID": "wrk.ephemeral-drain.verify",
+          "StepTitle": null,
+          "Status": "✔",
+          "Target": ""
+        },
+        "at": "2025-11-06T00:27:57Z"
+      }
+    ]
+  }
+]
