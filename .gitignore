@@ -1,27 +1,34 @@
-﻿# See: https://help.github.com/articles/ignoring-files/
+# See: https://help.github.com/articles/ignoring-files/
+
 # Dependencies
 node_modules/
 .pnp.*
 .pnpm-store/
+
 # Next.js outputs
 .next/
 out/
+
 # Build artifacts
 dist/
 build/
 .turbo/
 .vercel/
+
 # Coverage / tests
 coverage/
 *.lcov
+
 # TypeScript
 *.tsbuildinfo
+
 # Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+
 # OS / editor junk
 .DS_Store
 Thumbs.db
@@ -32,12 +39,15 @@ Thumbs.db
 *.suo
 *.njsproj
 *.sln
+
 # Package manager state
 .yarn/
 .yarnrc.yml
 .npm/
+
 # Local certs/keys
 *.pem
+
 # --- env files ---
 .env
 .env.*
@@ -56,15 +66,21 @@ infra/**/*.auto.tfvars
 *.tfstate
 *.tfstate.*
 *.tfplan
+
 # ---- Local/ephemeral outputs ----
 .tmp_*/
 .tmp_alarm_smoke/
 **/smoke.zip
 **/function.zip
+
 # Optional: generic build artefacts
 *.zip
+
 infra/.ci-nudge-*
+
 logs/ci/
-logs/
-bucket-policy.backup*.json
-state/build-checkpoints.json.bak_*
+/logs/*.log
+/scripts/*.bak_*
+/scripts/worker.mjs.bak_*
+/bucket-policy.backup.*.json
+/bucket-policy.patched.*.json
