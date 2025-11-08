@@ -84,5 +84,12 @@
     "pr_url": "https://github.com/LifebookAI/Lifebook-Site/pull/86",
     "needs": "non-author approval",
     "head": "chore/eol-lf-normalize-20251108-1338"
+  },
+  {
+    "ts": "2025-11-08T14:43:51",
+    "kind": "pr_merge_pending",
+    "pr": "#86",
+    "note": "waiting for GitHub to complete auto-merge (or click Merge in UI)",
+    "pr_url": "https://github.com/LifebookAI/Lifebook-Site/pull/86"
   }
 ]
