@@ -59,3 +59,4 @@ Conventions: `snake_case` event names; required props **bold**; UUIDv4 ids; no P
 - Activation (A1) comes from `source_connected`, `workflow_run_started/completed`, and `artifact_saved`.
 
 - Privacy: No raw content in analytics; only ids/counters; sampling allowed.
+<!-- workflow-kick: 2025-11-08 20:23:35-05:00 -->
