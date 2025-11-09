@@ -1,24 +1,19 @@
-﻿name: analytics-spec
-
+﻿name: Analytics spec
 on:
   pull_request:
-    branches: [ "main" ]
+    types: [opened, synchronize, reopened]
     paths:
-      - "analytics/**"
-      - "infra/ci/**"
-      - "**/*.ts"
-      - "**/*.tsx"
-      - "**/*.js"
-      - "**/*.jsx"
-      - "!node_modules/**"
-
+      - 'analytics/spec.md'
+      - 'infra/ci/Validate-AnalyticsSpec.ps1'
+      - 'lib/analytics/**'
+      - 'scripts/analytics-smoke.ts'
+      - '.github/workflows/analytics-spec.yml'
+  workflow_dispatch:
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Run analytics spec validator (PowerShell)
+      - uses: actions/checkout@v4
+      - name: Run analytics spec validator
         shell: pwsh
-        run: |
-          ./infra/ci/Validate-AnalyticsSpec.ps1
+        run: pwsh -NoProfile -File infra/ci/Validate-AnalyticsSpec.ps1

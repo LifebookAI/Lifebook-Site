@@ -84,3 +84,5 @@ logs/ci/
 /scripts/worker.mjs.bak_*
 /bucket-policy.backup.*.json
 /bucket-policy.patched.*.json
+
+state/build-checkpoints.json.bak_*
