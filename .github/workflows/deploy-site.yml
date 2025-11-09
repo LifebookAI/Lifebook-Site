@@ -55,4 +55,5 @@ jobs:
             '--sse','aws:kms','--sse-kms-key-id',$kms
           )
           & aws @args
-          Write-Host "Uploaded index.html with no-cache" -ForegroundColor Green
+          if ($LASTEXITCODE -ne 0) { throw ""aws s3 cp failed with exit code $LASTEXITCODE"" }
+          Write-Host ""Uploaded index.html with no-cache"" -ForegroundColor Green
