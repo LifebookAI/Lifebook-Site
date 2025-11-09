@@ -17,3 +17,5 @@ logs/*.log  text eol=lf
 *.json text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
+*.yml  text eol=lf
+*.md   text eol=lf

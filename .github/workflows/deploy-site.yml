@@ -27,16 +27,13 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference='Stop'
-          $id = aws sts get-caller-identity
-          Write-Host $id
+          aws sts get-caller-identity | Write-Host
 
       - name: Ensure site exists
         shell: pwsh
         run: |
           $ErrorActionPreference='Stop'
-          if (-not (Test-Path 'site/index.html')) {
-            throw "site/index.html not found (create it and push again)."
-          }
+          if (-not (Test-Path 'site/index.html')) { throw 'site/index.html not found (create it and push again).' }
           Write-Host 'site/ found' -ForegroundColor Green
 
       - name: Upload index.html (no-cache)
@@ -45,9 +42,7 @@ jobs:
           $ErrorActionPreference='Stop'
           $bucket = "lifebook.ai"
           $kms    = '${{ vars.S3_KMS_KEY_ARN }}'
-          if ([string]::IsNullOrWhiteSpace($kms)) {
-            throw "Repo variable S3_KMS_KEY_ARN is empty or missing. Set it under Settings → Variables → Repository variables."
-          }
+          if ([string]::IsNullOrWhiteSpace($kms)) { throw 'Repo variable S3_KMS_KEY_ARN is empty or missing.' }
           $args = @(
             's3','cp','site/index.html',"s3://$bucket/index.html",
             '--cache-control','no-cache, must-revalidate',
@@ -55,5 +50,8 @@ jobs:
             '--sse','aws:kms','--sse-kms-key-id',$kms
           )
           & aws @args
-          if ($LASTEXITCODE -ne 0) { throw ""aws s3 cp failed with exit code $LASTEXITCODE"" }
-          Write-Host ""Uploaded index.html with no-cache"" -ForegroundColor Green
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error ("aws s3 cp failed with exit code {0}" -f $LASTEXITCODE)
+            exit $LASTEXITCODE
+          }
+          Write-Host 'Uploaded index.html with no-cache' -ForegroundColor Green
