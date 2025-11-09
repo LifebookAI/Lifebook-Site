@@ -2,6 +2,7 @@
 name: Analytics spec
 on:
   pull_request:
+    name: Analytics spec / validate
     types: [opened, synchronize, reopened]
     paths:
       - 'analytics/spec.md'
@@ -10,8 +11,10 @@ on:
       - 'scripts/analytics-smoke.ts'
       - '.github/workflows/analytics-spec.yml'
   workflow_dispatch:
+    name: Analytics spec / validate
 jobs:
   validate:
+    name: Analytics spec / validate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
