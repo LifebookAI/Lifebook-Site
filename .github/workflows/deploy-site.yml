@@ -1,0 +1,47 @@
+name: Deploy site (PowerShell)
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::354630286254:role/LifebookPresignDeployer
+          aws-region: us-east-1
+          output-env-credentials: true
+
+      - name: Ensure site exists
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          if (-not (Test-Path 'site/index.html')) {
+            throw "site/index.html not found (create it and push again)."
+          }
+          Write-Host 'site/ found' -ForegroundColor Green
+
+      - name: Upload index.html (no-cache)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $bucket = "lifebook.ai"
+          $kms    = '${{ vars.S3_KMS_KEY_ARN }}'
+          $args = @(
+            's3','cp','site/index.html',"s3://$bucket/index.html",
+            '--cache-control','no-cache, must-revalidate',
+            '--content-type','text/html',
+            '--sse','aws:kms','--sse-kms-key-id',$kms
+          )
+          & aws @args
+          Write-Host "Uploaded index.html with no-cache" -ForegroundColor Green
