@@ -1,0 +1,19 @@
+﻿name: Analytics spec
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'analytics/spec.md'
+      - 'infra/ci/Validate-AnalyticsSpec.ps1'
+      - 'lib/analytics/**'
+      - 'scripts/analytics-smoke.ts'
+      - '.github/workflows/analytics-spec.yml'
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run analytics spec validator
+        shell: pwsh
+        run: pwsh -NoProfile -File infra/ci/Validate-AnalyticsSpec.ps1
