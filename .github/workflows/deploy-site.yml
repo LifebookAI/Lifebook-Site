@@ -36,9 +36,11 @@ jobs:
         shell: pwsh
         run: |
           $bucket = "${{ vars.S3_BUCKET }}"
-          aws s3 cp "site/index.html" "s3://$bucket/index.html" `
+          aws s3 cp "site/index.html" "s3://$bucket/index.html" ` --sse aws:kms --sse-kms-key-id "${{ vars.S3_KMS_KEY_ARN }}"
             --cache-control "no-cache, must-revalidate" `
             --content-type "text/html"
+          --sse aws:kms
+          --sse-kms-key-id "${{ vars.S3_KMS_KEY_ARN }}"
           Write-Host "Uploaded index.html with no-cache" -ForegroundColor Green
 
       - name: Upload assets (immutable cache)
