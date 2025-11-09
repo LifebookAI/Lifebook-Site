@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   deploy:
@@ -21,6 +22,13 @@ jobs:
           role-to-assume: arn:aws:iam::354630286254:role/LifebookPresignDeployer
           aws-region: us-east-1
           output-env-credentials: true
+
+      - name: Verify AWS identity
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $id = aws sts get-caller-identity
+          Write-Host $id
 
       - name: Ensure site exists
         shell: pwsh
@@ -37,6 +45,9 @@ jobs:
           $ErrorActionPreference='Stop'
           $bucket = "lifebook.ai"
           $kms    = '${{ vars.S3_KMS_KEY_ARN }}'
+          if ([string]::IsNullOrWhiteSpace($kms)) {
+            throw "Repo variable S3_KMS_KEY_ARN is empty or missing. Set it under Settings → Variables → Repository variables."
+          }
           $args = @(
             's3','cp','site/index.html',"s3://$bucket/index.html",
             '--cache-control','no-cache, must-revalidate',
