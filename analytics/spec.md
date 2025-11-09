@@ -1,4 +1,4 @@
-﻿# Analytics Spec (authoritative) — MVP v1
+# Analytics Spec (authoritative) — MVP v1
 
 **Source of truth.** CI blocks any client/server event not listed here.
 Conventions: `snake_case` event names; required props **bold**; UUIDv4 ids; no PII; server timestamps when possible.

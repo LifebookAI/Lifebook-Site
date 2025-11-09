@@ -1,4 +1,5 @@
-﻿name: Analytics spec
+﻿∩╗┐name: Analytics spec
+name: Analytics spec
 on:
   pull_request:
     types: [opened, synchronize, reopened]
