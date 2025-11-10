@@ -1,59 +1,77 @@
 {
   "resource": {
+    "aws_cloudwatch_composite_alarm": {
+      "lifebook_ingest_dlq_incident": {
+        "ok_actions": [
+          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
+        ],
+        "alarm_rule": "ALARM(\"lifebook-ingest-dlq-backlog\") OR ALARM(\"lifebook-ingest-dlq-oldest-age\")",
+        "tags": {
+          "Project": "lifebook",
+          "Env": "prod"
+        },
+        "actions_enabled": true,
+        "insufficient_data_actions": [],
+        "alarm_name": "lifebook-ingest-dlq-incident",
+        "alarm_actions": [
+          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
+        ]
+      }
+    },
     "aws_cloudwatch_metric_alarm": {
       "lifebook_ingest_dlq_backlog": {
-        "comparison_operator": "GreaterThanOrEqualToThreshold",
-        "statistic": "Average",
-        "tags": {
-          "Project": "lifebook",
-          "Env": "prod"
-        },
-        "alarm_name": "lifebook-ingest-dlq-backlog",
-        "ok_actions": [
-          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
-        ],
-        "treat_missing_data": "notBreaching",
-        "metric_name": "ApproximateNumberOfMessagesVisible",
-        "alarm_actions": [
-          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
-        ],
-        "datapoints_to_alarm": 1,
         "dimensions": {
           "QueueName": "lifebook-ingest-dlq"
         },
-        "period": 60,
+        "comparison_operator": "GreaterThanOrEqualToThreshold",
         "threshold": 10,
         "evaluation_periods": 1,
+        "ok_actions": [
+          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
+        ],
         "insufficient_data_actions": [],
+        "alarm_name": "lifebook-ingest-dlq-backlog",
         "namespace": "AWS/SQS",
-        "actions_enabled": true
-      },
-      "lifebook_ingest_dlq_oldest_age": {
-        "comparison_operator": "GreaterThanOrEqualToThreshold",
-        "statistic": "Maximum",
+        "datapoints_to_alarm": 1,
         "tags": {
           "Project": "lifebook",
           "Env": "prod"
         },
-        "alarm_name": "lifebook-ingest-dlq-oldest-age",
-        "ok_actions": [
-          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
-        ],
-        "treat_missing_data": "notBreaching",
-        "metric_name": "ApproximateAgeOfOldestMessage",
         "alarm_actions": [
           "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
         ],
-        "datapoints_to_alarm": 1,
+        "metric_name": "ApproximateNumberOfMessagesVisible",
+        "period": 60,
+        "statistic": "Average",
+        "actions_enabled": true,
+        "treat_missing_data": "notBreaching"
+      },
+      "lifebook_ingest_dlq_oldest_age": {
         "dimensions": {
           "QueueName": "lifebook-ingest-dlq"
         },
-        "period": 60,
+        "comparison_operator": "GreaterThanOrEqualToThreshold",
         "threshold": 300,
         "evaluation_periods": 1,
+        "ok_actions": [
+          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
+        ],
         "insufficient_data_actions": [],
+        "alarm_name": "lifebook-ingest-dlq-oldest-age",
         "namespace": "AWS/SQS",
-        "actions_enabled": true
+        "datapoints_to_alarm": 1,
+        "tags": {
+          "Project": "lifebook",
+          "Env": "prod"
+        },
+        "alarm_actions": [
+          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
+        ],
+        "metric_name": "ApproximateAgeOfOldestMessage",
+        "period": 60,
+        "statistic": "Maximum",
+        "actions_enabled": true,
+        "treat_missing_data": "notBreaching"
       }
     }
   }

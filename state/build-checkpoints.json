@@ -914,5 +914,14 @@
     "policy_len": 2632,
     "tf_clean": true,
     "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T18:52:50",
+    "step": "ingest_dlq_composite_added",
+    "alarm": "lifebook-ingest-dlq-incident",
+    "rule": "ALARM(\"lifebook-ingest-dlq-backlog\") OR ALARM(\"lifebook-ingest-dlq-oldest-age\")",
+    "sns_topic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+    "tf_clean": false,
+    "ok": true
   }
 ]
