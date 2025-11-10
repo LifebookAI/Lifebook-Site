@@ -815,5 +815,19 @@
     "has_reserved_concurrency": false,
     "has_event_invoke_config": false,
     "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T14:56:13",
+    "step": "ingest_iam_role_imported",
+    "role_name": "lifebook-ingest-role",
+    "attached_policies": [
+      "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+      "arn:aws:iam::354630286254:policy/LifebookIngestPolicy"
+    ],
+    "inline_policies": [
+      "lifebook-ingest-dlq-access"
+    ],
+    "iam_tf": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\iam.tf.json",
+    "ok": true
   }
 ]
