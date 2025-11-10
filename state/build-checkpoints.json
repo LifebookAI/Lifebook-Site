@@ -1,4 +1,4 @@
-﻿[
+[
   {
     "timestamp": "2025-11-05T11:07:08",
     "tag": "checkpoint/phase4.step18/20251105_1107",
@@ -538,5 +538,15 @@
     "base": "main",
     "pr_url": "https://github.com/LifebookAI/Lifebook-Site/pull/86",
     "merge_sha": "c5808fb1ccf26d2e4108683e27ccdcb070687b92"
+  },
+  {
+    "ts": "2025-11-09T20:32:18",
+    "kind": "site-deploy",
+    "bucket": "lifebook.ai",
+    "key": "index.html",
+    "kms": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
+    "cfDistId": "E2D7FJLA6YQUNP",
+    "cfInvId": "IDKN3EOMOZD8KQN9E4CT1UDT0B",
+    "status": "success"
   }
 ]
