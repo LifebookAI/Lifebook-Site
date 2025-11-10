@@ -1,0 +1,16 @@
+{
+  "resource": {
+    "aws_lambda_function_event_invoke_config": {
+      "lifebook_ingest_invoke": {
+        "destination_config": {
+          "on_failure": {
+            "destination": "${aws_sqs_queue.sqs_lifebook_ingest_dlq.arn}"
+          }
+        },
+        "maximum_event_age_in_seconds": 14400,
+        "maximum_retry_attempts": 2,
+        "function_name": "lifebook-ingest"
+      }
+    }
+  }
+}

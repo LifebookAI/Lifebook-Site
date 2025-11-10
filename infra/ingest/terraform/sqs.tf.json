@@ -1,0 +1,9 @@
+{
+  "resource": {
+    "aws_sqs_queue": {
+      "sqs_lifebook_ingest_dlq": {
+        "name": "lifebook-ingest-dlq"
+      }
+    }
+  }
+}

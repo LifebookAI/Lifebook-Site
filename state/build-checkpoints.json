@@ -829,5 +829,31 @@
     ],
     "iam_tf": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\iam.tf.json",
     "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T15:01:45",
+    "step": "ingest_iam_role_fixed_and_imported",
+    "role_name": "lifebook-ingest-role",
+    "attached_policies": [
+      "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+      "arn:aws:iam::354630286254:policy/LifebookIngestPolicy"
+    ],
+    "inline_policies": [
+      "lifebook-ingest-dlq-access"
+    ],
+    "iam_tf": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\iam.tf.json",
+    "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T16:30:05",
+    "step": "ingest_dlq_created_and_wired",
+    "queue": "lifebook-ingest-dlq",
+    "queue_arn": "arn:aws:sqs:us-east-1:354630286254:lifebook-ingest-dlq",
+    "lambda": "lifebook-ingest",
+    "tf_files": [
+      "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\sqs.tf.json",
+      "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\lambda.tf.json"
+    ],
+    "ok": true
   }
 ]
