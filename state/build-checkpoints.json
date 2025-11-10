@@ -548,5 +548,272 @@
     "cfDistId": "E2D7FJLA6YQUNP",
     "cfInvId": "IDKN3EOMOZD8KQN9E4CT1UDT0B",
     "status": "success"
+  },
+  {
+    "timestamp": "2025-11-10T10:28:19",
+    "step": "ingest_presign_put",
+    "bucket": "lifebook.ai",
+    "key": "sources/13928479-f420-40d8-b208-fe9396ee314b.txt",
+    "lambda": "lifebook-ingest",
+    "inv_base": 2,
+    "inv_now": 3,
+    "ok": true,
+    "sse": "aws:kms",
+    "kmsKeyId": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a"
+  },
+  {
+    "timestamp": "2025-11-10T10:54:44",
+    "step": "alarm_ingest_quiet_15m",
+    "alarm": "lifebook-ingest-quiet-15m",
+    "arn": "arn:aws:cloudwatch:us-east-1:354630286254:alarm:lifebook-ingest-quiet-15m",
+    "state": {
+      "Raw": [
+        "{",
+        "    \"LambdaFunctionConfigurations\": [",
+        "        {",
+        "            \"Id\": \"lifebook-ingest-sources\",",
+        "            \"LambdaFunctionArn\": \"arn:aws:lambda:us-east-1:354630286254:function:lifebook-ingest\",",
+        "            \"Events\": [",
+        "                \"s3:ObjectCreated:Put\"",
+        "            ],",
+        "            \"Filter\": {",
+        "                \"Key\": {",
+        "                    \"FilterRules\": [",
+        "                        {",
+        "                            \"Name\": \"Prefix\",",
+        "                            \"Value\": \"sources/\"",
+        "                        }",
+        "                    ]",
+        "                }",
+        "            }",
+        "        }",
+        "    ]",
+        "}"
+      ],
+      "LFC": {
+        "Id": "lifebook-ingest-sources",
+        "LambdaFunctionArn": "arn:aws:lambda:us-east-1:354630286254:function:lifebook-ingest",
+        "Events": [
+          "s3:ObjectCreated:Put"
+        ],
+        "Filter": {
+          "Key": {
+            "FilterRules": [
+              {
+                "Name": "Prefix",
+                "Value": "sources/"
+              }
+            ]
+          }
+        }
+      },
+      "TPC": null,
+      "QQC": null
+    },
+    "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T11:00:18",
+    "step": "alarm_ingest_quiet_15m_ascii_desc",
+    "alarm": "lifebook-ingest-quiet-15m",
+    "arn": "arn:aws:cloudwatch:us-east-1:354630286254:alarm:lifebook-ingest-quiet-15m",
+    "state": "ALARM",
+    "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T11:05:24",
+    "step": "dashboard_ingest_overview",
+    "dashboard": "Lifebook-Ingest-Overview",
+    "alarm": "lifebook-ingest-quiet-15m",
+    "region": "us-east-1",
+    "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T11:09:01",
+    "step": "dashboard_ingest_overview_created",
+    "dashboard": "Lifebook-Ingest-Overview",
+    "alarm": "lifebook-ingest-quiet-15m",
+    "region": "us-east-1",
+    "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T11:11:10",
+    "step": "dashboard_ingest_overview_fixed_metrics",
+    "dashboard": "Lifebook-Ingest-Overview",
+    "alarm": "lifebook-ingest-quiet-15m",
+    "region": "us-east-1",
+    "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T11:14:17",
+    "step": "dashboard_ingest_overview_enhanced",
+    "dashboard": "Lifebook-Ingest-Overview",
+    "alarms": "lifebook-ingest-quiet-15m,lifebook-ingest-errors-5m,lifebook-ingest-throttles-5m",
+    "region": "us-east-1",
+    "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T11:17:05",
+    "step": "ingest_composite_alarm_and_dashboard",
+    "composite": "lifebook-ingest-incident",
+    "dashboard": "Lifebook-Ingest-Overview",
+    "region": "us-east-1",
+    "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T11:23:35",
+    "step": "ingest_composite_verified_and_dash_bound",
+    "composite": "lifebook-ingest-incident",
+    "composite_state": "ALARM",
+    "dashboard": "Lifebook-Ingest-Overview",
+    "region": "us-east-1",
+    "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T11:26:02",
+    "step": "dashboard_ingest_overview_logs_widget",
+    "dashboard": "Lifebook-Ingest-Overview",
+    "region": "us-east-1",
+    "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T11:33:30",
+    "step": "ingest_smoke_trigger_and_verify_safe",
+    "key": "ingest/smoke/smoke_20251110_113302.txt",
+    "inv_5m": 0,
+    "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T11:41:52",
+    "step": "ingest_smoke_s3notify_wired_and_verified",
+    "key": "ingest/smoke/smoke_20251110_113824.txt",
+    "inv_5m": 1.0,
+    "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T11:50:03",
+    "step": "ingest_s3_notification_merged_and_smoked",
+    "key": "ingest/smoke/smoke_20251110_114638.txt",
+    "inv_5m": 0,
+    "ok": false
+  },
+  {
+    "timestamp": "2025-11-10T11:54:37",
+    "step": "ingest_s3_notification_strictmerge_and_smoke",
+    "key": "ingest/smoke/smoke_20251110_115356.txt",
+    "inv_5m": 1.0,
+    "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T12:00:55",
+    "step": "ingest_alarm_drill_snapshot_done",
+    "snapshot": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\s3_notification.lifebook.ai.20251110_120018.json",
+    "states_before": {
+      "Composite": [
+        {
+          "Name": "lifebook-ingest-incident",
+          "State": "OK"
+        }
+      ],
+      "Metric": [
+        {
+          "Name": "lifebook-ingest-errors-5m",
+          "State": "OK"
+        },
+        {
+          "Name": "lifebook-ingest-quiet-15m",
+          "State": "OK"
+        },
+        {
+          "Name": "lifebook-ingest-throttles-5m",
+          "State": "OK"
+        }
+      ]
+    },
+    "states_mid": {
+      "Composite": [
+        {
+          "Name": "lifebook-ingest-incident",
+          "State": "ALARM"
+        }
+      ],
+      "Metric": [
+        {
+          "Name": "lifebook-ingest-errors-5m",
+          "State": "ALARM"
+        },
+        {
+          "Name": "lifebook-ingest-quiet-15m",
+          "State": "OK"
+        },
+        {
+          "Name": "lifebook-ingest-throttles-5m",
+          "State": "OK"
+        }
+      ]
+    },
+    "states_after": {
+      "Composite": [
+        {
+          "Name": "lifebook-ingest-incident",
+          "State": "OK"
+        }
+      ],
+      "Metric": [
+        {
+          "Name": "lifebook-ingest-errors-5m",
+          "State": "OK"
+        },
+        {
+          "Name": "lifebook-ingest-quiet-15m",
+          "State": "OK"
+        },
+        {
+          "Name": "lifebook-ingest-throttles-5m",
+          "State": "OK"
+        }
+      ]
+    },
+    "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T14:22:30",
+    "step": "ingest_terraform_init_import_plan",
+    "tfjson": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\main.tf.json",
+    "plugin_cache": "C:\\Users\\zacha\\.terraform.d\\plugin-cache",
+    "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T14:26:18",
+    "step": "ingest_tf_tags_locked",
+    "tfjson": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\main.tf.json",
+    "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T14:30:32",
+    "step": "ingest_tf_tags_applied",
+    "tfjson": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\main.tf.json",
+    "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T14:36:04",
+    "step": "ingest_tf_s3_bucket_notification_imported",
+    "notif_tf": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\notification.tf.json",
+    "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T14:40:09",
+    "step": "ingest_iac_committed_and_smoked",
+    "key": "ingest/smoke/smoke_20251110_143941.txt",
+    "sse_args": "--sse aws:kms --sse-kms-key-id arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
+    "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T14:45:47",
+    "step": "ingest_lambda_ops_config_imported",
+    "lambda_tf": null,
+    "has_reserved_concurrency": false,
+    "has_event_invoke_config": false,
+    "ok": true
   }
 ]
