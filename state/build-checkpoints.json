@@ -881,5 +881,16 @@
       "retention": "1209600"
     },
     "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T16:45:56",
+    "step": "ingest_dlq_alarms_added",
+    "queue": "lifebook-ingest-dlq",
+    "alarms": [
+      "lifebook-ingest-dlq-backlog",
+      "lifebook-ingest-dlq-oldest-age"
+    ],
+    "sns_topic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+    "ok": true
   }
 ]

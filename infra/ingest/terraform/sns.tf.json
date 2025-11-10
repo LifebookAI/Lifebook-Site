@@ -1,0 +1,10 @@
+{
+  "resource": {
+    "aws_sns_topic_policy": {
+      "lifebook_alerts_allow_cloudwatch": {
+        "arn": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+        "policy": "null"
+      }
+    }
+  }
+}
