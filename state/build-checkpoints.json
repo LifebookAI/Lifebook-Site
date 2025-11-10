@@ -892,5 +892,12 @@
     ],
     "sns_topic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
     "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T16:52:46",
+    "step": "sns_policy_repaired",
+    "topic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+    "policy_len": 2632,
+    "ok": true
   }
 ]
