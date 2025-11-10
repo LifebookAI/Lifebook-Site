@@ -23,13 +23,13 @@
         "dimensions": {
           "QueueName": "lifebook-ingest-dlq"
         },
-        "comparison_operator": "GreaterThanOrEqualToThreshold",
         "threshold": 10,
         "evaluation_periods": 1,
         "ok_actions": [
           "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
         ],
         "insufficient_data_actions": [],
+        "period": 60,
         "alarm_name": "lifebook-ingest-dlq-backlog",
         "namespace": "AWS/SQS",
         "datapoints_to_alarm": 1,
@@ -41,7 +41,7 @@
           "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
         ],
         "metric_name": "ApproximateNumberOfMessagesVisible",
-        "period": 60,
+        "comparison_operator": "GreaterThanOrEqualToThreshold",
         "statistic": "Average",
         "actions_enabled": true,
         "treat_missing_data": "notBreaching"
@@ -50,13 +50,13 @@
         "dimensions": {
           "QueueName": "lifebook-ingest-dlq"
         },
-        "comparison_operator": "GreaterThanOrEqualToThreshold",
         "threshold": 300,
         "evaluation_periods": 1,
         "ok_actions": [
           "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
         ],
         "insufficient_data_actions": [],
+        "period": 60,
         "alarm_name": "lifebook-ingest-dlq-oldest-age",
         "namespace": "AWS/SQS",
         "datapoints_to_alarm": 1,
@@ -68,7 +68,7 @@
           "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
         ],
         "metric_name": "ApproximateAgeOfOldestMessage",
-        "period": 60,
+        "comparison_operator": "GreaterThanOrEqualToThreshold",
         "statistic": "Maximum",
         "actions_enabled": true,
         "treat_missing_data": "notBreaching"
