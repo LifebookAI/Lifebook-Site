@@ -906,5 +906,13 @@
     "topic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
     "policy_len": 2632,
     "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T18:48:44",
+    "step": "sns_policy_tf_converged",
+    "topic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+    "policy_len": 2632,
+    "tf_clean": true,
+    "ok": true
   }
 ]
