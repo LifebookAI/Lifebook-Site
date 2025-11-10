@@ -2,7 +2,14 @@
   "resource": {
     "aws_sqs_queue": {
       "sqs_lifebook_ingest_dlq": {
-        "name": "lifebook-ingest-dlq"
+        "name": "lifebook-ingest-dlq",
+        "visibility_timeout_seconds": 30,
+        "tags": {
+          "Env": "prod",
+          "Project": "lifebook"
+        },
+        "sqs_managed_sse_enabled": true,
+        "message_retention_seconds": 1209600
       }
     }
   }

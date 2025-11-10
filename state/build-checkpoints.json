@@ -870,5 +870,16 @@
       "retention": "1209600"
     },
     "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T16:38:24",
+    "step": "ingest_dlq_attrs_enforced",
+    "queue": "lifebook-ingest-dlq",
+    "resulting": {
+      "sse": "true",
+      "visibility": "30",
+      "retention": "1209600"
+    },
+    "ok": true
   }
 ]
