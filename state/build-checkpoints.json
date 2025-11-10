@@ -855,5 +855,20 @@
       "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\lambda.tf.json"
     ],
     "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T16:33:52",
+    "step": "ingest_dlq_pinned_attrs",
+    "queue": "lifebook-ingest-dlq",
+    "pinned": {
+      "sse": "true",
+      "tags": {
+        "Env": "prod",
+        "Project": "lifebook"
+      },
+      "visibility": "30",
+      "retention": "1209600"
+    },
+    "ok": true
   }
 ]
