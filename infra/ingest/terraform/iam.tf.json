@@ -1,0 +1,14 @@
+{
+  "resource": {
+    "aws_iam_role_policy_attachment": {
+      "lifebook_ingest_role_att_arn_aws_iam__aws_policy_service_role_AWSLambdaBasicExecutionRole": {
+        "role": "lifebook-ingest-role",
+        "policy_arn": "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+      },
+      "lifebook_ingest_role_att_arn_aws_iam__354630286254_policy_LifebookIngestPolicy": {
+        "role": "lifebook-ingest-role",
+        "policy_arn": "arn:aws:iam::354630286254:policy/LifebookIngestPolicy"
+      }
+    }
+  }
+}
