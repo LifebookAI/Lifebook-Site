@@ -1365,5 +1365,20 @@
     "deletedAnomalyLive": false,
     "removedAnomalyFromState": false,
     "esbuildResolved": {}
+  },
+  {
+    "ts": "2025-11-11T14:13:58-05:00",
+    "step": "Phase4/18H14b-deps-esbuild-verified-treeok",
+    "esbuildTrees": [
+      {
+        "dir": "C:\\Users\\zacha\\src\\Lifebook-Site\\services\\orchestrator",
+        "versions": []
+      },
+      {
+        "dir": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest",
+        "versions": []
+      }
+    ],
+    "openEsbuildAlerts": null
   }
 ]
