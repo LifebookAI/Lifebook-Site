@@ -1392,5 +1392,31 @@
     "step": "Phase4/18H14d-deps-esbuild-verified-robust",
     "esbuildReport": [],
     "dependabotOpen": null
+  },
+  {
+    "ts": "2025-11-11T14:27:47-05:00",
+    "step": "Phase4/18H14e-deps-esbuild-verified-v2",
+    "esbuildReport": [
+      {
+        "dir": "C:\\Users\\zacha\\src\\Lifebook-Site\\services\\orchestrator",
+        "lockVersions": [
+          "0.25.12"
+        ],
+        "nodeVersion": "0.25.12"
+      },
+      {
+        "dir": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest",
+        "lockVersions": [
+          "0.25.12"
+        ],
+        "nodeVersion": "0.25.12"
+      },
+      {
+        "dir": "C:/Users/zacha/src/Lifebook-Site",
+        "lockVersions": [],
+        "nodeVersion": null
+      }
+    ],
+    "dependabotOpen": null
   }
 ]
