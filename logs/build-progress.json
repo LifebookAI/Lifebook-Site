@@ -367,15 +367,15 @@
     "StepID": "Phase4-18A-orchestrator",
     "StepTitle": "",
     "Status": "✔",
-    "Evidence": "Scaffold + TF + FD-1 analytics + E2E S3 artifact",
+    "Evidence": "TF applied (SQS/DLQ/DDB/Lambda/ESM). Added KMS perms + forced SSE-KMS in Lambda. Re-smoked SQS→Lambda→S3.",
     "Decisions": "",
     "Blockers": "",
     "Next": [
-      ""
+      "Make SSE-KMS code path first-class in TS; add error metrics & DLQ dashboard."
     ],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-11-11T01:42:44Z",
+    "LastUpdated": "2025-11-11T14:58:20Z",
     "History": [
       {
         "at": "2025-11-11T01:42:44Z",
@@ -392,6 +392,23 @@
           "Blockers": "",
           "Phase": null,
           "Evidence": "Scaffold + TF + FD-1 analytics + E2E S3 artifact"
+        }
+      },
+      {
+        "at": "2025-11-11T14:58:20Z",
+        "patch": {
+          "Owner": "Zach",
+          "Next": [
+            "Make SSE-KMS code path first-class in TS; add error metrics & DLQ dashboard."
+          ],
+          "StepTitle": "",
+          "Target": "",
+          "StepID": "phase4-18A-orchestrator",
+          "Status": "✔",
+          "Decisions": "",
+          "Blockers": "",
+          "Phase": "Phase 0 — Infra",
+          "Evidence": "TF applied (SQS/DLQ/DDB/Lambda/ESM). Added KMS perms + forced SSE-KMS in Lambda. Re-smoked SQS→Lambda→S3."
         }
       }
     ]
