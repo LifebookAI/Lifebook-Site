@@ -1067,5 +1067,23 @@
   },
   "C:\\Users\\zacha\\src\\Lifebook-Site\\state\\build-checkpoints.json",
   "C:\\Users\\zacha\\src\\Lifebook-Site\\state\\build-checkpoints.json",
-  "C:\\Users\\zacha\\src\\Lifebook-Site\\state\\build-checkpoints.json"
+  "C:\\Users\\zacha\\src\\Lifebook-Site\\state\\build-checkpoints.json",
+  {
+    "ts": "2025-11-11T09:49:18-05:00",
+    "step": "Phase4/18A-fixed2",
+    "infra": {
+      "lambda": "lifebook-orchestrator-worker",
+      "table": "lifebook-orchestrator-jobs",
+      "queue": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue"
+    },
+    "s3Out": "s3://lifebook.ai/workflows/manual/manual-68fa451e/result.md",
+    "notion": {
+      "used": false
+    },
+    "analytics": {
+      "spec": "analytics/spec.md",
+      "guard": ".github/workflows/analytics-guard.yml"
+    },
+    "ok": false
+  }
 ]
