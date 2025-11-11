@@ -1319,5 +1319,12 @@
     "quarantined": true,
     "newFile": "orchestrator_composite.tf",
     "liveRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\")"
+  },
+  {
+    "ts": "2025-11-11T12:53:43-05:00",
+    "step": "Phase4/18H9-orchestrator-terraform-import-and-apply",
+    "tfExe": "C:\\Users\\zacha\\lifebook\\.tools\\terraform\\terraform.cmd",
+    "imported": false,
+    "liveRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\")"
   }
 ]
