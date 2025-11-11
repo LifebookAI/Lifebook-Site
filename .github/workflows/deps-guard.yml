@@ -1,0 +1,13 @@
+name: deps-guard
+on:
+  pull_request:
+  push:
+    branches: [ "main" ]
+jobs:
+  esbuild-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify esbuild pin (0.25.x) & overrides
+        shell: pwsh
+        run: ./infra/ops/deps/verify-esbuild.ps1 -Targets "services/orchestrator","infra/ingest"
