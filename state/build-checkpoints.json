@@ -1480,5 +1480,23 @@
     "smokeId": "d16e039eddf344be84c61aa6ed66df1b",
     "ok": false,
     "reservedConcurrency": null
+  },
+  {
+    "ts": "2025-11-11T17:11:29-05:00",
+    "step": "Phase4/18H15d-orchestrator-audit-fix-smoke",
+    "ok": false,
+    "needsManaged": true,
+    "needsKms": false,
+    "delay": 0,
+    "filters": false,
+    "smokeId": "b274a8091c18494d94ca27cdb3f8b9c3"
+  },
+  {
+    "ts": "2025-11-11T17:34:36-05:00",
+    "step": "Phase4/18H15e-orchestrator-rolefix-smoke",
+    "ok": false,
+    "role": "lifebook-orchestrator-lambda-role",
+    "attached": true,
+    "smokeId": "0fb966fa6c824960a0300f80969e8266"
   }
 ]
