@@ -33,6 +33,13 @@ resource "aws_cloudwatch_metric_alarm" "lambda_invocations_anom" {
 }
 
 # Composite: page once when any critical alarm is ALARM
+resource "aws_cloudwatch_composite_alarm" "orch_incident" {
+  alarm_name    = "${local.name_prefix}-incident"
+  alarm_actions = [var.alerts_topic_arn]
+  ok_actions    = [var.alerts_topic_arn]
+  # Excludes anomaly alarm on purpose (reduce noise)
+  alarm_rule    = "ALARM(\"${aws_cloudwatch_metric_alarm.lambda_errors.alarm_name}\") OR ALARM(\"${aws_cloudwatch_metric_alarm.lambda_throttles.alarm_name}\") OR ALARM(\"${aws_cloudwatch_metric_alarm.sqs_age.alarm_name}\") OR ALARM(\"${aws_cloudwatch_metric_alarm.dlq_visible.alarm_name}\")"
+}-incident"
   alarm_actions = [var.alerts_topic_arn]
   ok_actions    = [var.alerts_topic_arn]
   alarm_rule    = join(" OR ", [
@@ -70,14 +77,13 @@ resource "aws_cloudwatch_dashboard" "orch_overview_alarms_tile" {
   })
 }
 
+resource "aws_cloudwatch_composite_alarm" "orch_incident" {
+  alarm_name    = "${local.name_prefix}-incident"
   alarm_actions = [var.alerts_topic_arn]
   ok_actions    = [var.alerts_topic_arn]
   # Excludes anomaly alarm on purpose (reduce noise)
   alarm_rule    = "ALARM(\"${aws_cloudwatch_metric_alarm.lambda_errors.alarm_name}\") OR ALARM(\"${aws_cloudwatch_metric_alarm.lambda_throttles.alarm_name}\") OR ALARM(\"${aws_cloudwatch_metric_alarm.sqs_age.alarm_name}\") OR ALARM(\"${aws_cloudwatch_metric_alarm.dlq_visible.alarm_name}\")"
-}
-
-resource "aws_cloudwatch_composite_alarm" "orch_incident" {
-  alarm_name    = "${local.name_prefix}-incident"
+}-incident"
   alarm_actions = [var.alerts_topic_arn]
   ok_actions    = [var.alerts_topic_arn]
   # Excludes anomaly alarm on purpose (reduce noise)
