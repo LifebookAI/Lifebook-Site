@@ -1193,5 +1193,17 @@
       ]
     },
     "ok": true
+  },
+  {
+    "ts": "2025-11-11T10:36:33-05:00",
+    "step": "Phase4/18D-orchestrator-monitoring-extras-fix",
+    "infra": {
+      "dashboard": "alarms-tile",
+      "alarmsAdded": [
+        "invocations-anom",
+        "incident-composite"
+      ]
+    },
+    "ok": true
   }
 ]
