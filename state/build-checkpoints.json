@@ -1470,5 +1470,15 @@
     "queueArn": "arn:aws:sqs:us-east-1:354630286254:lifebook-orchestrator-queue",
     "smokeId": "7e5695d5211e422694442d04c6a95e23",
     "ok": false
+  },
+  {
+    "ts": "2025-11-11T16:48:50-05:00",
+    "step": "Phase4/18H15c-orchestrator-esm-waiter-patched-and-smoke",
+    "lambda": "lifebook-orchestrator-worker",
+    "queueUrl": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue",
+    "queueArn": "arn:aws:sqs:us-east-1:354630286254:lifebook-orchestrator-queue",
+    "smokeId": "d16e039eddf344be84c61aa6ed66df1b",
+    "ok": false,
+    "reservedConcurrency": null
   }
 ]
