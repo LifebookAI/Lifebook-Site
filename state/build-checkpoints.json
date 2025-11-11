@@ -1270,5 +1270,11 @@
       "incidentRaised": false,
       "incidentBackOk": true
     }
+  },
+  {
+    "ts": "2025-11-11T11:34:08-05:00",
+    "step": "Phase4/18H-orchestrator-composite-tidy+dlq-inspector",
+    "compositeRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\") OR ALARM(\"lifebook-orchestrator-invocations-anom\")",
+    "dlqSamplePath": ""
   }
 ]
