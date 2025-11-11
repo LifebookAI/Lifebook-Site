@@ -1380,5 +1380,11 @@
       }
     ],
     "openEsbuildAlerts": null
+  },
+  {
+    "ts": "2025-11-11T14:23:05-05:00",
+    "step": "Phase4/18H14c-deps-esbuild-verified-lock-and-node",
+    "esbuildReport": [],
+    "dependabotEsbuild": null
   }
 ]
