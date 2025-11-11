@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json && node ./scripts/build-lambda.mjs",
     "build:code": "tsc -p tsconfig.json",
@@ -25,6 +27,9 @@
     "vitest": "^2.1.4",
     "eslint": "^9.12.0",
     "@types/node": "^20.11.30",
-    "esbuild": "^0.24.0"
+    "esbuild": "^0.25.0"
+  },
+  "overrides": {
+    "esbuild": "^0.25.0"
   }
 }
