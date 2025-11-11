@@ -1,12 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
 
+type Spec = { allowed: string[] };
 const repo = process.cwd();
-const allowed = new Set<string>(JSON.parse(fs.readFileSync(path.join(repo, "analytics", "events.json"), "utf8")).allowed);
+const spec = JSON.parse(fs.readFileSync(path.join(repo, "analytics", "events.json"), "utf8")) as Spec;
+const allowed = new Set<string>(spec.allowed);
 
-export function emitAnalytics(event: string, payload: Record<string, unknown>) {
+export function emitAnalytics(event: string, payload: Record<string, unknown>): void {
   if (!allowed.has(event)) {
-    // Throw in CI; at runtime, log but continue
     if (process.env.CI) throw new Error(`Unknown analytics event: ${event}`);
     console.warn("[analytics] unknown event:", event);
   }
