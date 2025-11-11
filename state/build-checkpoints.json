@@ -1498,5 +1498,19 @@
     "role": "lifebook-orchestrator-lambda-role",
     "attached": true,
     "smokeId": "0fb966fa6c824960a0300f80969e8266"
+  },
+  {
+    "ts": "2025-11-11T17:50:01-05:00",
+    "step": "Phase4/18H15f-orchestrator-deep-triage",
+    "ok": false,
+    "role": "lifebook-orchestrator-lambda-role",
+    "hasQueuePolicy": false,
+    "queuePolicyHasDeny": false,
+    "sseManaged": true,
+    "kmsKeyId": "",
+    "fifo": false,
+    "delay": 0,
+    "smokeId": "6670930da36d4ac5b89676b298fb1da4",
+    "esmState": "Enabled"
   }
 ]
