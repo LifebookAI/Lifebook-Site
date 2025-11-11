@@ -1,4 +1,7 @@
-variable "alerts_topic_arn" { type = string, default = "arn:aws:sns:us-east-1:354630286254:lifebook-alerts" }
+variable "alerts_topic_arn" {
+  type    = string
+  default = "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
+}
 
 # Lambda error > 0 (1 min)
 resource "aws_cloudwatch_metric_alarm" "lambda_errors" {
@@ -32,7 +35,7 @@ resource "aws_cloudwatch_metric_alarm" "lambda_throttles" {
   ok_actions          = [var.alerts_topic_arn]
 }
 
-# Queue age > 60s (messages aren't getting processed)
+# Queue age > 60s
 resource "aws_cloudwatch_metric_alarm" "sqs_age" {
   alarm_name          = "${local.name_prefix}-queue-age>60s"
   comparison_operator = "GreaterThanThreshold"
@@ -48,7 +51,7 @@ resource "aws_cloudwatch_metric_alarm" "sqs_age" {
   ok_actions          = [var.alerts_topic_arn]
 }
 
-# DLQ visible > 0 (redrive happening)
+# DLQ visible > 0
 resource "aws_cloudwatch_metric_alarm" "dlq_visible" {
   alarm_name          = "${local.name_prefix}-dlq-visible>0"
   comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -70,44 +73,44 @@ resource "aws_cloudwatch_dashboard" "orch_overview" {
   dashboard_body = jsonencode({
     widgets = [
       {
-        "type":"metric","width":12,"height":6,"x":0,"y":0,"properties":{
-          "title":"Lambda Invocations/Errors/Throttles",
-          "region":"us-east-1",
-          "metrics":[
-            [ "AWS/Lambda","Invocations","FunctionName", aws_lambda_function.worker.function_name, { "stat":"Sum" } ],
-            [ ".",         "Errors",     ".",            ".",                          { "stat":"Sum","yAxis":"right" } ],
-            [ ".",         "Throttles",  ".",            ".",                          { "stat":"Sum","yAxis":"right" } ]
+        "type" : "metric", "width" : 12, "height" : 6, "x" : 0, "y" : 0, "properties" : {
+          "title" : "Lambda Invocations/Errors/Throttles",
+          "region" : "us-east-1",
+          "metrics" : [
+            ["AWS/Lambda", "Invocations", "FunctionName", aws_lambda_function.worker.function_name, { "stat" : "Sum" }],
+            [".", "Errors", ".", ".", { "stat" : "Sum", "yAxis" : "right" }],
+            [".", "Throttles", ".", ".", { "stat" : "Sum", "yAxis" : "right" }]
           ],
-          "view":"timeSeries","stacked":false,"period":60
+          "view" : "timeSeries", "stacked" : false, "period" : 60
         }
       },
       {
-        "type":"metric","width":12,"height":6,"x":12,"y":0,"properties":{
-          "title":"Lambda Duration (p50/p95)","region":"us-east-1",
-          "metrics":[
-            [ "AWS/Lambda","Duration","FunctionName", aws_lambda_function.worker.function_name, { "stat":"p50" } ],
-            [ ".","Duration",".",".",{ "stat":"p95" } ]
+        "type" : "metric", "width" : 12, "height" : 6, "x" : 12, "y" : 0, "properties" : {
+          "title" : "Lambda Duration (p50/p95)", "region" : "us-east-1",
+          "metrics" : [
+            ["AWS/Lambda", "Duration", "FunctionName", aws_lambda_function.worker.function_name, { "stat" : "p50" }],
+            [".", "Duration", ".", ".", { "stat" : "p95" }]
           ],
-          "view":"timeSeries","stacked":false,"period":60
+          "view" : "timeSeries", "stacked" : false, "period" : 60
         }
       },
       {
-        "type":"metric","width":12,"height":6,"x":0,"y":6,"properties":{
-          "title":"SQS Queue Depth / Age","region":"us-east-1",
-          "metrics":[
-            [ "AWS/SQS","ApproximateNumberOfMessagesVisible","QueueName", aws_sqs_queue.queue.name, { "stat":"Maximum" } ],
-            [ ".","ApproximateAgeOfOldestMessage",".",".", { "stat":"Maximum","yAxis":"right" } ]
+        "type" : "metric", "width" : 12, "height" : 6, "x" : 0, "y" : 6, "properties" : {
+          "title" : "SQS Queue Depth / Age", "region" : "us-east-1",
+          "metrics" : [
+            ["AWS/SQS", "ApproximateNumberOfMessagesVisible", "QueueName", aws_sqs_queue.queue.name, { "stat" : "Maximum" }],
+            [".", "ApproximateAgeOfOldestMessage", ".", ".", { "stat" : "Maximum", "yAxis" : "right" }]
           ],
-          "view":"timeSeries","stacked":false,"period":60
+          "view" : "timeSeries", "stacked" : false, "period" : 60
         }
       },
       {
-        "type":"metric","width":12,"height":6,"x":12,"y":6,"properties":{
-          "title":"SQS DLQ Visible","region":"us-east-1",
-          "metrics":[
-            [ "AWS/SQS","ApproximateNumberOfMessagesVisible","QueueName", aws_sqs_queue.dlq.name, { "stat":"Maximum" } ]
+        "type" : "metric", "width" : 12, "height" : 6, "x" : 12, "y" : 6, "properties" : {
+          "title" : "SQS DLQ Visible", "region" : "us-east-1",
+          "metrics" : [
+            ["AWS/SQS", "ApproximateNumberOfMessagesVisible", "QueueName", aws_sqs_queue.dlq.name, { "stat" : "Maximum" }]
           ],
-          "view":"timeSeries","stacked":false,"period":60
+          "view" : "timeSeries", "stacked" : false, "period" : 60
         }
       }
     ]

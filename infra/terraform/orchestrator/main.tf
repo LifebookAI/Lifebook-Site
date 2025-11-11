@@ -40,8 +40,8 @@ resource "aws_dynamodb_table" "jobs" {
 resource "aws_iam_role" "lambda_role" {
   name = "${local.name_prefix}-lambda-role"
   assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{ Effect="Allow", Principal={ Service="lambda.amazonaws.com" }, Action="sts:AssumeRole" }]
+    Version   = "2012-10-17",
+    Statement = [{ Effect = "Allow", Principal = { Service = "lambda.amazonaws.com" }, Action = "sts:AssumeRole" }]
   })
 }
 
@@ -49,13 +49,13 @@ resource "aws_iam_role_policy" "lambda_policy" {
   name = "${local.name_prefix}-lambda-policy"
   role = aws_iam_role.lambda_role.id
   policy = jsonencode({
-    Version="2012-10-17",
+    Version = "2012-10-17",
     Statement = [
-      { Effect="Allow", Action=["sqs:ReceiveMessage","sqs:DeleteMessage","sqs:GetQueueAttributes"], Resource=aws_sqs_queue.queue.arn },
-      { Effect="Allow", Action=["dynamodb:PutItem","dynamodb:GetItem","dynamodb:UpdateItem","dynamodb:Query"], Resource=aws_dynamodb_table.jobs.arn },
-      { Effect="Allow", Action=["logs:CreateLogGroup","logs:CreateLogStream","logs:PutLogEvents"], Resource="*" },
-      { Effect="Allow", Action=["s3:PutObject","s3:GetObject"], Resource="arn:aws:s3:::lifebook.ai/*" },
-      { Effect="Allow", Action=["kms:Encrypt","kms:Decrypt","kms:GenerateDataKey*"], Resource="arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a" }
+      { Effect = "Allow", Action = ["sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:GetQueueAttributes"], Resource = aws_sqs_queue.queue.arn },
+      { Effect = "Allow", Action = ["dynamodb:PutItem", "dynamodb:GetItem", "dynamodb:UpdateItem", "dynamodb:Query"], Resource = aws_dynamodb_table.jobs.arn },
+      { Effect = "Allow", Action = ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"], Resource = "*" },
+      { Effect = "Allow", Action = ["s3:PutObject", "s3:GetObject"], Resource = "arn:aws:s3:::lifebook.ai/*" },
+      { Effect = "Allow", Action = ["kms:Encrypt", "kms:Decrypt", "kms:GenerateDataKey*"], Resource = "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a" }
     ]
   })
 }
@@ -98,8 +98,8 @@ resource "aws_lambda_event_source_mapping" "esm" {
 resource "aws_iam_role" "events_role" {
   name = "${local.name_prefix}-events-role"
   assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{ Effect="Allow", Principal={ Service="events.amazonaws.com" }, Action="sts:AssumeRole" }]
+    Version   = "2012-10-17",
+    Statement = [{ Effect = "Allow", Principal = { Service = "events.amazonaws.com" }, Action = "sts:AssumeRole" }]
   })
 }
 
@@ -107,8 +107,8 @@ resource "aws_iam_role_policy" "events_to_sqs" {
   name = "${local.name_prefix}-events-to-sqs"
   role = aws_iam_role.events_role.id
   policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{ Effect="Allow", Action=["sqs:SendMessage"], Resource=aws_sqs_queue.queue.arn }]
+    Version   = "2012-10-17",
+    Statement = [{ Effect = "Allow", Action = ["sqs:SendMessage"], Resource = aws_sqs_queue.queue.arn }]
   })
 }
 
@@ -121,7 +121,7 @@ resource "aws_cloudwatch_event_target" "to_queue" {
   rule     = aws_cloudwatch_event_rule.hourly.name
   arn      = aws_sqs_queue.queue.arn
   role_arn = aws_iam_role.events_role.arn
-  input    = jsonencode({
+  input = jsonencode({
     jobId   = "schedule-${uuid()}"
     idemKey = "schedule-${uuid()}"
     inputs  = { url = "https://example.com" }
@@ -129,6 +129,6 @@ resource "aws_cloudwatch_event_target" "to_queue" {
   })
 }
 
-output "queue_url"   { value = aws_sqs_queue.queue.url }
+output "queue_url" { value = aws_sqs_queue.queue.url }
 output "lambda_name" { value = aws_lambda_function.worker.function_name }
-output "table_name"  { value = aws_dynamodb_table.jobs.name }
+output "table_name" { value = aws_dynamodb_table.jobs.name }
