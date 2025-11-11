@@ -1205,5 +1205,19 @@
       ]
     },
     "ok": true
+  },
+  {
+    "ts": "2025-11-11T10:50:48-05:00",
+    "step": "Phase4/18E-orchestrator-monitoring-extras-verify-fix2",
+    "infra": {
+      "dashboardHasAlarmTile": true,
+      "anomPresent": true,
+      "compositePresent": true
+    },
+    "smoke": {
+      "incidentBackOk": false,
+      "ran": true,
+      "incidentRaised": true
+    }
   }
 ]
