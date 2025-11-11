@@ -952,5 +952,14 @@
     "oldestage_widget": false,
     "tf_clean": true,
     "ok": false
+  },
+  {
+    "timestamp": "2025-11-10T19:12:56",
+    "step": "ingest_dlq_widgets_fix_hashtable_indexing",
+    "dashboard": "Lifebook-Ingest-Overview",
+    "visible_widget": false,
+    "oldestage_widget": false,
+    "tf_clean": false,
+    "ok": false
   }
 ]
