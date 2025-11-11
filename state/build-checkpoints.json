@@ -1134,5 +1134,15 @@
     "s3OutSqs": "s3://lifebook.ai/workflows/manual/manual-8b91876f/result.md",
     "kms": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
     "ok": true
+  },
+  {
+    "ts": "2025-11-11T10:15:21-05:00",
+    "step": "Phase4/18B-orchestrator-monitoring",
+    "infra": {
+      "lambda": "lifebook-orchestrator-worker",
+      "alertsTopic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+      "queue": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue"
+    },
+    "ok": true
   }
 ]
