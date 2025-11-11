@@ -1121,5 +1121,18 @@
     "s3Out": "s3://lifebook.ai/workflows/manual/manual-17bdc900/result.md",
     "kms": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
     "ok": false
+  },
+  {
+    "ts": "2025-11-11T10:10:14-05:00",
+    "step": "Phase4/18A-cjs-fix+tf-repair",
+    "infra": {
+      "lambda": "lifebook-orchestrator-worker",
+      "table": "lifebook-orchestrator-jobs",
+      "queue": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue"
+    },
+    "s3OutDirect": "s3://lifebook.ai/workflows/manual/manual-38ae6775/result.md",
+    "s3OutSqs": "s3://lifebook.ai/workflows/manual/manual-8b91876f/result.md",
+    "kms": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
+    "ok": true
   }
 ]
