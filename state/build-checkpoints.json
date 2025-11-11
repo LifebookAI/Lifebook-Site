@@ -1438,5 +1438,28 @@
         "nodeVersion": "0.25.12"
       }
     ]
+  },
+  {
+    "ts": "2025-11-11T16:33:44-05:00",
+    "step": "Phase4/18H15-orchestrator-e2e-smoke",
+    "lambda": "lifebook-orchestrator-worker",
+    "queue": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue",
+    "dlq": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-dlq",
+    "smokeId": "85bf9c8b07b9445ebcdeec8cc07cbb92",
+    "baseline": {
+      "dlq": {
+        "visible": 0,
+        "inflight": 0
+      },
+      "q": {
+        "visible": 0,
+        "inflight": 0
+      },
+      "invocations": 0
+    },
+    "result": {
+      "ok": false,
+      "invocationsAfter": 0
+    }
   }
 ]
