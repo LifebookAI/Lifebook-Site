@@ -1034,5 +1034,17 @@
     "oldestage_found": true,
     "metrics_aoa_ok": true,
     "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T19:46:05",
+    "step": "ingest_dashboard_validator_persisted",
+    "dashboard": "Lifebook-Ingest-Overview",
+    "validator_ok": true
+  },
+  {
+    "timestamp": "2025-11-10T19:50:17",
+    "step": "ingest_dashboard_validator_persisted_fixed",
+    "dashboard": "Lifebook-Ingest-Overview",
+    "validator_ok": true
   }
 ]
