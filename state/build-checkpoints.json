@@ -932,5 +932,16 @@
     "sns_topic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
     "tf_clean": true,
     "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T19:02:03",
+    "step": "ingest_dlq_widgets_added_and_composite_verified",
+    "composite": "lifebook-ingest-dlq-incident",
+    "composite_state": "OK",
+    "dashboard": "Lifebook-Ingest-Overview",
+    "visible_widget": false,
+    "oldestage_widget": false,
+    "tf_clean": false,
+    "ok": true
   }
 ]
