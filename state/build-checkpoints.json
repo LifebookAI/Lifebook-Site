@@ -1159,5 +1159,15 @@
       ]
     },
     "ok": true
+  },
+  {
+    "ts": "2025-11-11T10:22:20-05:00",
+    "step": "Phase4/18C-orchestrator-alarms-verified",
+    "infra": {
+      "lambda": "lifebook-orchestrator-worker",
+      "alarm": "lifebook-orchestrator-errors>0-1m"
+    },
+    "alarmRaised": true,
+    "alarmBackOk": true
   }
 ]
