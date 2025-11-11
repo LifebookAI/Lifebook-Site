@@ -1233,5 +1233,30 @@
       "ran": true,
       "incidentRaised": true
     }
+  },
+  {
+    "ts": "2025-11-11T11:11:08-05:00",
+    "step": "Phase4/18F-orchestrator-composite-clear",
+    "alarmStates": {
+      "errors": "OK",
+      "throttles": "OK",
+      "queue_age": "OK",
+      "dlq_visible": "ALARM",
+      "inv_anom": "OK",
+      "composite": "ALARM"
+    },
+    "sqs": {
+      "dlqVisible": 3,
+      "mainVisible": 0,
+      "mainInFlight": 0
+    },
+    "actions": {
+      "remediateDLQ": false,
+      "remediateMain": false
+    },
+    "result": {
+      "incidentRaised": true,
+      "incidentBackOk": false
+    }
   }
 ]
