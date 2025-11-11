@@ -1340,5 +1340,14 @@
     "tfExe": "C:\\Users\\zacha\\src\\Lifebook-Site\\.tools\\terraform\\terraform.exe",
     "imported": false,
     "liveRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\")"
+  },
+  {
+    "ts": "2025-11-11T13:03:55-05:00",
+    "step": "Phase4/18H12-orchestrator-fix-tags-and-clean-index",
+    "addedLocals": true,
+    "tfExe": "C:\\Users\\zacha\\src\\Lifebook-Site\\.tools\\terraform\\terraform.exe",
+    "imported": false,
+    "liveRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\")",
+    "untrackedTools": true
   }
 ]

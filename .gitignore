@@ -86,3 +86,6 @@ logs/ci/
 /bucket-policy.patched.*.json
 
 state/build-checkpoints.json.bak_*
+
+# Tools (local only)
+.tools/terraform/
