@@ -1292,5 +1292,12 @@
     "ts": "2025-11-11T12:28:12-05:00",
     "step": "Phase4/18H4-orchestrator-composite-exclude-anom-brace-parse",
     "compositeRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\") OR ALARM(\"lifebook-orchestrator-invocations-anom\")"
+  },
+  {
+    "ts": "2025-11-11T12:37:15-05:00",
+    "step": "Phase4/18H5-orchestrator-composite-canonicalized",
+    "compositeRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\") OR ALARM(\"lifebook-orchestrator-invocations-anom\")",
+    "removedBlocks": 2,
+    "backup": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\terraform\\orchestrator\\monitoring_extras.tf.bak_20251111_123716"
   }
 ]
