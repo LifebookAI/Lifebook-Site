@@ -1287,5 +1287,10 @@
     "ts": "2025-11-11T12:24:22-05:00",
     "step": "Phase4/18H3-orchestrator-composite-exclude-anom-fixed-dotall",
     "compositeRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\") OR ALARM(\"lifebook-orchestrator-invocations-anom\")"
+  },
+  {
+    "ts": "2025-11-11T12:28:12-05:00",
+    "step": "Phase4/18H4-orchestrator-composite-exclude-anom-brace-parse",
+    "compositeRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\") OR ALARM(\"lifebook-orchestrator-invocations-anom\")"
   }
 ]
