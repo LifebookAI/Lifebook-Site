@@ -1386,5 +1386,11 @@
     "step": "Phase4/18H14c-deps-esbuild-verified-lock-and-node",
     "esbuildReport": [],
     "dependabotEsbuild": null
+  },
+  {
+    "ts": "2025-11-11T14:25:45-05:00",
+    "step": "Phase4/18H14d-deps-esbuild-verified-robust",
+    "esbuildReport": [],
+    "dependabotOpen": null
   }
 ]
