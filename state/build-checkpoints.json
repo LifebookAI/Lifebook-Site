@@ -1282,5 +1282,10 @@
     "step": "Phase4/18H2-orchestrator-composite-exclude-anom+dlq-inspector-fix",
     "compositeRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\") OR ALARM(\"lifebook-orchestrator-invocations-anom\")",
     "dlqSamplePath": ""
+  },
+  {
+    "ts": "2025-11-11T12:24:22-05:00",
+    "step": "Phase4/18H3-orchestrator-composite-exclude-anom-fixed-dotall",
+    "compositeRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\") OR ALARM(\"lifebook-orchestrator-invocations-anom\")"
   }
 ]
