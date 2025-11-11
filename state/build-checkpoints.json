@@ -1312,5 +1312,12 @@
     "removed": 2,
     "backup": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\terraform\\orchestrator\\monitoring_extras.tf.bak_20251111_124720",
     "liveRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\")"
+  },
+  {
+    "ts": "2025-11-11T12:50:17-05:00",
+    "step": "Phase4/18H8-orchestrator-composite-quarantine-and-rewrite",
+    "quarantined": true,
+    "newFile": "orchestrator_composite.tf",
+    "liveRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\")"
   }
 ]
