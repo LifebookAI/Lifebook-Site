@@ -10,8 +10,10 @@ resource "aws_cloudwatch_metric_alarm" "lambda_invocations_anom" {
   alarm_actions       = [var.alerts_topic_arn]
   ok_actions          = [var.alerts_topic_arn]
 
+  # Base metric MUST return data
   metric_query {
-    id = "m1"
+    id          = "m1"
+    return_data = true
     metric {
       namespace   = "AWS/Lambda"
       metric_name = "Invocations"
@@ -19,9 +21,9 @@ resource "aws_cloudwatch_metric_alarm" "lambda_invocations_anom" {
       period      = 60
       stat        = "Sum"
     }
-    return_data = false
   }
 
+  # Anomaly band MUST also return data and be referenced by threshold_metric_id
   metric_query {
     id          = "ad1"
     expression  = "ANOMALY_DETECTION_BAND(m1, 2)"
