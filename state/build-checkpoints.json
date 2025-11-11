@@ -981,5 +981,23 @@
     "tf_plan_ok": true,
     "tf_applied": true,
     "ok": false
+  },
+  {
+    "timestamp": "2025-11-10T19:30:47",
+    "step": "ingest_dlq_widgets_metrics_literal_json_fix",
+    "dashboard": "Lifebook-Ingest-Overview",
+    "titles": [
+      "Ingest - INCIDENT (composite)",
+      "Ingest - component alarms",
+      "lifebook-ingest - Invocations / Errors / Throttles (Sum, 60s)",
+      "lifebook-ingest - recent errors (Logs Insights)",
+      "Ingest DLQ ù Visible (1m)",
+      "Ingest DLQ ù OldestAge (1m)"
+    ],
+    "visible_found": false,
+    "oldestage_found": false,
+    "tf_plan_ok": true,
+    "tf_applied": true,
+    "ok": false
   }
 ]
