@@ -367,15 +367,15 @@
     "StepID": "Phase4-18A-orchestrator",
     "StepTitle": "",
     "Status": "✔",
-    "Evidence": "TF applied (SQS/DLQ/DDB/Lambda/ESM). Added KMS perms + forced SSE-KMS in Lambda. Re-smoked SQS→Lambda→S3.",
+    "Evidence": "TF updated (KMS perms/env, 30s timeout). Minimal handler writes SSE-KMS to S3. Smoke ran.",
     "Decisions": "",
     "Blockers": "",
     "Next": [
-      "Make SSE-KMS code path first-class in TS; add error metrics & DLQ dashboard."
+      "Fold SSE-KMS util into TS; re-enable full orchestrator steps; add alarms/DLQ dashboard."
     ],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-11-11T14:58:20Z",
+    "LastUpdated": "2025-11-11T15:02:44Z",
     "History": [
       {
         "at": "2025-11-11T01:42:44Z",
@@ -409,6 +409,23 @@
           "Blockers": "",
           "Phase": "Phase 0 — Infra",
           "Evidence": "TF applied (SQS/DLQ/DDB/Lambda/ESM). Added KMS perms + forced SSE-KMS in Lambda. Re-smoked SQS→Lambda→S3."
+        }
+      },
+      {
+        "at": "2025-11-11T15:02:44Z",
+        "patch": {
+          "Owner": "Zach",
+          "Next": [
+            "Fold SSE-KMS util into TS; re-enable full orchestrator steps; add alarms/DLQ dashboard."
+          ],
+          "StepTitle": "",
+          "Target": "",
+          "StepID": "phase4-18A-orchestrator",
+          "Status": "✔",
+          "Decisions": "",
+          "Blockers": "",
+          "Phase": "Phase 0 — Infra",
+          "Evidence": "TF updated (KMS perms/env, 30s timeout). Minimal handler writes SSE-KMS to S3. Smoke ran."
         }
       }
     ]

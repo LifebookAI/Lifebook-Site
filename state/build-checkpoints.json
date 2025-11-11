@@ -1097,5 +1097,17 @@
     "s3Out": "s3://lifebook.ai/workflows/manual/manual-5f753586/result.md",
     "kms": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
     "ok": false
+  },
+  {
+    "ts": "2025-11-11T10:01:19-05:00",
+    "step": "Phase4/18A-minimal-writer",
+    "infra": {
+      "lambda": "lifebook-orchestrator-worker",
+      "table": "lifebook-orchestrator-jobs",
+      "queue": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue"
+    },
+    "s3Out": "s3://lifebook.ai/workflows/manual/manual-09475024/result.md",
+    "kms": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
+    "ok": false
   }
 ]
