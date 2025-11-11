@@ -1,12 +1,4 @@
 {
-  "terraform": {
-    "required_providers": {
-      "aws": {
-        "version": "~> 5.0",
-        "source": "hashicorp/aws"
-      }
-    }
-  },
   "provider": {
     "aws": [
       {
@@ -24,128 +16,136 @@
     ]
   },
   "resource": {
-    "aws_cloudwatch_dashboard": {
-      "Lifebook_Ingest_Overview": {
-        "dashboard_name": "Lifebook-Ingest-Overview",
-        "dashboard_body": "{\"widgets\":[{\"type\":\"alarm\",\"x\":0,\"y\":0,\"width\":24,\"height\":4,\"properties\":{\"title\":\"Ingest - INCIDENT (composite)\",\"alarms\":[\"arn:aws:cloudwatch:us-east-1:354630286254:alarm:lifebook-ingest-incident\"]}},{\"type\":\"alarm\",\"x\":0,\"y\":4,\"width\":24,\"height\":4,\"properties\":{\"title\":\"Ingest - component alarms\",\"alarms\":[\"arn:aws:cloudwatch:us-east-1:354630286254:alarm:lifebook-ingest-quiet-15m\",\"arn:aws:cloudwatch:us-east-1:354630286254:alarm:lifebook-ingest-errors-5m\",\"arn:aws:cloudwatch:us-east-1:354630286254:alarm:lifebook-ingest-throttles-5m\"]}},{\"type\":\"metric\",\"x\":0,\"y\":8,\"width\":24,\"height\":8,\"properties\":{\"view\":\"timeSeries\",\"stacked\":false,\"region\":\"us-east-1\",\"title\":\"lifebook-ingest - Invocations / Errors / Throttles (Sum, 60s)\",\"metrics\":[[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"lifebook-ingest\",{\"stat\":\"Sum\",\"period\":60}],[\"AWS/Lambda\",\"Errors\",\"FunctionName\",\"lifebook-ingest\",{\"stat\":\"Sum\",\"period\":60}],[\"AWS/Lambda\",\"Throttles\",\"FunctionName\",\"lifebook-ingest\",{\"stat\":\"Sum\",\"period\":60}]]}},{\"type\":\"log\",\"x\":0,\"y\":16,\"width\":24,\"height\":7,\"properties\":{\"region\":\"us-east-1\",\"title\":\"lifebook-ingest - recent errors (Logs Insights)\",\"query\":\"SOURCE '/aws/lambda/lifebook-ingest' | filter @message like /(?i)(error|exception|fail)/ | fields @timestamp, @message, @logStream | sort @timestamp desc | limit 50\"}}]}"
-      }
-    },
-    "aws_lambda_permission": {
-      "perm_lifebook_ingest_s3_lifebook_ai": {
-        "principal": "s3.amazonaws.com",
-        "source_arn": "arn:aws:s3:::lifebook.ai",
-        "statement_id": "s3invoke-e280def1",
-        "function_name": "lifebook-ingest",
-        "action": "lambda:InvokeFunction"
-      }
-    },
-    "aws_cloudwatch_metric_alarm": {
-      "lifebook_ingest_throttles_5m": {
-        "namespace": "AWS/Lambda",
-        "comparison_operator": "GreaterThanThreshold",
-        "ok_actions": [
-          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
-        ],
-        "insufficient_data_actions": [
-          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
-        ],
-        "period": 60,
-        "alarm_description": "Fires if AWS/Lambda:Throttles for lifebook-ingest >0 in any 1 of 5 minutes. TreatMissing=notBreaching.",
-        "alarm_actions": [
-          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
-        ],
-        "datapoints_to_alarm": 1,
-        "threshold": 0.0,
-        "metric_name": "Throttles",
-        "alarm_name": "lifebook-ingest-throttles-5m",
-        "dimensions": {
-          "FunctionName": "lifebook-ingest"
-        },
-        "evaluation_periods": 5,
-        "treat_missing_data": "notBreaching",
-        "statistic": "Sum",
-        "tags": {
-          "Purpose": "ingest"
-        }
-      },
-      "lifebook_ingest_quiet_15m": {
-        "namespace": "AWS/Lambda",
-        "comparison_operator": "LessThanThreshold",
-        "ok_actions": [
-          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
-        ],
-        "insufficient_data_actions": [
-          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
-        ],
-        "period": 60,
-        "alarm_description": "Fires if AWS/Lambda:Invocations for lifebook-ingest are <1 for 15 consecutive minutes. TreatMissing=breaching. Actions -> lifebook-alerts.",
-        "alarm_actions": [
-          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
-        ],
-        "datapoints_to_alarm": 15,
-        "threshold": 1.0,
-        "metric_name": "Invocations",
-        "alarm_name": "lifebook-ingest-quiet-15m",
-        "dimensions": {
-          "FunctionName": "lifebook-ingest"
-        },
-        "evaluation_periods": 15,
-        "treat_missing_data": "breaching",
-        "statistic": "Sum",
-        "tags": {
-          "Purpose": "ingest-quiet"
-        }
-      },
-      "lifebook_ingest_errors_5m": {
-        "namespace": "AWS/Lambda",
-        "comparison_operator": "GreaterThanThreshold",
-        "ok_actions": [
-          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
-        ],
-        "insufficient_data_actions": [
-          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
-        ],
-        "period": 60,
-        "alarm_description": "Fires if AWS/Lambda:Errors for lifebook-ingest >0 in any 1 of 5 minutes. TreatMissing=notBreaching.",
-        "alarm_actions": [
-          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
-        ],
-        "datapoints_to_alarm": 1,
-        "threshold": 0.0,
-        "metric_name": "Errors",
-        "alarm_name": "lifebook-ingest-errors-5m",
-        "dimensions": {
-          "FunctionName": "lifebook-ingest"
-        },
-        "evaluation_periods": 5,
-        "treat_missing_data": "notBreaching",
-        "statistic": "Sum",
-        "tags": {
-          "Purpose": "ingest"
-        }
+    "aws_cloudwatch_log_group": {
+      "_aws_lambda_lifebook_ingest": {
+        "name": "/aws/lambda/lifebook-ingest",
+        "retention_in_days": 60
       }
     },
     "aws_cloudwatch_composite_alarm": {
       "lifebook_ingest_incident": {
+        "actions_enabled": true,
+        "alarm_name": "lifebook-ingest-incident",
+        "alarm_rule": "ALARM(\"lifebook-ingest-errors-5m\") OR ALARM(\"lifebook-ingest-throttles-5m\") OR ALARM(\"lifebook-ingest-quiet-15m\")",
+        "alarm_description": "Overall ingest incident: ALARM if Errors OR Throttles OR 15m Quiet.",
         "ok_actions": [
           "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
         ],
-        "alarm_name": "lifebook-ingest-incident",
-        "actions_enabled": true,
-        "alarm_rule": "ALARM(\"lifebook-ingest-errors-5m\") OR ALARM(\"lifebook-ingest-throttles-5m\") OR ALARM(\"lifebook-ingest-quiet-15m\")",
         "alarm_actions": [
           "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
         ],
-        "alarm_description": "Overall ingest incident: ALARM if Errors OR Throttles OR 15m Quiet.",
         "tags": {
           "Purpose": "ingest-overall"
         }
       }
     },
-    "aws_cloudwatch_log_group": {
-      "_aws_lambda_lifebook_ingest": {
-        "retention_in_days": 60,
-        "name": "/aws/lambda/lifebook-ingest"
+    "aws_cloudwatch_metric_alarm": {
+      "lifebook_ingest_errors_5m": {
+        "dimensions": {
+          "FunctionName": "lifebook-ingest"
+        },
+        "threshold": 0.0,
+        "evaluation_periods": 5,
+        "ok_actions": [
+          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
+        ],
+        "insufficient_data_actions": [
+          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
+        ],
+        "alarm_description": "Fires if AWS/Lambda:Errors for lifebook-ingest >0 in any 1 of 5 minutes. TreatMissing=notBreaching.",
+        "period": 60,
+        "alarm_name": "lifebook-ingest-errors-5m",
+        "namespace": "AWS/Lambda",
+        "datapoints_to_alarm": 1,
+        "tags": {
+          "Purpose": "ingest"
+        },
+        "alarm_actions": [
+          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
+        ],
+        "metric_name": "Errors",
+        "comparison_operator": "GreaterThanThreshold",
+        "statistic": "Sum",
+        "treat_missing_data": "notBreaching"
+      },
+      "lifebook_ingest_quiet_15m": {
+        "dimensions": {
+          "FunctionName": "lifebook-ingest"
+        },
+        "threshold": 1.0,
+        "evaluation_periods": 15,
+        "ok_actions": [
+          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
+        ],
+        "insufficient_data_actions": [
+          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
+        ],
+        "alarm_description": "Fires if AWS/Lambda:Invocations for lifebook-ingest are <1 for 15 consecutive minutes. TreatMissing=breaching. Actions -> lifebook-alerts.",
+        "period": 60,
+        "alarm_name": "lifebook-ingest-quiet-15m",
+        "namespace": "AWS/Lambda",
+        "datapoints_to_alarm": 15,
+        "tags": {
+          "Purpose": "ingest-quiet"
+        },
+        "alarm_actions": [
+          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
+        ],
+        "metric_name": "Invocations",
+        "comparison_operator": "LessThanThreshold",
+        "statistic": "Sum",
+        "treat_missing_data": "breaching"
+      },
+      "lifebook_ingest_throttles_5m": {
+        "dimensions": {
+          "FunctionName": "lifebook-ingest"
+        },
+        "threshold": 0.0,
+        "evaluation_periods": 5,
+        "ok_actions": [
+          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
+        ],
+        "insufficient_data_actions": [
+          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
+        ],
+        "alarm_description": "Fires if AWS/Lambda:Throttles for lifebook-ingest >0 in any 1 of 5 minutes. TreatMissing=notBreaching.",
+        "period": 60,
+        "alarm_name": "lifebook-ingest-throttles-5m",
+        "namespace": "AWS/Lambda",
+        "datapoints_to_alarm": 1,
+        "tags": {
+          "Purpose": "ingest"
+        },
+        "alarm_actions": [
+          "arn:aws:sns:us-east-1:354630286254:lifebook-alerts"
+        ],
+        "metric_name": "Throttles",
+        "comparison_operator": "GreaterThanThreshold",
+        "statistic": "Sum",
+        "treat_missing_data": "notBreaching"
+      }
+    },
+    "aws_lambda_permission": {
+      "perm_lifebook_ingest_s3_lifebook_ai": {
+        "source_arn": "arn:aws:s3:::lifebook.ai",
+        "principal": "s3.amazonaws.com",
+        "statement_id": "s3invoke-e280def1",
+        "action": "lambda:InvokeFunction",
+        "function_name": "lifebook-ingest"
+      }
+    },
+    "aws_cloudwatch_dashboard": {
+      "Lifebook_Ingest_Overview": {
+        "dashboard_body": "{\"widgets\":[{\"type\":\"alarm\",\"x\":0,\"y\":0,\"width\":24,\"height\":4,\"properties\":{\"title\":\"Ingest - INCIDENT (composite)\",\"alarms\":[\"arn:aws:cloudwatch:us-east-1:354630286254:alarm:lifebook-ingest-incident\"]}},{\"type\":\"alarm\",\"x\":0,\"y\":4,\"width\":24,\"height\":4,\"properties\":{\"title\":\"Ingest - component alarms\",\"alarms\":[\"arn:aws:cloudwatch:us-east-1:354630286254:alarm:lifebook-ingest-quiet-15m\",\"arn:aws:cloudwatch:us-east-1:354630286254:alarm:lifebook-ingest-errors-5m\",\"arn:aws:cloudwatch:us-east-1:354630286254:alarm:lifebook-ingest-throttles-5m\"]}},{\"type\":\"metric\",\"x\":0,\"y\":8,\"width\":24,\"height\":8,\"properties\":{\"view\":\"timeSeries\",\"stacked\":false,\"region\":\"us-east-1\",\"title\":\"lifebook-ingest - Invocations / Errors / Throttles (Sum, 60s)\",\"metrics\":[[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"lifebook-ingest\",{\"stat\":\"Sum\",\"period\":60}],[\"AWS/Lambda\",\"Errors\",\"FunctionName\",\"lifebook-ingest\",{\"stat\":\"Sum\",\"period\":60}],[\"AWS/Lambda\",\"Throttles\",\"FunctionName\",\"lifebook-ingest\",{\"stat\":\"Sum\",\"period\":60}]]}},{\"type\":\"log\",\"x\":0,\"y\":16,\"width\":24,\"height\":7,\"properties\":{\"region\":\"us-east-1\",\"title\":\"lifebook-ingest - recent errors (Logs Insights)\",\"query\":\"SOURCE '/aws/lambda/lifebook-ingest' | filter @message like /(?i)(error|exception|fail)/ | fields @timestamp, @message, @logStream | sort @timestamp desc | limit 50\"}}]}",
+        "dashboard_name": "Lifebook-Ingest-Overview"
+      }
+    }
+  },
+  "terraform": {
+    "required_providers": {
+      "aws": {
+        "source": "hashicorp/aws",
+        "version": "~> 5.0"
       }
     }
   }

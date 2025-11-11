@@ -943,5 +943,14 @@
     "oldestage_widget": false,
     "tf_clean": false,
     "ok": true
+  },
+  {
+    "timestamp": "2025-11-10T19:07:00",
+    "step": "ingest_dlq_widgets_resolved_duplicate",
+    "dashboard": "Lifebook-Ingest-Overview",
+    "visible_widget": false,
+    "oldestage_widget": false,
+    "tf_clean": true,
+    "ok": false
   }
 ]
