@@ -1512,5 +1512,15 @@
     "delay": 0,
     "smokeId": "6670930da36d4ac5b89676b298fb1da4",
     "esmState": "Enabled"
+  },
+  {
+    "ts": "2025-11-11T17:57:39-05:00",
+    "step": "Phase4/18H15g-orchestrator-finish",
+    "manualDelta": 0,
+    "manualLogs": false,
+    "queueDelta": 0,
+    "queueLogs": false,
+    "dlq": 0,
+    "role": "lifebook-orchestrator-lambda-role"
   }
 ]
