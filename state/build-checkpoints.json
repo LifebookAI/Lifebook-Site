@@ -1258,5 +1258,17 @@
       "incidentRaised": true,
       "incidentBackOk": false
     }
+  },
+  {
+    "ts": "2025-11-11T11:24:46-05:00",
+    "step": "Phase4/18G-orchestrator-redrive-dlq-clear",
+    "dlqStart": 3,
+    "moveTask": "eyJ0YXNrSWQiOiI1ZTFlNWY2ZC01MzFmLTQ3ZDktYTdhYi1kMGZmMmM2YTkwNGMiLCJzb3VyY2VBcm4iOiJhcm46YXdzOnNxczp1cy1lYXN0LTE6MzU0NjMwMjg2MjU0OmxpZmVib29rLW9yY2hlc3RyYXRvci1kbHEifQ==",
+    "purgeDLQ": false,
+    "purgeMain": false,
+    "result": {
+      "incidentRaised": false,
+      "incidentBackOk": true
+    }
   }
 ]
