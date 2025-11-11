@@ -971,5 +971,15 @@
     "tf_plan_ok": true,
     "tf_applied": true,
     "ok": false
+  },
+  {
+    "timestamp": "2025-11-10T19:23:15",
+    "step": "ingest_dlq_widgets_metrics_array_of_arrays_fix",
+    "dashboard": "Lifebook-Ingest-Overview",
+    "visible_widget": false,
+    "oldestage_widget": false,
+    "tf_plan_ok": true,
+    "tf_applied": true,
+    "ok": false
   }
 ]
