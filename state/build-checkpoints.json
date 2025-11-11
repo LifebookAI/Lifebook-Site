@@ -1357,5 +1357,13 @@
     "deletedAnomalyLive": false,
     "removedAnomalyFromState": false,
     "esbuildResolved": {}
+  },
+  {
+    "ts": "2025-11-11T13:09:59-05:00",
+    "step": "Phase4/18H13-orchestrator-e2e-verify-purge-anomaly-and-bump-esbuild",
+    "e2eTransitions": [],
+    "deletedAnomalyLive": false,
+    "removedAnomalyFromState": false,
+    "esbuildResolved": {}
   }
 ]
