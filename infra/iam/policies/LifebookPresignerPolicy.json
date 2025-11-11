@@ -1,0 +1,27 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowPutToSourcesPrefixWithKMS",
+      "Effect": "Allow",
+      "Action": ["s3:PutObject","s3:AbortMultipartUpload","s3:PutObjectTagging"],
+      "Resource": "arn:aws:s3:::lifebook.ai/sources/*",
+      "Condition": {
+        "StringEquals": {
+          "s3:x-amz-server-side-encryption": "aws:kms",
+          "s3:x-amz-server-side-encryption-aws-kms-key-id": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a"
+        }
+      }
+    },
+    {
+      "Sid": "AllowKMSForS3SSE",
+      "Effect": "Allow",
+      "Action": ["kms:Encrypt","kms:GenerateDataKey*","kms:DescribeKey"],
+      "Resource": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
+      "Condition": {
+        "StringEquals": { "kms:ViaService": "s3.us-east-1.amazonaws.com" },
+        "StringLike":   { "kms:EncryptionContext:aws:s3:arn": "arn:aws:s3:::lifebook.ai/*" }
+      }
+    }
+  ]
+}

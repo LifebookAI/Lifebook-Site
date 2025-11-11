@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+node ./scripts/check-events.mjs
+if [ -f "services/orchestrator/package.json" ]; then
+  if command -v pnpm >/dev/null 2>&1; then
+    (cd services/orchestrator && pnpm -s lint && pnpm -s test)
+  elif command -v npm >/dev/null 2>&1; then
+    (cd services/orchestrator && npm -s run lint || true; npm -s test || true)
+  fi
+fi

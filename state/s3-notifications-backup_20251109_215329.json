@@ -1,0 +1,21 @@
+{
+    "QueueConfigurations": [
+        {
+            "Id": "YjE3NzlmZDMtMWEyMS00YWU2LWJlNTAtYTlmYzBiYWExY2Vh",
+            "QueueArn": "arn:aws:sqs:us-east-1:354630286254:lifebook-jobs",
+            "Events": [
+                "s3:ObjectCreated:*"
+            ],
+            "Filter": {
+                "Key": {
+                    "FilterRules": [
+                        {
+                            "Name": "Prefix",
+                            "Value": "sources/"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

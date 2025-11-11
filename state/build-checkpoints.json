@@ -599,10 +599,7 @@
         "Filter": {
           "Key": {
             "FilterRules": [
-              {
-                "Name": "Prefix",
-                "Value": "sources/"
-              }
+              "@{Name=Prefix; Value=sources/}"
             ]
           }
         }
@@ -1046,5 +1043,26 @@
     "step": "ingest_dashboard_validator_persisted_fixed",
     "dashboard": "Lifebook-Ingest-Overview",
     "validator_ok": true
+  },
+  {
+    "ts": "2025-11-10T20:28:54-05:00",
+    "step": "Phase4/18A",
+    "branch": "main",
+    "infra": {
+      "lambda": "lifebook-orchestrator-worker",
+      "table": "lifebook-orchestrator-jobs",
+      "queue": "lifebook-orchestrator-queue",
+      "dlq": "lifebook-orchestrator-dlq"
+    },
+    "s3Out": "s3://lifebook.ai/workflows/manual/manual-4c5e16d7/result.md",
+    "notion": {
+      "parent": "251159fa-88d0-804a-8a1b-c8518efa2805",
+      "used": false
+    },
+    "analytics": {
+      "spec": "analytics/spec.md",
+      "guard": ".github/workflows/analytics-guard.yml"
+    },
+    "ok": true
   }
 ]

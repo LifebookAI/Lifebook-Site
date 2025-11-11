@@ -1,0 +1,11 @@
+{ "allowed": [
+  "source_connected",
+  "workflow_run_started",
+  "workflow_run_completed",
+  "artifact_saved",
+  "notion_export",
+  "schedule_created",
+  "schedule_triggered",
+  "library_search_performed",
+  "billing_limit_hit"
+] }

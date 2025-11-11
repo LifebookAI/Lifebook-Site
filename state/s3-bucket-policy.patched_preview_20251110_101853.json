@@ -1,0 +1,142 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyUnencryptedObjectUploads",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::lifebook.ai/*",
+      "Condition": {
+        "StringNotEquals": {
+          "s3:x-amz-server-side-encryption": "aws:kms"
+        },
+        "ArnNotEquals": {
+          "aws:PrincipalArn": "arn:aws:sts::354630286254:assumed-role/AWSReservedSSO_AdministratorAccess_218fc3a66a7afc34/Founder"
+        }
+      }
+    },
+    {
+      "Sid": "DenyWrongKmsKey",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::lifebook.ai/*",
+      "Condition": {
+        "StringNotEquals": {
+          "s3:x-amz-server-side-encryption-aws-kms-key-id": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a"
+        },
+        "ArnNotEquals": {
+          "aws:PrincipalArn": "arn:aws:sts::354630286254:assumed-role/AWSReservedSSO_AdministratorAccess_218fc3a66a7afc34/Founder"
+        }
+      }
+    },
+    {
+      "Sid": "DenyNonTLS",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "s3:AbortMultipartUpload"
+      ],
+      "Resource": [
+        "arn:aws:s3:::lifebook.ai",
+        "arn:aws:s3:::lifebook.ai/*"
+      ],
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        },
+        "ArnNotEquals": {
+          "aws:PrincipalArn": "arn:aws:sts::354630286254:assumed-role/AWSReservedSSO_AdministratorAccess_218fc3a66a7afc34/Founder"
+        }
+      }
+    },
+    {
+      "Sid": "AllowCloudFrontOACGetObject",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "cloudfront.amazonaws.com"
+      },
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::lifebook.ai/*",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::354630286254:distribution/E2D7FJLA6YQUNP"
+        }
+      }
+    },
+    {
+      "Sid": "AllowEcsWorkerPut",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::lifebook.ai/catalog/transcripts/requests/*",
+      "Condition": {
+        "StringEquals": {
+          "s3:x-amz-server-side-encryption": "aws:kms",
+          "s3:x-amz-server-side-encryption-aws-kms-key-id": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a"
+        },
+        "Bool": {
+          "aws:SecureTransport": "true"
+        },
+        "ArnLike": {
+          "aws:PrincipalArn": "arn:aws:sts::354630286254:assumed-role/lifebook-ecs-worker-role/*"
+        }
+      }
+    },
+    {
+      "Sid": "AllowDeployPutObjectSSEKMS",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::354630286254:role/LifebookPresignDeployer"
+      },
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::lifebook.ai/*",
+      "Condition": {
+        "StringEquals": {
+          "s3:x-amz-server-side-encryption": "aws:kms",
+          "s3:x-amz-server-side-encryption-aws-kms-key-id": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a"
+        }
+      }
+    },
+    {
+      "Sid": "DenyInsecureTransport",
+      "Effect": "Deny",
+      "Principal": {
+        "AWS": "*"
+      },
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::lifebook.ai",
+        "arn:aws:s3:::lifebook.ai/*"
+      ],
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": false
+        }
+      }
+    },
+    {
+      "Sid": "AllowPresignedSourcesFromOurAccount",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "*"
+      },
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::lifebook.ai/sources/*",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": true
+        },
+        "StringEquals": {
+          "s3:x-amz-server-side-encryption": "aws:kms",
+          "s3:x-amz-server-side-encryption-aws-kms-key-id": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
+          "aws:PrincipalAccount": "354630286254"
+        }
+      }
+    }
+  ]
+}

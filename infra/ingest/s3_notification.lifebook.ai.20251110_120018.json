@@ -1,0 +1,21 @@
+{
+    "LambdaFunctionConfigurations": [
+        {
+            "Id": "lifebook-ingest-objectcreated-ingestprefix",
+            "LambdaFunctionArn": "arn:aws:lambda:us-east-1:354630286254:function:lifebook-ingest",
+            "Events": [
+                "s3:ObjectCreated:*"
+            ],
+            "Filter": {
+                "Key": {
+                    "FilterRules": [
+                        {
+                            "Name": "Prefix",
+                            "Value": "ingest/"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

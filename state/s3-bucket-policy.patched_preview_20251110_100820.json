@@ -1,0 +1,4 @@
+[
+  "DenyDataPlaneWithoutVpceKey",
+  "DenyDataPlaneNotViaVpce"
+]
