@@ -1169,5 +1169,17 @@
     },
     "alarmRaised": true,
     "alarmBackOk": true
+  },
+  {
+    "ts": "2025-11-11T10:27:52-05:00",
+    "step": "Phase4/18D-orchestrator-monitoring-extras",
+    "infra": {
+      "dashboard": "alarms-tile",
+      "alarmsAdded": [
+        "invocations-anom",
+        "incident-composite"
+      ]
+    },
+    "ok": true
   }
 ]
