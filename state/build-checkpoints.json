@@ -1,1526 +1,1540 @@
 [
-  {
-    "timestamp": "2025-11-05T11:07:08",
-    "tag": "checkpoint/phase4.step18/20251105_1107",
-    "branch": "ops/beta-plan-jan1-20251105-095634",
-    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
-    "step": "Phase4.Step18",
-    "title": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
-    "status": "Γ£ö",
-    "evidence": {
-      "node": "v22.18.0",
-      "npm": "10.9.3",
-      "secrets": [
-        "lifebook/dev/app",
-        "lifebook/prod/app"
-      ],
-      "hashes": [
-        {
-          "file": "package.json",
-          "sha256": "BB5DB004272F24F2B4971B033FA6ACB22D9659E237638FD330D9E17847380AA1"
-        },
-        {
-          "file": "tsconfig.json",
-          "sha256": "B1AFF0E999D3096A80067EE3E27119088259766BCABDA9F4A5DE9248E2B215B9"
-        },
-        {
-          "file": "next.config.mjs",
-          "sha256": "D89E67505BDD63929298457CB668B6F0A78A8B1C3920F648C7211C42177A7112"
-        },
-        {
-          "file": ".nvmrc",
-          "sha256": "1FBB92631D52373701BB35D0A63CF732C210AB8ABE2430D79FF7EEA3CDAC9EC2"
-        },
-        {
-          "file": ".gitignore",
-          "sha256": "649971C9856A2A3567E73CB9C0913C439A626A25F365AFCBEB716D92565BDCC1"
-        },
-        {
-          "file": "app/layout.tsx",
-          "sha256": "E47B2BE4287F463E9D1A13A60679EC53825E7275EA4ACEC5ADD2FCB806BF98E4"
-        },
-        {
-          "file": "app/page.tsx",
-          "sha256": "2442FC7B4EAC6965B9641EEDF13082070E0A93A7C6797758696ECF1241935900"
-        },
-        {
-          "file": "app/dashboard/page.tsx",
-          "sha256": "084C70D7D5066863D662828DE4C79261284B6A6E685FDFFC892EFB74FEAC171C"
-        },
-        {
-          "file": "app/(auth)/login/page.tsx",
-          "sha256": "D4B268AE084A989834B972ECE6CFB3909060117EB14FF8E104C89AF013D4DED2"
-        },
-        {
-          "file": "app/api/health/route.ts",
-          "sha256": "A18F29B259AA13B2CD352B08E9D45BF53A240A7BCFB84C1914B785000D7AD93E"
-        },
-        {
-          "file": "lib/env.ts",
-          "sha256": "42D31417B9ABC4171D57F6F879651D7AD04D0DFFE3298274169BCCB757548733"
-        },
-        {
-          "file": "lib/aws/secrets.ts",
-          "sha256": "585DC70D34B4B50B19045BCE181A0867CA03AA3863855B5572E91A681D417CCB"
-        },
-        {
-          "file": "styles/globals.css",
-          "sha256": "BC916BB8E935CA431D557AF55081DE97C27B5984B1F17C43BE6F13A2C1F3ED18"
-        },
-        {
-          "file": "middleware.ts",
-          "sha256": "5E1D15D050936F4F5546726CDAA703E5C9A9475109F00ECC057E1A4C2DBC94DF"
-        }
-      ],
-      "pkgTree": "@lifebook/site@0.1.0 C:\\Users\\zacha\\src\\Lifebook-Site\r\n+-- @aws-sdk/client-secrets-manager@3.922.0\r\n+-- @emnapi/runtime@1.6.0 extraneous\r\n+-- @eslint/eslintrc@3.3.1\r\n+-- @tailwindcss/postcss@4.1.16\r\n+-- @types/node@20.19.19\r\n+-- @types/react-dom@19.2.0\r\n+-- @types/react@19.2.0\r\n+-- eslint-config-next@15.5.4\r\n+-- eslint@9.37.0\r\n+-- next@15.4.7\r\n+-- react-dom@19.2.0\r\n+-- react@19.2.0\r\n+-- tailwindcss@4.1.16\r\n+-- typescript-eslint@8.45.0\r\n`-- typescript@5.9.3\r\n\r\n",
-      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
-    },
-    "decisions": [
-      "Zod strict env with Secrets Manager fallback (USE_AWS_SECRETS=1 or prod).",
-      "CSP Report-Only in dev via next.config.mjs; enforce later per 0.4.",
-      "Middleware cookie-guard protects /dashboard until Step 17 auth."
-    ],
-    "next": [
-      "18A ΓÇö Job orchestration & idempotency (SQS + worker baseline).",
-      "19 ΓÇö Transcription pipeline skeleton (Whisper v3 stub) behind feature flag.",
-      "Wire CI check for typecheck/build on PRs."
-    ]
-  },
-  {
-    "timestamp": "2025-11-05T11:13:26",
-    "tag": "checkpoint/phase4.step18/20251105_1113",
-    "branch": "ops/beta-plan-jan1-20251105-095634",
-    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
-    "step": "Phase4.Step18",
-    "title": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
-    "status": "Γ£ö",
-    "evidence": {
-      "node": "v22.18.0",
-      "npm": "10.9.3",
-      "deps": [
-        "zod",
-        "dotenv"
-      ],
-      "hashes": [
-        {
-          "file": "package.json",
-          "sha256": "94D030E96B6416F500A25166FED2B4E6C693253D36B4F30D4E0273788C556342"
-        },
-        {
-          "file": "tsconfig.json",
-          "sha256": "B1AFF0E999D3096A80067EE3E27119088259766BCABDA9F4A5DE9248E2B215B9"
-        },
-        {
-          "file": "next.config.mjs",
-          "sha256": "D89E67505BDD63929298457CB668B6F0A78A8B1C3920F648C7211C42177A7112"
-        },
-        {
-          "file": ".nvmrc",
-          "sha256": "1FBB92631D52373701BB35D0A63CF732C210AB8ABE2430D79FF7EEA3CDAC9EC2"
-        },
-        {
-          "file": ".gitignore",
-          "sha256": "649971C9856A2A3567E73CB9C0913C439A626A25F365AFCBEB716D92565BDCC1"
-        },
-        {
-          "file": "app/layout.tsx",
-          "sha256": "E47B2BE4287F463E9D1A13A60679EC53825E7275EA4ACEC5ADD2FCB806BF98E4"
-        },
-        {
-          "file": "app/page.tsx",
-          "sha256": "2442FC7B4EAC6965B9641EEDF13082070E0A93A7C6797758696ECF1241935900"
-        },
-        {
-          "file": "app/dashboard/page.tsx",
-          "sha256": "084C70D7D5066863D662828DE4C79261284B6A6E685FDFFC892EFB74FEAC171C"
-        },
-        {
-          "file": "app/(auth)/login/page.tsx",
-          "sha256": "D4B268AE084A989834B972ECE6CFB3909060117EB14FF8E104C89AF013D4DED2"
-        },
-        {
-          "file": "app/api/health/route.ts",
-          "sha256": "A18F29B259AA13B2CD352B08E9D45BF53A240A7BCFB84C1914B785000D7AD93E"
-        },
-        {
-          "file": "lib/env.ts",
-          "sha256": "42D31417B9ABC4171D57F6F879651D7AD04D0DFFE3298274169BCCB757548733"
-        },
-        {
-          "file": "lib/aws/secrets.ts",
-          "sha256": "585DC70D34B4B50B19045BCE181A0867CA03AA3863855B5572E91A681D417CCB"
-        },
-        {
-          "file": "styles/globals.css",
-          "sha256": "BC916BB8E935CA431D557AF55081DE97C27B5984B1F17C43BE6F13A2C1F3ED18"
-        },
-        {
-          "file": "middleware.ts",
-          "sha256": "5E1D15D050936F4F5546726CDAA703E5C9A9475109F00ECC057E1A4C2DBC94DF"
-        }
-      ],
-      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
-    },
-    "decisions": [
-      "Add zod + dotenv to satisfy env schema + dev .env load.",
-      "Keep CSP in Report-Only until hardening step."
-    ],
-    "next": [
-      "18A ΓÇö Job orchestration & idempotency (SQS + worker baseline).",
-      "19 ΓÇö Transcription pipeline skeleton behind feature flag.",
-      "CI: add typecheck/build job on PRs."
-    ]
-  },
-  {
-    "timestamp": "2025-11-05T11:17:31",
-    "tag": "checkpoint/phase4.step18/20251105_1117",
-    "branch": "ops/beta-plan-jan1-20251105-095634",
-    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
-    "step": "Phase4.Step18",
-    "title": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
-    "status": "Γ£ö",
-    "evidence": {
-      "node": "v22.18.0",
-      "npm": "10.9.3",
-      "hashes": [
-        {
-          "file": "package.json",
-          "sha256": "94D030E96B6416F500A25166FED2B4E6C693253D36B4F30D4E0273788C556342"
-        },
-        {
-          "file": "tsconfig.json",
-          "sha256": "B1AFF0E999D3096A80067EE3E27119088259766BCABDA9F4A5DE9248E2B215B9"
-        },
-        {
-          "file": "next.config.mjs",
-          "sha256": "D89E67505BDD63929298457CB668B6F0A78A8B1C3920F648C7211C42177A7112"
-        },
-        {
-          "file": ".nvmrc",
-          "sha256": "1FBB92631D52373701BB35D0A63CF732C210AB8ABE2430D79FF7EEA3CDAC9EC2"
-        },
-        {
-          "file": ".gitignore",
-          "sha256": "649971C9856A2A3567E73CB9C0913C439A626A25F365AFCBEB716D92565BDCC1"
-        },
-        {
-          "file": "app/layout.tsx",
-          "sha256": "E47B2BE4287F463E9D1A13A60679EC53825E7275EA4ACEC5ADD2FCB806BF98E4"
-        },
-        {
-          "file": "app/page.tsx",
-          "sha256": "2442FC7B4EAC6965B9641EEDF13082070E0A93A7C6797758696ECF1241935900"
-        },
-        {
-          "file": "app/dashboard/page.tsx",
-          "sha256": "F0A179FE3D712622B383667854F62CB46F7468E95BAA877434DE3BF9A2E71672"
-        },
-        {
-          "file": "app/(auth)/login/page.tsx",
-          "sha256": "E5E0180C371E448B145875701F8A3C58DB445E603DDCC00ACDBBEBB09C70C282"
-        },
-        {
-          "file": "app/api/health/route.ts",
-          "sha256": "481D54430CB3ADBE0E902AD9D3E0F24E74AF7B31E956EE46A8B3FEBDB1FC1D42"
-        },
-        {
-          "file": "lib/env.ts",
-          "sha256": "D37C4833DE9913B0AD96EF17D7133D2939C668466D178CF3E7605295CEFAE57C"
-        },
-        {
-          "file": "lib/aws/secrets.ts",
-          "sha256": "398CE15917C82BC923A9725BF89E4B65EB1FFB9DAD2D9330CBAC4835495B0B07"
-        },
-        {
-          "file": "styles/globals.css",
-          "sha256": "BC916BB8E935CA431D557AF55081DE97C27B5984B1F17C43BE6F13A2C1F3ED18"
-        },
-        {
-          "file": "middleware.ts",
-          "sha256": "5E1D15D050936F4F5546726CDAA703E5C9A9475109F00ECC057E1A4C2DBC94DF"
-        }
-      ],
-      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
-    },
-    "decisions": [
-      "ESLint compliance without disabling rules.",
-      "Type-safe Secrets Manager utility returning Record<string,string>."
-    ],
-    "next": [
-      "18A ΓÇö SQS job orchestrator + idempotency baseline.",
-      "19 ΓÇö Transcription pipeline stub behind feature flag.",
-      "CI: add typecheck/build job on PRs."
-    ]
-  },
-  {
-    "timestamp": "2025-11-05T11:20:42",
-    "tag": "checkpoint/phase4.step18/20251105_1120",
-    "branch": "ops/beta-plan-jan1-20251105-095634",
-    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
-    "step": "Phase4.Step18",
-    "title": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
-    "status": "Γ£ö",
-    "evidence": {
-      "node": "v22.18.0",
-      "npm": "10.9.3",
-      "file": "lib/aws/secrets.ts",
-      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
-    },
-    "decisions": [
-      "Avoid base-to-string by JSON.stringify for non-strings; rely on control-flow narrowing for SecretBinary."
-    ],
-    "next": [
-      "18A ΓÇö SQS job orchestrator + idempotency baseline.",
-      "19 ΓÇö Transcription pipeline stub behind feature flag.",
-      "CI: add typecheck/build job on PRs."
-    ]
-  },
-  {
-    "timestamp": "2025-11-05T11:28:05",
-    "tag": "checkpoint/phase4.step18a/20251105_1128",
-    "branch": "ops/beta-plan-jan1-20251105-095634",
-    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
-    "step": "Phase4.Step18A",
-    "title": "Job orchestration & idempotency (SQS FIFO + enqueue API + worker)",
-    "status": "Γ£ö",
-    "evidence": {
-      "node": "v22.18.0",
-      "npm": "10.9.3",
-      "queues": [
-        {
-          "url": null,
-          "stage": "dev"
-        },
-        {
-          "url": null,
-          "stage": "prod"
-        }
-      ],
-      "files": [
-        "lib/aws/queue.ts",
-        "app/api/jobs/enqueue/route.ts",
-        "scripts/worker.mjs"
-      ],
-      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
-    },
-    "decisions": [
-      "Use SQS FIFO + MessageDeduplicationId for idempotency; group by job name.",
-      "Persist JOBS_QUEUE_URL in Secrets lifebook/{stage}/app."
-    ],
-    "next": [
-      "19 ΓÇö Transcription pipeline stub behind feature flag.",
-      "CI: gate PRs on typecheck/build.",
-      "Wire a simple job handler switch inside worker (e.g., 'transcribe')."
-    ]
-  },
-  {
-    "timestamp": "2025-11-05T11:33:52",
-    "tag": "checkpoint/phase4.step18a-fix/20251105_1133",
-    "branch": "ops/beta-plan-jan1-20251105-095634",
-    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
-    "step": "Phase4.Step18A-fix",
-    "title": "18A repair (SQS create/tag/redrive + zod + pkg script)",
-    "status": "Γ£ö",
-    "evidence": {
-      "node": "v22.18.0",
-      "npm": "10.9.3",
-      "queues": [
-        {
-          "url": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-dev-jobs.fifo",
-          "stage": "dev"
-        },
-        {
-          "url": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-prod-jobs.fifo",
-          "stage": "prod"
-        }
-      ],
-      "secretsUpdated": [
-        "lifebook/dev/app",
-        "lifebook/prod/app"
-      ],
-      "files": [
-        "app/api/jobs/enqueue/route.ts",
-        "package.json"
-      ],
-      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
-    },
-    "decisions": [
-      "Avoid inline JSON quoting by using file:// for RedrivePolicy.",
-      "Tag queues with aws sqs tag-queue post-create for reliability on Windows."
-    ],
-    "next": [
-      "Wire worker switch (e.g., 'transcribe') behind feature flag.",
-      "CI: add typecheck/build gate on PRs."
-    ]
-  },
-  {
-    "timestamp": "2025-11-05T11:38:04",
-    "tag": "checkpoint/phase4.step18a-finish/20251105_1138",
-    "branch": "ops/beta-plan-jan1-20251105-095634",
-    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
-    "step": "Phase4.Step18A-finish",
-    "title": "18A finish (SQS tag via JSON + enqueue safeParse)",
-    "status": "Γ£ö",
-    "evidence": {
-      "node": "v22.18.0",
-      "npm": "10.9.3",
-      "queues": [
-        {
-          "url": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-dev-jobs.fifo",
-          "stage": "dev"
-        },
-        {
-          "url": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-prod-jobs.fifo",
-          "stage": "prod"
-        }
-      ],
-      "files": [
-        "app/api/jobs/enqueue/route.ts"
-      ],
-      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
-    },
-    "decisions": [
-      "Use file:// JSON for SQS tag-queue to avoid CLI quoting issues on Windows.",
-      "Use zod.safeParse to guarantee typed body without eslint unsafe-assignment."
-    ],
-    "next": [
-      "Add worker switch (e.g., 'transcribe') behind a feature flag.",
-      "CI: gate PRs on typecheck/build."
-    ]
-  },
-  {
-    "timestamp": "2025-11-05T11:41:33",
-    "tag": "checkpoint/phase4.step19/20251105_1141",
-    "branch": "ops/beta-plan-jan1-20251105-095634",
-    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
-    "step": "Phase4.Step19",
-    "title": "Transcription pipeline stub (feature-flagged)",
-    "status": "Γ£ö",
-    "evidence": {
-      "node": "v22.18.0",
-      "npm": "10.9.3",
-      "files": [
-        "scripts/worker.mjs",
-        ".github/workflows/ci.yml",
-        ".env.local"
-      ],
-      "ciWorkflow": "ci.yml",
-      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
-    },
-    "decisions": [
-      "Gate real STT behind FEATURE_TRANSCRIBE for safe rollout.",
-      "Add CI workflow to require typecheck/build on PRs."
-    ],
-    "next": [
-      "19A ΓÇö wire real STT path (Whisper v3) behind the flag.",
-      "20 ΓÇö job-level metrics & DLQ alarm (SQS/Lambda path)."
-    ]
-  },
-  {
-    "timestamp": "2025-11-05T11:46:17",
-    "tag": "checkpoint/phase4.step19a/20251105_1146",
-    "branch": "ops/beta-plan-jan1-20251105-095634",
-    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
-    "step": "Phase4.Step19A",
-    "title": "Transcription pipeline stub ΓåÆ S3 request record (feature-flagged)",
-    "status": "Γ£ö",
-    "evidence": {
-      "node": "v22.18.0",
-      "npm": "10.9.3",
-      "files": [
-        "scripts/handlers/transcribe.mjs",
-        "scripts/worker.mjs"
-      ],
-      "s3PathExample": "catalog/transcripts/requests/req-<uuid>.json",
-      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
-    },
-    "decisions": [
-      "Persist STT requests in S3 (catalog/transcripts/requests) for audit/idempotency.",
-      "Keep FEATURE_TRANSCRIBE gate; no external STT call yet."
-    ],
-    "next": [
-      "19B ΓÇö wire actual Whisper v3 call; write transcript artifact to catalog/transcripts/results/.",
-      "20 ΓÇö job-level metrics + DLQ alarms."
-    ]
-  },
-  {
-    "timestamp": "2025-11-05T11:50:53",
-    "tag": "checkpoint/phase4.step19b/20251105_1150",
-    "branch": "ops/beta-plan-jan1-20251105-095634",
-    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
-    "step": "Phase4.Step19B",
-    "title": "Transcription stub ΓåÆ request+result artifacts (feature-flagged)",
-    "status": "Γ£ö",
-    "evidence": {
-      "files": [
-        "scripts/handlers/transcribe.mjs"
-      ],
-      "requestPrefix": "catalog/transcripts/requests/",
-      "resultPrefix": "catalog/transcripts/results/",
-      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
-    },
-    "decisions": [
-      "Record lifecycle: requests/* ΓåÆ results/*, update request with completion + link.",
-      "Keep the real STT call behind FEATURE_TRANSCRIBE until 19C."
-    ],
-    "next": [
-      "19C ΓÇö replace stub with real Whisper v3 call (adapter), same result contract.",
-      "20 ΓÇö add SQS DLQ alarm + basic job metrics (count, latency)."
-    ]
-  },
-  {
-    "timestamp": "2025-11-05T11:55:15",
-    "tag": "checkpoint/phase4.step19c/20251105_1155",
-    "branch": "ops/beta-plan-jan1-20251105-095634",
-    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
-    "step": "Phase4.Step19C",
-    "title": "Transcription ΓåÆ OpenAI adapter (feature-flagged, dry-run if no key)",
-    "status": "Γ£ö",
-    "evidence": {
-      "files": [
-        "scripts/stt/openai.mjs",
-        "scripts/handlers/transcribe.mjs"
-      ],
-      "requestPrefix": "catalog/transcripts/requests/",
-      "resultPrefix": "catalog/transcripts/results/",
-      "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
-    },
-    "decisions": [
-      "Introduce provider adapter layer: OpenAI primary, stub fallback if no key.",
-      "Keep behind FEATURE_TRANSCRIBE for controlled rollout."
-    ],
-    "next": [
-      "20 ΓÇö SQS DLQ alarm + basic job metrics (count/latency); wire into dashboard.",
-      "21 ΓÇö persist transcript ΓåÆ chapterizer/summary pipeline entry (stub first)."
-    ]
-  },
-  {
-    "timestamp": "2025-11-05T11:59:27",
-    "tag": "checkpoint/phase4.step20/20251105_1159",
-    "branch": "ops/beta-plan-jan1-20251105-095634",
-    "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
-    "step": "Phase4.Step20",
-    "title": "SQS alarms + dashboard + worker metrics",
-    "status": "Γ£ö",
-    "evidence": {
-      "alarms": [
-        "lifebook-dev-jobs-dlq-not-empty",
-        "lifebook-prod-jobs-dlq-not-empty",
-        "lifebook-dev-jobs-age-high",
-        "lifebook-prod-jobs-age-high"
-      ],
-      "dashboard": "Lifebook-Jobs",
-      "files": [
-        "scripts/worker.mjs"
-      ]
-    },
-    "decisions": [
-      "Alert on DLQ>0 (1 datapoint @60s) and backlog age>=300s (5/5 datapoints).",
-      "Emit basic job metrics from worker (Completed, LatencyMs) under Lifebook/Jobs."
-    ],
-    "next": [
-      "21 ΓÇö pipe transcript ΓåÆ chapterizer/summary (stub) writing to catalog/chapters & catalog/summaries.",
-      "22 ΓÇö PR gate: require CI green + alarms present (light policy check)."
-    ]
-  },
-  {
-    "Timestamp": "2025-11-05T19:27:56",
-    "Step": "wrk.ephemeral-drain.verify",
-    "Stage": "dev",
-    "VerifiedKeys": null,
-    "Completed30m": 0.0,
-    "LatencyMs": null
-  },
-  {
-    "ts": "2025-11-08T15:06:39",
-    "kind": "pr_merged",
-    "pr": "#@{url=https://api.github.com/repos/LifebookAI/Lifebook-Site/pulls/86; id=2991687269; node_id=PR_kwDOPc61NM6yUYZl; html_url=https://github.com/LifebookAI/Lifebook-Site/pull/86; diff_url=https://github.com/LifebookAI/Lifebook-Site/pull/86.diff; patch_url=https://github.com/LifebookAI/Lifebook-Site/pull/86.patch; issue_url=https://api.github.com/repos/LifebookAI/Lifebook-Site/issues/86; number=86; state=closed; locked=False; title=chore(eol): normalize LF + newline at EOF + checkpoint; user=; body=Normalize LF + ensure newline at EOF for state/build-checkpoints.json; append checkpoint entry; hooks green. No functional code changes.; created_at=11/08/2025 18:56:17; updated_at=11/08/2025 19:59:59; closed_at=11/08/2025 19:59:58; merged_at=11/08/2025 19:59:58; merge_commit_sha=c5808fb1ccf26d2e4108683e27ccdcb070687b92; assignee=; assignees=System.Object[]; requested_reviewers=System.Object[]; requested_teams=System.Object[]; labels=System.Object[]; milestone=; draft=False; commits_url=https://api.github.com/repos/LifebookAI/Lifebook-Site/pulls/86/commits; review_comments_url=https://api.github.com/repos/LifebookAI/Lifebook-Site/pulls/86/comments; review_comment_url=https://api.github.com/repos/LifebookAI/Lifebook-Site/pulls/comments{/number}; comments_url=https://api.github.com/repos/LifebookAI/Lifebook-Site/issues/86/comments; statuses_url=https://api.github.com/repos/LifebookAI/Lifebook-Site/statuses/f5f89289ee2ee7094745339c65147cbbb4f67e4c; head=; base=; _links=; author_association=OWNER; auto_merge=; active_lock_reason=; merged=True; mergeable=; rebaseable=; mergeable_state=unknown; merged_by=; comments=1; review_comments=0; maintainer_can_modify=False; commits=10; additions=771; deletions=378; changed_files=24}",
-    "base": "main",
-    "pr_url": "https://github.com/LifebookAI/Lifebook-Site/pull/86",
-    "merge_sha": "c5808fb1ccf26d2e4108683e27ccdcb070687b92"
-  },
-  {
-    "ts": "2025-11-09T20:32:18",
-    "kind": "site-deploy",
-    "bucket": "lifebook.ai",
-    "key": "index.html",
-    "kms": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
-    "cfDistId": "E2D7FJLA6YQUNP",
-    "cfInvId": "IDKN3EOMOZD8KQN9E4CT1UDT0B",
-    "status": "success"
-  },
-  {
-    "timestamp": "2025-11-10T10:28:19",
-    "step": "ingest_presign_put",
-    "bucket": "lifebook.ai",
-    "key": "sources/13928479-f420-40d8-b208-fe9396ee314b.txt",
-    "lambda": "lifebook-ingest",
-    "inv_base": 2,
-    "inv_now": 3,
-    "ok": true,
-    "sse": "aws:kms",
-    "kmsKeyId": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a"
-  },
-  {
-    "timestamp": "2025-11-10T10:54:44",
-    "step": "alarm_ingest_quiet_15m",
-    "alarm": "lifebook-ingest-quiet-15m",
-    "arn": "arn:aws:cloudwatch:us-east-1:354630286254:alarm:lifebook-ingest-quiet-15m",
-    "state": {
-      "Raw": [
-        "{",
-        "    \"LambdaFunctionConfigurations\": [",
-        "        {",
-        "            \"Id\": \"lifebook-ingest-sources\",",
-        "            \"LambdaFunctionArn\": \"arn:aws:lambda:us-east-1:354630286254:function:lifebook-ingest\",",
-        "            \"Events\": [",
-        "                \"s3:ObjectCreated:Put\"",
-        "            ],",
-        "            \"Filter\": {",
-        "                \"Key\": {",
-        "                    \"FilterRules\": [",
-        "                        {",
-        "                            \"Name\": \"Prefix\",",
-        "                            \"Value\": \"sources/\"",
-        "                        }",
-        "                    ]",
-        "                }",
-        "            }",
-        "        }",
-        "    ]",
-        "}"
-      ],
-      "LFC": {
-        "Id": "lifebook-ingest-sources",
-        "LambdaFunctionArn": "arn:aws:lambda:us-east-1:354630286254:function:lifebook-ingest",
-        "Events": [
-          "s3:ObjectCreated:Put"
+  [
+    {
+      "timestamp": "2025-11-05T11:07:08",
+      "tag": "checkpoint/phase4.step18/20251105_1107",
+      "branch": "ops/beta-plan-jan1-20251105-095634",
+      "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+      "step": "Phase4.Step18",
+      "title": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
+      "status": "Γ£ö",
+      "evidence": {
+        "node": "v22.18.0",
+        "npm": "10.9.3",
+        "secrets": [
+          "lifebook/dev/app",
+          "lifebook/prod/app"
         ],
-        "Filter": {
-          "Key": {
-            "FilterRules": [
-              "@{Name=Prefix; Value=sources/}"
-            ]
+        "hashes": [
+          {
+            "file": "package.json",
+            "sha256": "BB5DB004272F24F2B4971B033FA6ACB22D9659E237638FD330D9E17847380AA1"
+          },
+          {
+            "file": "tsconfig.json",
+            "sha256": "B1AFF0E999D3096A80067EE3E27119088259766BCABDA9F4A5DE9248E2B215B9"
+          },
+          {
+            "file": "next.config.mjs",
+            "sha256": "D89E67505BDD63929298457CB668B6F0A78A8B1C3920F648C7211C42177A7112"
+          },
+          {
+            "file": ".nvmrc",
+            "sha256": "1FBB92631D52373701BB35D0A63CF732C210AB8ABE2430D79FF7EEA3CDAC9EC2"
+          },
+          {
+            "file": ".gitignore",
+            "sha256": "649971C9856A2A3567E73CB9C0913C439A626A25F365AFCBEB716D92565BDCC1"
+          },
+          {
+            "file": "app/layout.tsx",
+            "sha256": "E47B2BE4287F463E9D1A13A60679EC53825E7275EA4ACEC5ADD2FCB806BF98E4"
+          },
+          {
+            "file": "app/page.tsx",
+            "sha256": "2442FC7B4EAC6965B9641EEDF13082070E0A93A7C6797758696ECF1241935900"
+          },
+          {
+            "file": "app/dashboard/page.tsx",
+            "sha256": "084C70D7D5066863D662828DE4C79261284B6A6E685FDFFC892EFB74FEAC171C"
+          },
+          {
+            "file": "app/(auth)/login/page.tsx",
+            "sha256": "D4B268AE084A989834B972ECE6CFB3909060117EB14FF8E104C89AF013D4DED2"
+          },
+          {
+            "file": "app/api/health/route.ts",
+            "sha256": "A18F29B259AA13B2CD352B08E9D45BF53A240A7BCFB84C1914B785000D7AD93E"
+          },
+          {
+            "file": "lib/env.ts",
+            "sha256": "42D31417B9ABC4171D57F6F879651D7AD04D0DFFE3298274169BCCB757548733"
+          },
+          {
+            "file": "lib/aws/secrets.ts",
+            "sha256": "585DC70D34B4B50B19045BCE181A0867CA03AA3863855B5572E91A681D417CCB"
+          },
+          {
+            "file": "styles/globals.css",
+            "sha256": "BC916BB8E935CA431D557AF55081DE97C27B5984B1F17C43BE6F13A2C1F3ED18"
+          },
+          {
+            "file": "middleware.ts",
+            "sha256": "5E1D15D050936F4F5546726CDAA703E5C9A9475109F00ECC057E1A4C2DBC94DF"
           }
-        }
+        ],
+        "pkgTree": "@lifebook/site@0.1.0 C:\\Users\\zacha\\src\\Lifebook-Site\r\n+-- @aws-sdk/client-secrets-manager@3.922.0\r\n+-- @emnapi/runtime@1.6.0 extraneous\r\n+-- @eslint/eslintrc@3.3.1\r\n+-- @tailwindcss/postcss@4.1.16\r\n+-- @types/node@20.19.19\r\n+-- @types/react-dom@19.2.0\r\n+-- @types/react@19.2.0\r\n+-- eslint-config-next@15.5.4\r\n+-- eslint@9.37.0\r\n+-- next@15.4.7\r\n+-- react-dom@19.2.0\r\n+-- react@19.2.0\r\n+-- tailwindcss@4.1.16\r\n+-- typescript-eslint@8.45.0\r\n`-- typescript@5.9.3\r\n\r\n",
+        "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
       },
-      "TPC": null,
-      "QQC": null
-    },
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T11:00:18",
-    "step": "alarm_ingest_quiet_15m_ascii_desc",
-    "alarm": "lifebook-ingest-quiet-15m",
-    "arn": "arn:aws:cloudwatch:us-east-1:354630286254:alarm:lifebook-ingest-quiet-15m",
-    "state": "ALARM",
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T11:05:24",
-    "step": "dashboard_ingest_overview",
-    "dashboard": "Lifebook-Ingest-Overview",
-    "alarm": "lifebook-ingest-quiet-15m",
-    "region": "us-east-1",
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T11:09:01",
-    "step": "dashboard_ingest_overview_created",
-    "dashboard": "Lifebook-Ingest-Overview",
-    "alarm": "lifebook-ingest-quiet-15m",
-    "region": "us-east-1",
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T11:11:10",
-    "step": "dashboard_ingest_overview_fixed_metrics",
-    "dashboard": "Lifebook-Ingest-Overview",
-    "alarm": "lifebook-ingest-quiet-15m",
-    "region": "us-east-1",
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T11:14:17",
-    "step": "dashboard_ingest_overview_enhanced",
-    "dashboard": "Lifebook-Ingest-Overview",
-    "alarms": "lifebook-ingest-quiet-15m,lifebook-ingest-errors-5m,lifebook-ingest-throttles-5m",
-    "region": "us-east-1",
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T11:17:05",
-    "step": "ingest_composite_alarm_and_dashboard",
-    "composite": "lifebook-ingest-incident",
-    "dashboard": "Lifebook-Ingest-Overview",
-    "region": "us-east-1",
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T11:23:35",
-    "step": "ingest_composite_verified_and_dash_bound",
-    "composite": "lifebook-ingest-incident",
-    "composite_state": "ALARM",
-    "dashboard": "Lifebook-Ingest-Overview",
-    "region": "us-east-1",
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T11:26:02",
-    "step": "dashboard_ingest_overview_logs_widget",
-    "dashboard": "Lifebook-Ingest-Overview",
-    "region": "us-east-1",
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T11:33:30",
-    "step": "ingest_smoke_trigger_and_verify_safe",
-    "key": "ingest/smoke/smoke_20251110_113302.txt",
-    "inv_5m": 0,
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T11:41:52",
-    "step": "ingest_smoke_s3notify_wired_and_verified",
-    "key": "ingest/smoke/smoke_20251110_113824.txt",
-    "inv_5m": 1.0,
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T11:50:03",
-    "step": "ingest_s3_notification_merged_and_smoked",
-    "key": "ingest/smoke/smoke_20251110_114638.txt",
-    "inv_5m": 0,
-    "ok": false
-  },
-  {
-    "timestamp": "2025-11-10T11:54:37",
-    "step": "ingest_s3_notification_strictmerge_and_smoke",
-    "key": "ingest/smoke/smoke_20251110_115356.txt",
-    "inv_5m": 1.0,
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T12:00:55",
-    "step": "ingest_alarm_drill_snapshot_done",
-    "snapshot": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\s3_notification.lifebook.ai.20251110_120018.json",
-    "states_before": {
-      "Composite": [
-        {
-          "Name": "lifebook-ingest-incident",
-          "State": "OK"
-        }
+      "decisions": [
+        "Zod strict env with Secrets Manager fallback (USE_AWS_SECRETS=1 or prod).",
+        "CSP Report-Only in dev via next.config.mjs; enforce later per 0.4.",
+        "Middleware cookie-guard protects /dashboard until Step 17 auth."
       ],
-      "Metric": [
-        {
-          "Name": "lifebook-ingest-errors-5m",
-          "State": "OK"
-        },
-        {
-          "Name": "lifebook-ingest-quiet-15m",
-          "State": "OK"
-        },
-        {
-          "Name": "lifebook-ingest-throttles-5m",
-          "State": "OK"
-        }
+      "next": [
+        "18A ΓÇö Job orchestration & idempotency (SQS + worker baseline).",
+        "19 ΓÇö Transcription pipeline skeleton (Whisper v3 stub) behind feature flag.",
+        "Wire CI check for typecheck/build on PRs."
       ]
     },
-    "states_mid": {
-      "Composite": [
-        {
-          "Name": "lifebook-ingest-incident",
-          "State": "ALARM"
-        }
-      ],
-      "Metric": [
-        {
-          "Name": "lifebook-ingest-errors-5m",
-          "State": "ALARM"
-        },
-        {
-          "Name": "lifebook-ingest-quiet-15m",
-          "State": "OK"
-        },
-        {
-          "Name": "lifebook-ingest-throttles-5m",
-          "State": "OK"
-        }
-      ]
-    },
-    "states_after": {
-      "Composite": [
-        {
-          "Name": "lifebook-ingest-incident",
-          "State": "OK"
-        }
-      ],
-      "Metric": [
-        {
-          "Name": "lifebook-ingest-errors-5m",
-          "State": "OK"
-        },
-        {
-          "Name": "lifebook-ingest-quiet-15m",
-          "State": "OK"
-        },
-        {
-          "Name": "lifebook-ingest-throttles-5m",
-          "State": "OK"
-        }
-      ]
-    },
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T14:22:30",
-    "step": "ingest_terraform_init_import_plan",
-    "tfjson": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\main.tf.json",
-    "plugin_cache": "C:\\Users\\zacha\\.terraform.d\\plugin-cache",
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T14:26:18",
-    "step": "ingest_tf_tags_locked",
-    "tfjson": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\main.tf.json",
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T14:30:32",
-    "step": "ingest_tf_tags_applied",
-    "tfjson": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\main.tf.json",
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T14:36:04",
-    "step": "ingest_tf_s3_bucket_notification_imported",
-    "notif_tf": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\notification.tf.json",
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T14:40:09",
-    "step": "ingest_iac_committed_and_smoked",
-    "key": "ingest/smoke/smoke_20251110_143941.txt",
-    "sse_args": "--sse aws:kms --sse-kms-key-id arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T14:45:47",
-    "step": "ingest_lambda_ops_config_imported",
-    "lambda_tf": null,
-    "has_reserved_concurrency": false,
-    "has_event_invoke_config": false,
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T14:56:13",
-    "step": "ingest_iam_role_imported",
-    "role_name": "lifebook-ingest-role",
-    "attached_policies": [
-      "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-      "arn:aws:iam::354630286254:policy/LifebookIngestPolicy"
-    ],
-    "inline_policies": [
-      "lifebook-ingest-dlq-access"
-    ],
-    "iam_tf": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\iam.tf.json",
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T15:01:45",
-    "step": "ingest_iam_role_fixed_and_imported",
-    "role_name": "lifebook-ingest-role",
-    "attached_policies": [
-      "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-      "arn:aws:iam::354630286254:policy/LifebookIngestPolicy"
-    ],
-    "inline_policies": [
-      "lifebook-ingest-dlq-access"
-    ],
-    "iam_tf": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\iam.tf.json",
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T16:30:05",
-    "step": "ingest_dlq_created_and_wired",
-    "queue": "lifebook-ingest-dlq",
-    "queue_arn": "arn:aws:sqs:us-east-1:354630286254:lifebook-ingest-dlq",
-    "lambda": "lifebook-ingest",
-    "tf_files": [
-      "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\sqs.tf.json",
-      "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\lambda.tf.json"
-    ],
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T16:33:52",
-    "step": "ingest_dlq_pinned_attrs",
-    "queue": "lifebook-ingest-dlq",
-    "pinned": {
-      "sse": "true",
-      "tags": {
-        "Env": "prod",
-        "Project": "lifebook"
+    {
+      "timestamp": "2025-11-05T11:13:26",
+      "tag": "checkpoint/phase4.step18/20251105_1113",
+      "branch": "ops/beta-plan-jan1-20251105-095634",
+      "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+      "step": "Phase4.Step18",
+      "title": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
+      "status": "Γ£ö",
+      "evidence": {
+        "node": "v22.18.0",
+        "npm": "10.9.3",
+        "deps": [
+          "zod",
+          "dotenv"
+        ],
+        "hashes": [
+          {
+            "file": "package.json",
+            "sha256": "94D030E96B6416F500A25166FED2B4E6C693253D36B4F30D4E0273788C556342"
+          },
+          {
+            "file": "tsconfig.json",
+            "sha256": "B1AFF0E999D3096A80067EE3E27119088259766BCABDA9F4A5DE9248E2B215B9"
+          },
+          {
+            "file": "next.config.mjs",
+            "sha256": "D89E67505BDD63929298457CB668B6F0A78A8B1C3920F648C7211C42177A7112"
+          },
+          {
+            "file": ".nvmrc",
+            "sha256": "1FBB92631D52373701BB35D0A63CF732C210AB8ABE2430D79FF7EEA3CDAC9EC2"
+          },
+          {
+            "file": ".gitignore",
+            "sha256": "649971C9856A2A3567E73CB9C0913C439A626A25F365AFCBEB716D92565BDCC1"
+          },
+          {
+            "file": "app/layout.tsx",
+            "sha256": "E47B2BE4287F463E9D1A13A60679EC53825E7275EA4ACEC5ADD2FCB806BF98E4"
+          },
+          {
+            "file": "app/page.tsx",
+            "sha256": "2442FC7B4EAC6965B9641EEDF13082070E0A93A7C6797758696ECF1241935900"
+          },
+          {
+            "file": "app/dashboard/page.tsx",
+            "sha256": "084C70D7D5066863D662828DE4C79261284B6A6E685FDFFC892EFB74FEAC171C"
+          },
+          {
+            "file": "app/(auth)/login/page.tsx",
+            "sha256": "D4B268AE084A989834B972ECE6CFB3909060117EB14FF8E104C89AF013D4DED2"
+          },
+          {
+            "file": "app/api/health/route.ts",
+            "sha256": "A18F29B259AA13B2CD352B08E9D45BF53A240A7BCFB84C1914B785000D7AD93E"
+          },
+          {
+            "file": "lib/env.ts",
+            "sha256": "42D31417B9ABC4171D57F6F879651D7AD04D0DFFE3298274169BCCB757548733"
+          },
+          {
+            "file": "lib/aws/secrets.ts",
+            "sha256": "585DC70D34B4B50B19045BCE181A0867CA03AA3863855B5572E91A681D417CCB"
+          },
+          {
+            "file": "styles/globals.css",
+            "sha256": "BC916BB8E935CA431D557AF55081DE97C27B5984B1F17C43BE6F13A2C1F3ED18"
+          },
+          {
+            "file": "middleware.ts",
+            "sha256": "5E1D15D050936F4F5546726CDAA703E5C9A9475109F00ECC057E1A4C2DBC94DF"
+          }
+        ],
+        "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
       },
-      "visibility": "30",
-      "retention": "1209600"
+      "decisions": [
+        "Add zod + dotenv to satisfy env schema + dev .env load.",
+        "Keep CSP in Report-Only until hardening step."
+      ],
+      "next": [
+        "18A ΓÇö Job orchestration & idempotency (SQS + worker baseline).",
+        "19 ΓÇö Transcription pipeline skeleton behind feature flag.",
+        "CI: add typecheck/build job on PRs."
+      ]
     },
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T16:38:24",
-    "step": "ingest_dlq_attrs_enforced",
-    "queue": "lifebook-ingest-dlq",
-    "resulting": {
-      "sse": "true",
-      "visibility": "30",
-      "retention": "1209600"
+    {
+      "timestamp": "2025-11-05T11:17:31",
+      "tag": "checkpoint/phase4.step18/20251105_1117",
+      "branch": "ops/beta-plan-jan1-20251105-095634",
+      "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+      "step": "Phase4.Step18",
+      "title": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
+      "status": "Γ£ö",
+      "evidence": {
+        "node": "v22.18.0",
+        "npm": "10.9.3",
+        "hashes": [
+          {
+            "file": "package.json",
+            "sha256": "94D030E96B6416F500A25166FED2B4E6C693253D36B4F30D4E0273788C556342"
+          },
+          {
+            "file": "tsconfig.json",
+            "sha256": "B1AFF0E999D3096A80067EE3E27119088259766BCABDA9F4A5DE9248E2B215B9"
+          },
+          {
+            "file": "next.config.mjs",
+            "sha256": "D89E67505BDD63929298457CB668B6F0A78A8B1C3920F648C7211C42177A7112"
+          },
+          {
+            "file": ".nvmrc",
+            "sha256": "1FBB92631D52373701BB35D0A63CF732C210AB8ABE2430D79FF7EEA3CDAC9EC2"
+          },
+          {
+            "file": ".gitignore",
+            "sha256": "649971C9856A2A3567E73CB9C0913C439A626A25F365AFCBEB716D92565BDCC1"
+          },
+          {
+            "file": "app/layout.tsx",
+            "sha256": "E47B2BE4287F463E9D1A13A60679EC53825E7275EA4ACEC5ADD2FCB806BF98E4"
+          },
+          {
+            "file": "app/page.tsx",
+            "sha256": "2442FC7B4EAC6965B9641EEDF13082070E0A93A7C6797758696ECF1241935900"
+          },
+          {
+            "file": "app/dashboard/page.tsx",
+            "sha256": "F0A179FE3D712622B383667854F62CB46F7468E95BAA877434DE3BF9A2E71672"
+          },
+          {
+            "file": "app/(auth)/login/page.tsx",
+            "sha256": "E5E0180C371E448B145875701F8A3C58DB445E603DDCC00ACDBBEBB09C70C282"
+          },
+          {
+            "file": "app/api/health/route.ts",
+            "sha256": "481D54430CB3ADBE0E902AD9D3E0F24E74AF7B31E956EE46A8B3FEBDB1FC1D42"
+          },
+          {
+            "file": "lib/env.ts",
+            "sha256": "D37C4833DE9913B0AD96EF17D7133D2939C668466D178CF3E7605295CEFAE57C"
+          },
+          {
+            "file": "lib/aws/secrets.ts",
+            "sha256": "398CE15917C82BC923A9725BF89E4B65EB1FFB9DAD2D9330CBAC4835495B0B07"
+          },
+          {
+            "file": "styles/globals.css",
+            "sha256": "BC916BB8E935CA431D557AF55081DE97C27B5984B1F17C43BE6F13A2C1F3ED18"
+          },
+          {
+            "file": "middleware.ts",
+            "sha256": "5E1D15D050936F4F5546726CDAA703E5C9A9475109F00ECC057E1A4C2DBC94DF"
+          }
+        ],
+        "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+      },
+      "decisions": [
+        "ESLint compliance without disabling rules.",
+        "Type-safe Secrets Manager utility returning Record<string,string>."
+      ],
+      "next": [
+        "18A ΓÇö SQS job orchestrator + idempotency baseline.",
+        "19 ΓÇö Transcription pipeline stub behind feature flag.",
+        "CI: add typecheck/build job on PRs."
+      ]
     },
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T16:45:56",
-    "step": "ingest_dlq_alarms_added",
-    "queue": "lifebook-ingest-dlq",
-    "alarms": [
-      "lifebook-ingest-dlq-backlog",
-      "lifebook-ingest-dlq-oldest-age"
-    ],
-    "sns_topic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T16:52:46",
-    "step": "sns_policy_repaired",
-    "topic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
-    "policy_len": 2632,
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T18:43:20",
-    "step": "sns_policy_fixed_hashtable_write",
-    "topic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
-    "policy_len": 2632,
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T18:48:44",
-    "step": "sns_policy_tf_converged",
-    "topic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
-    "policy_len": 2632,
-    "tf_clean": true,
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T18:52:50",
-    "step": "ingest_dlq_composite_added",
-    "alarm": "lifebook-ingest-dlq-incident",
-    "rule": "ALARM(\"lifebook-ingest-dlq-backlog\") OR ALARM(\"lifebook-ingest-dlq-oldest-age\")",
-    "sns_topic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
-    "tf_clean": false,
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T18:57:26",
-    "step": "ingest_dlq_composite_added",
-    "alarm": "lifebook-ingest-dlq-incident",
-    "rule": "ALARM(\"lifebook-ingest-dlq-backlog\") OR ALARM(\"lifebook-ingest-dlq-oldest-age\")",
-    "sns_topic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
-    "tf_clean": true,
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T19:02:03",
-    "step": "ingest_dlq_widgets_added_and_composite_verified",
-    "composite": "lifebook-ingest-dlq-incident",
-    "composite_state": "OK",
-    "dashboard": "Lifebook-Ingest-Overview",
-    "visible_widget": false,
-    "oldestage_widget": false,
-    "tf_clean": false,
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T19:07:00",
-    "step": "ingest_dlq_widgets_resolved_duplicate",
-    "dashboard": "Lifebook-Ingest-Overview",
-    "visible_widget": false,
-    "oldestage_widget": false,
-    "tf_clean": true,
-    "ok": false
-  },
-  {
-    "timestamp": "2025-11-10T19:12:56",
-    "step": "ingest_dlq_widgets_fix_hashtable_indexing",
-    "dashboard": "Lifebook-Ingest-Overview",
-    "visible_widget": false,
-    "oldestage_widget": false,
-    "tf_clean": false,
-    "ok": false
-  },
-  {
-    "timestamp": "2025-11-10T19:18:23",
-    "step": "ingest_dlq_widgets_fix_tf_tags_and_resource_hashtable",
-    "dashboard": "Lifebook-Ingest-Overview",
-    "visible_widget": false,
-    "oldestage_widget": false,
-    "tf_plan_ok": true,
-    "tf_applied": true,
-    "ok": false
-  },
-  {
-    "timestamp": "2025-11-10T19:23:15",
-    "step": "ingest_dlq_widgets_metrics_array_of_arrays_fix",
-    "dashboard": "Lifebook-Ingest-Overview",
-    "visible_widget": false,
-    "oldestage_widget": false,
-    "tf_plan_ok": true,
-    "tf_applied": true,
-    "ok": false
-  },
-  {
-    "timestamp": "2025-11-10T19:30:47",
-    "step": "ingest_dlq_widgets_metrics_literal_json_fix",
-    "dashboard": "Lifebook-Ingest-Overview",
-    "titles": [
-      "Ingest - INCIDENT (composite)",
-      "Ingest - component alarms",
-      "lifebook-ingest - Invocations / Errors / Throttles (Sum, 60s)",
-      "lifebook-ingest - recent errors (Logs Insights)",
-      "Ingest DLQ ù Visible (1m)",
-      "Ingest DLQ ù OldestAge (1m)"
-    ],
-    "visible_found": false,
-    "oldestage_found": false,
-    "tf_plan_ok": true,
-    "tf_applied": true,
-    "ok": false
-  },
-  {
-    "timestamp": "2025-11-10T19:36:51",
-    "step": "ingest_dlq_widgets_raw_json_insertion",
-    "dashboard": "Lifebook-Ingest-Overview",
-    "titles": [
-      "Ingest - INCIDENT (composite)",
-      "Ingest - component alarms",
-      "lifebook-ingest - Invocations / Errors / Throttles (Sum, 60s)",
-      "lifebook-ingest - recent errors (Logs Insights)",
-      "Ingest DLQ - Visible (1m)",
-      "Ingest DLQ - OldestAge (1m)"
-    ],
-    "visible_found": 0,
-    "oldestage_found": 0,
-    "tf_plan_ok": true,
-    "tf_applied": false,
-    "ok": false
-  },
-  {
-    "timestamp": "2025-11-10T19:39:39",
-    "step": "ingest_dlq_widgets_verify_and_fix_count",
-    "dashboard": "Lifebook-Ingest-Overview",
-    "titles": [
-      "Ingest - INCIDENT (composite)",
-      "Ingest - component alarms",
-      "lifebook-ingest - Invocations / Errors / Throttles (Sum, 60s)",
-      "lifebook-ingest - recent errors (Logs Insights)",
-      "Ingest DLQ - Visible (1m)",
-      "Ingest DLQ - OldestAge (1m)"
-    ],
-    "visible_found": true,
-    "oldestage_found": true,
-    "metrics_aoa_ok": true,
-    "ok": true
-  },
-  {
-    "timestamp": "2025-11-10T19:46:05",
-    "step": "ingest_dashboard_validator_persisted",
-    "dashboard": "Lifebook-Ingest-Overview",
-    "validator_ok": true
-  },
-  {
-    "timestamp": "2025-11-10T19:50:17",
-    "step": "ingest_dashboard_validator_persisted_fixed",
-    "dashboard": "Lifebook-Ingest-Overview",
-    "validator_ok": true
-  },
-  {
-    "ts": "2025-11-10T20:28:54-05:00",
-    "step": "Phase4/18A",
-    "branch": "main",
-    "infra": {
-      "lambda": "lifebook-orchestrator-worker",
-      "table": "lifebook-orchestrator-jobs",
-      "queue": "lifebook-orchestrator-queue",
-      "dlq": "lifebook-orchestrator-dlq"
+    {
+      "timestamp": "2025-11-05T11:20:42",
+      "tag": "checkpoint/phase4.step18/20251105_1120",
+      "branch": "ops/beta-plan-jan1-20251105-095634",
+      "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+      "step": "Phase4.Step18",
+      "title": "Core App Architecture (Next.js + strict env + AWS Secrets + SSR dashboard)",
+      "status": "Γ£ö",
+      "evidence": {
+        "node": "v22.18.0",
+        "npm": "10.9.3",
+        "file": "lib/aws/secrets.ts",
+        "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+      },
+      "decisions": [
+        "Avoid base-to-string by JSON.stringify for non-strings; rely on control-flow narrowing for SecretBinary."
+      ],
+      "next": [
+        "18A ΓÇö SQS job orchestrator + idempotency baseline.",
+        "19 ΓÇö Transcription pipeline stub behind feature flag.",
+        "CI: add typecheck/build job on PRs."
+      ]
     },
-    "s3Out": "s3://lifebook.ai/workflows/manual/manual-4c5e16d7/result.md",
-    "notion": {
-      "parent": "251159fa-88d0-804a-8a1b-c8518efa2805",
-      "used": false
+    {
+      "timestamp": "2025-11-05T11:28:05",
+      "tag": "checkpoint/phase4.step18a/20251105_1128",
+      "branch": "ops/beta-plan-jan1-20251105-095634",
+      "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+      "step": "Phase4.Step18A",
+      "title": "Job orchestration & idempotency (SQS FIFO + enqueue API + worker)",
+      "status": "Γ£ö",
+      "evidence": {
+        "node": "v22.18.0",
+        "npm": "10.9.3",
+        "queues": [
+          {
+            "url": null,
+            "stage": "dev"
+          },
+          {
+            "url": null,
+            "stage": "prod"
+          }
+        ],
+        "files": [
+          "lib/aws/queue.ts",
+          "app/api/jobs/enqueue/route.ts",
+          "scripts/worker.mjs"
+        ],
+        "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+      },
+      "decisions": [
+        "Use SQS FIFO + MessageDeduplicationId for idempotency; group by job name.",
+        "Persist JOBS_QUEUE_URL in Secrets lifebook/{stage}/app."
+      ],
+      "next": [
+        "19 ΓÇö Transcription pipeline stub behind feature flag.",
+        "CI: gate PRs on typecheck/build.",
+        "Wire a simple job handler switch inside worker (e.g., 'transcribe')."
+      ]
     },
-    "analytics": {
-      "spec": "analytics/spec.md",
-      "guard": ".github/workflows/analytics-guard.yml"
+    {
+      "timestamp": "2025-11-05T11:33:52",
+      "tag": "checkpoint/phase4.step18a-fix/20251105_1133",
+      "branch": "ops/beta-plan-jan1-20251105-095634",
+      "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+      "step": "Phase4.Step18A-fix",
+      "title": "18A repair (SQS create/tag/redrive + zod + pkg script)",
+      "status": "Γ£ö",
+      "evidence": {
+        "node": "v22.18.0",
+        "npm": "10.9.3",
+        "queues": [
+          {
+            "url": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-dev-jobs.fifo",
+            "stage": "dev"
+          },
+          {
+            "url": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-prod-jobs.fifo",
+            "stage": "prod"
+          }
+        ],
+        "secretsUpdated": [
+          "lifebook/dev/app",
+          "lifebook/prod/app"
+        ],
+        "files": [
+          "app/api/jobs/enqueue/route.ts",
+          "package.json"
+        ],
+        "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+      },
+      "decisions": [
+        "Avoid inline JSON quoting by using file:// for RedrivePolicy.",
+        "Tag queues with aws sqs tag-queue post-create for reliability on Windows."
+      ],
+      "next": [
+        "Wire worker switch (e.g., 'transcribe') behind feature flag.",
+        "CI: add typecheck/build gate on PRs."
+      ]
     },
-    "ok": true
-  },
-  "C:\\Users\\zacha\\src\\Lifebook-Site\\state\\build-checkpoints.json",
-  "C:\\Users\\zacha\\src\\Lifebook-Site\\state\\build-checkpoints.json",
-  "C:\\Users\\zacha\\src\\Lifebook-Site\\state\\build-checkpoints.json",
-  {
-    "ts": "2025-11-11T09:49:18-05:00",
-    "step": "Phase4/18A-fixed2",
-    "infra": {
-      "lambda": "lifebook-orchestrator-worker",
-      "table": "lifebook-orchestrator-jobs",
-      "queue": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue"
+    {
+      "timestamp": "2025-11-05T11:38:04",
+      "tag": "checkpoint/phase4.step18a-finish/20251105_1138",
+      "branch": "ops/beta-plan-jan1-20251105-095634",
+      "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+      "step": "Phase4.Step18A-finish",
+      "title": "18A finish (SQS tag via JSON + enqueue safeParse)",
+      "status": "Γ£ö",
+      "evidence": {
+        "node": "v22.18.0",
+        "npm": "10.9.3",
+        "queues": [
+          {
+            "url": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-dev-jobs.fifo",
+            "stage": "dev"
+          },
+          {
+            "url": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-prod-jobs.fifo",
+            "stage": "prod"
+          }
+        ],
+        "files": [
+          "app/api/jobs/enqueue/route.ts"
+        ],
+        "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+      },
+      "decisions": [
+        "Use file:// JSON for SQS tag-queue to avoid CLI quoting issues on Windows.",
+        "Use zod.safeParse to guarantee typed body without eslint unsafe-assignment."
+      ],
+      "next": [
+        "Add worker switch (e.g., 'transcribe') behind a feature flag.",
+        "CI: gate PRs on typecheck/build."
+      ]
     },
-    "s3Out": "s3://lifebook.ai/workflows/manual/manual-68fa451e/result.md",
-    "notion": {
-      "used": false
+    {
+      "timestamp": "2025-11-05T11:41:33",
+      "tag": "checkpoint/phase4.step19/20251105_1141",
+      "branch": "ops/beta-plan-jan1-20251105-095634",
+      "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+      "step": "Phase4.Step19",
+      "title": "Transcription pipeline stub (feature-flagged)",
+      "status": "Γ£ö",
+      "evidence": {
+        "node": "v22.18.0",
+        "npm": "10.9.3",
+        "files": [
+          "scripts/worker.mjs",
+          ".github/workflows/ci.yml",
+          ".env.local"
+        ],
+        "ciWorkflow": "ci.yml",
+        "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+      },
+      "decisions": [
+        "Gate real STT behind FEATURE_TRANSCRIBE for safe rollout.",
+        "Add CI workflow to require typecheck/build on PRs."
+      ],
+      "next": [
+        "19A ΓÇö wire real STT path (Whisper v3) behind the flag.",
+        "20 ΓÇö job-level metrics & DLQ alarm (SQS/Lambda path)."
+      ]
     },
-    "analytics": {
-      "spec": "analytics/spec.md",
-      "guard": ".github/workflows/analytics-guard.yml"
+    {
+      "timestamp": "2025-11-05T11:46:17",
+      "tag": "checkpoint/phase4.step19a/20251105_1146",
+      "branch": "ops/beta-plan-jan1-20251105-095634",
+      "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+      "step": "Phase4.Step19A",
+      "title": "Transcription pipeline stub ΓåÆ S3 request record (feature-flagged)",
+      "status": "Γ£ö",
+      "evidence": {
+        "node": "v22.18.0",
+        "npm": "10.9.3",
+        "files": [
+          "scripts/handlers/transcribe.mjs",
+          "scripts/worker.mjs"
+        ],
+        "s3PathExample": "catalog/transcripts/requests/req-<uuid>.json",
+        "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+      },
+      "decisions": [
+        "Persist STT requests in S3 (catalog/transcripts/requests) for audit/idempotency.",
+        "Keep FEATURE_TRANSCRIBE gate; no external STT call yet."
+      ],
+      "next": [
+        "19B ΓÇö wire actual Whisper v3 call; write transcript artifact to catalog/transcripts/results/.",
+        "20 ΓÇö job-level metrics + DLQ alarms."
+      ]
     },
-    "ok": false
-  },
-  {
-    "ts": "2025-11-11T09:56:56-05:00",
-    "step": "Phase4/18A-kms-hotfix",
-    "infra": {
-      "lambda": "lifebook-orchestrator-worker",
-      "table": "lifebook-orchestrator-jobs",
-      "queue": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue"
+    {
+      "timestamp": "2025-11-05T11:50:53",
+      "tag": "checkpoint/phase4.step19b/20251105_1150",
+      "branch": "ops/beta-plan-jan1-20251105-095634",
+      "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+      "step": "Phase4.Step19B",
+      "title": "Transcription stub ΓåÆ request+result artifacts (feature-flagged)",
+      "status": "Γ£ö",
+      "evidence": {
+        "files": [
+          "scripts/handlers/transcribe.mjs"
+        ],
+        "requestPrefix": "catalog/transcripts/requests/",
+        "resultPrefix": "catalog/transcripts/results/",
+        "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+      },
+      "decisions": [
+        "Record lifecycle: requests/* ΓåÆ results/*, update request with completion + link.",
+        "Keep the real STT call behind FEATURE_TRANSCRIBE until 19C."
+      ],
+      "next": [
+        "19C ΓÇö replace stub with real Whisper v3 call (adapter), same result contract.",
+        "20 ΓÇö add SQS DLQ alarm + basic job metrics (count, latency)."
+      ]
     },
-    "s3Out": "s3://lifebook.ai/workflows/manual/manual-5f753586/result.md",
-    "kms": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
-    "ok": false
-  },
-  {
-    "ts": "2025-11-11T10:01:19-05:00",
-    "step": "Phase4/18A-minimal-writer",
-    "infra": {
-      "lambda": "lifebook-orchestrator-worker",
-      "table": "lifebook-orchestrator-jobs",
-      "queue": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue"
+    {
+      "timestamp": "2025-11-05T11:55:15",
+      "tag": "checkpoint/phase4.step19c/20251105_1155",
+      "branch": "ops/beta-plan-jan1-20251105-095634",
+      "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+      "step": "Phase4.Step19C",
+      "title": "Transcription ΓåÆ OpenAI adapter (feature-flagged, dry-run if no key)",
+      "status": "Γ£ö",
+      "evidence": {
+        "files": [
+          "scripts/stt/openai.mjs",
+          "scripts/handlers/transcribe.mjs"
+        ],
+        "requestPrefix": "catalog/transcripts/requests/",
+        "resultPrefix": "catalog/transcripts/results/",
+        "buildDir": "C:\\Users\\zacha\\src\\Lifebook-Site\\.next"
+      },
+      "decisions": [
+        "Introduce provider adapter layer: OpenAI primary, stub fallback if no key.",
+        "Keep behind FEATURE_TRANSCRIBE for controlled rollout."
+      ],
+      "next": [
+        "20 ΓÇö SQS DLQ alarm + basic job metrics (count/latency); wire into dashboard.",
+        "21 ΓÇö persist transcript ΓåÆ chapterizer/summary pipeline entry (stub first)."
+      ]
     },
-    "s3Out": "s3://lifebook.ai/workflows/manual/manual-09475024/result.md",
-    "kms": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
-    "ok": false
-  },
-  {
-    "ts": "2025-11-11T10:05:16-05:00",
-    "step": "Phase4/18A-tf-repair-kms",
-    "infra": {
-      "lambda": "lifebook-orchestrator-worker",
-      "table": "lifebook-orchestrator-jobs",
-      "queue": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue"
+    {
+      "timestamp": "2025-11-05T11:59:27",
+      "tag": "checkpoint/phase4.step20/20251105_1159",
+      "branch": "ops/beta-plan-jan1-20251105-095634",
+      "pr": "https://github.com/LifebookAI/Lifebook-Site/pull/69",
+      "step": "Phase4.Step20",
+      "title": "SQS alarms + dashboard + worker metrics",
+      "status": "Γ£ö",
+      "evidence": {
+        "alarms": [
+          "lifebook-dev-jobs-dlq-not-empty",
+          "lifebook-prod-jobs-dlq-not-empty",
+          "lifebook-dev-jobs-age-high",
+          "lifebook-prod-jobs-age-high"
+        ],
+        "dashboard": "Lifebook-Jobs",
+        "files": [
+          "scripts/worker.mjs"
+        ]
+      },
+      "decisions": [
+        "Alert on DLQ>0 (1 datapoint @60s) and backlog age>=300s (5/5 datapoints).",
+        "Emit basic job metrics from worker (Completed, LatencyMs) under Lifebook/Jobs."
+      ],
+      "next": [
+        "21 ΓÇö pipe transcript ΓåÆ chapterizer/summary (stub) writing to catalog/chapters & catalog/summaries.",
+        "22 ΓÇö PR gate: require CI green + alarms present (light policy check)."
+      ]
     },
-    "s3Out": "s3://lifebook.ai/workflows/manual/manual-17bdc900/result.md",
-    "kms": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
-    "ok": false
-  },
-  {
-    "ts": "2025-11-11T10:10:14-05:00",
-    "step": "Phase4/18A-cjs-fix+tf-repair",
-    "infra": {
-      "lambda": "lifebook-orchestrator-worker",
-      "table": "lifebook-orchestrator-jobs",
-      "queue": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue"
+    {
+      "Timestamp": "2025-11-05T19:27:56",
+      "Step": "wrk.ephemeral-drain.verify",
+      "Stage": "dev",
+      "VerifiedKeys": null,
+      "Completed30m": 0.0,
+      "LatencyMs": null
     },
-    "s3OutDirect": "s3://lifebook.ai/workflows/manual/manual-38ae6775/result.md",
-    "s3OutSqs": "s3://lifebook.ai/workflows/manual/manual-8b91876f/result.md",
-    "kms": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
-    "ok": true
-  },
-  {
-    "ts": "2025-11-11T10:15:21-05:00",
-    "step": "Phase4/18B-orchestrator-monitoring",
-    "infra": {
-      "lambda": "lifebook-orchestrator-worker",
-      "alertsTopic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
-      "queue": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue"
+    {
+      "ts": "2025-11-08T15:06:39",
+      "kind": "pr_merged",
+      "pr": "#@{url=https://api.github.com/repos/LifebookAI/Lifebook-Site/pulls/86; id=2991687269; node_id=PR_kwDOPc61NM6yUYZl; html_url=https://github.com/LifebookAI/Lifebook-Site/pull/86; diff_url=https://github.com/LifebookAI/Lifebook-Site/pull/86.diff; patch_url=https://github.com/LifebookAI/Lifebook-Site/pull/86.patch; issue_url=https://api.github.com/repos/LifebookAI/Lifebook-Site/issues/86; number=86; state=closed; locked=False; title=chore(eol): normalize LF + newline at EOF + checkpoint; user=; body=Normalize LF + ensure newline at EOF for state/build-checkpoints.json; append checkpoint entry; hooks green. No functional code changes.; created_at=11/08/2025 18:56:17; updated_at=11/08/2025 19:59:59; closed_at=11/08/2025 19:59:58; merged_at=11/08/2025 19:59:58; merge_commit_sha=c5808fb1ccf26d2e4108683e27ccdcb070687b92; assignee=; assignees=System.Object[]; requested_reviewers=System.Object[]; requested_teams=System.Object[]; labels=System.Object[]; milestone=; draft=False; commits_url=https://api.github.com/repos/LifebookAI/Lifebook-Site/pulls/86/commits; review_comments_url=https://api.github.com/repos/LifebookAI/Lifebook-Site/pulls/86/comments; review_comment_url=https://api.github.com/repos/LifebookAI/Lifebook-Site/pulls/comments{/number}; comments_url=https://api.github.com/repos/LifebookAI/Lifebook-Site/issues/86/comments; statuses_url=https://api.github.com/repos/LifebookAI/Lifebook-Site/statuses/f5f89289ee2ee7094745339c65147cbbb4f67e4c; head=; base=; _links=; author_association=OWNER; auto_merge=; active_lock_reason=; merged=True; mergeable=; rebaseable=; mergeable_state=unknown; merged_by=; comments=1; review_comments=0; maintainer_can_modify=False; commits=10; additions=771; deletions=378; changed_files=24}",
+      "base": "main",
+      "pr_url": "https://github.com/LifebookAI/Lifebook-Site/pull/86",
+      "merge_sha": "c5808fb1ccf26d2e4108683e27ccdcb070687b92"
     },
-    "ok": true
-  },
-  {
-    "ts": "2025-11-11T10:19:21-05:00",
-    "step": "Phase4/18B-orchestrator-monitoring-fix",
-    "infra": {
-      "alertsTopic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
-      "dashboard": "Lifebook-Orchestrator-Overview",
+    {
+      "ts": "2025-11-09T20:32:18",
+      "kind": "site-deploy",
+      "bucket": "lifebook.ai",
+      "key": "index.html",
+      "kms": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
+      "cfDistId": "E2D7FJLA6YQUNP",
+      "cfInvId": "IDKN3EOMOZD8KQN9E4CT1UDT0B",
+      "status": "success"
+    },
+    {
+      "timestamp": "2025-11-10T10:28:19",
+      "step": "ingest_presign_put",
+      "bucket": "lifebook.ai",
+      "key": "sources/13928479-f420-40d8-b208-fe9396ee314b.txt",
+      "lambda": "lifebook-ingest",
+      "inv_base": 2,
+      "inv_now": 3,
+      "ok": true,
+      "sse": "aws:kms",
+      "kmsKeyId": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a"
+    },
+    {
+      "timestamp": "2025-11-10T10:54:44",
+      "step": "alarm_ingest_quiet_15m",
+      "alarm": "lifebook-ingest-quiet-15m",
+      "arn": "arn:aws:cloudwatch:us-east-1:354630286254:alarm:lifebook-ingest-quiet-15m",
+      "state": {
+        "Raw": [
+          "{",
+          "    \"LambdaFunctionConfigurations\": [",
+          "        {",
+          "            \"Id\": \"lifebook-ingest-sources\",",
+          "            \"LambdaFunctionArn\": \"arn:aws:lambda:us-east-1:354630286254:function:lifebook-ingest\",",
+          "            \"Events\": [",
+          "                \"s3:ObjectCreated:Put\"",
+          "            ],",
+          "            \"Filter\": {",
+          "                \"Key\": {",
+          "                    \"FilterRules\": [",
+          "                        {",
+          "                            \"Name\": \"Prefix\",",
+          "                            \"Value\": \"sources/\"",
+          "                        }",
+          "                    ]",
+          "                }",
+          "            }",
+          "        }",
+          "    ]",
+          "}"
+        ],
+        "LFC": {
+          "Id": "lifebook-ingest-sources",
+          "LambdaFunctionArn": "arn:aws:lambda:us-east-1:354630286254:function:lifebook-ingest",
+          "Events": [
+            "s3:ObjectCreated:Put"
+          ],
+          "Filter": {
+            "Key": {
+              "FilterRules": [
+                "@{Name=Prefix; Value=sources/}"
+              ]
+            }
+          }
+        },
+        "TPC": null,
+        "QQC": null
+      },
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T11:00:18",
+      "step": "alarm_ingest_quiet_15m_ascii_desc",
+      "alarm": "lifebook-ingest-quiet-15m",
+      "arn": "arn:aws:cloudwatch:us-east-1:354630286254:alarm:lifebook-ingest-quiet-15m",
+      "state": "ALARM",
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T11:05:24",
+      "step": "dashboard_ingest_overview",
+      "dashboard": "Lifebook-Ingest-Overview",
+      "alarm": "lifebook-ingest-quiet-15m",
+      "region": "us-east-1",
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T11:09:01",
+      "step": "dashboard_ingest_overview_created",
+      "dashboard": "Lifebook-Ingest-Overview",
+      "alarm": "lifebook-ingest-quiet-15m",
+      "region": "us-east-1",
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T11:11:10",
+      "step": "dashboard_ingest_overview_fixed_metrics",
+      "dashboard": "Lifebook-Ingest-Overview",
+      "alarm": "lifebook-ingest-quiet-15m",
+      "region": "us-east-1",
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T11:14:17",
+      "step": "dashboard_ingest_overview_enhanced",
+      "dashboard": "Lifebook-Ingest-Overview",
+      "alarms": "lifebook-ingest-quiet-15m,lifebook-ingest-errors-5m,lifebook-ingest-throttles-5m",
+      "region": "us-east-1",
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T11:17:05",
+      "step": "ingest_composite_alarm_and_dashboard",
+      "composite": "lifebook-ingest-incident",
+      "dashboard": "Lifebook-Ingest-Overview",
+      "region": "us-east-1",
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T11:23:35",
+      "step": "ingest_composite_verified_and_dash_bound",
+      "composite": "lifebook-ingest-incident",
+      "composite_state": "ALARM",
+      "dashboard": "Lifebook-Ingest-Overview",
+      "region": "us-east-1",
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T11:26:02",
+      "step": "dashboard_ingest_overview_logs_widget",
+      "dashboard": "Lifebook-Ingest-Overview",
+      "region": "us-east-1",
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T11:33:30",
+      "step": "ingest_smoke_trigger_and_verify_safe",
+      "key": "ingest/smoke/smoke_20251110_113302.txt",
+      "inv_5m": 0,
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T11:41:52",
+      "step": "ingest_smoke_s3notify_wired_and_verified",
+      "key": "ingest/smoke/smoke_20251110_113824.txt",
+      "inv_5m": 1.0,
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T11:50:03",
+      "step": "ingest_s3_notification_merged_and_smoked",
+      "key": "ingest/smoke/smoke_20251110_114638.txt",
+      "inv_5m": 0,
+      "ok": false
+    },
+    {
+      "timestamp": "2025-11-10T11:54:37",
+      "step": "ingest_s3_notification_strictmerge_and_smoke",
+      "key": "ingest/smoke/smoke_20251110_115356.txt",
+      "inv_5m": 1.0,
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T12:00:55",
+      "step": "ingest_alarm_drill_snapshot_done",
+      "snapshot": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\s3_notification.lifebook.ai.20251110_120018.json",
+      "states_before": {
+        "Composite": [
+          {
+            "Name": "lifebook-ingest-incident",
+            "State": "OK"
+          }
+        ],
+        "Metric": [
+          {
+            "Name": "lifebook-ingest-errors-5m",
+            "State": "OK"
+          },
+          {
+            "Name": "lifebook-ingest-quiet-15m",
+            "State": "OK"
+          },
+          {
+            "Name": "lifebook-ingest-throttles-5m",
+            "State": "OK"
+          }
+        ]
+      },
+      "states_mid": {
+        "Composite": [
+          {
+            "Name": "lifebook-ingest-incident",
+            "State": "ALARM"
+          }
+        ],
+        "Metric": [
+          {
+            "Name": "lifebook-ingest-errors-5m",
+            "State": "ALARM"
+          },
+          {
+            "Name": "lifebook-ingest-quiet-15m",
+            "State": "OK"
+          },
+          {
+            "Name": "lifebook-ingest-throttles-5m",
+            "State": "OK"
+          }
+        ]
+      },
+      "states_after": {
+        "Composite": [
+          {
+            "Name": "lifebook-ingest-incident",
+            "State": "OK"
+          }
+        ],
+        "Metric": [
+          {
+            "Name": "lifebook-ingest-errors-5m",
+            "State": "OK"
+          },
+          {
+            "Name": "lifebook-ingest-quiet-15m",
+            "State": "OK"
+          },
+          {
+            "Name": "lifebook-ingest-throttles-5m",
+            "State": "OK"
+          }
+        ]
+      },
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T14:22:30",
+      "step": "ingest_terraform_init_import_plan",
+      "tfjson": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\main.tf.json",
+      "plugin_cache": "C:\\Users\\zacha\\.terraform.d\\plugin-cache",
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T14:26:18",
+      "step": "ingest_tf_tags_locked",
+      "tfjson": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\main.tf.json",
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T14:30:32",
+      "step": "ingest_tf_tags_applied",
+      "tfjson": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\main.tf.json",
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T14:36:04",
+      "step": "ingest_tf_s3_bucket_notification_imported",
+      "notif_tf": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\notification.tf.json",
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T14:40:09",
+      "step": "ingest_iac_committed_and_smoked",
+      "key": "ingest/smoke/smoke_20251110_143941.txt",
+      "sse_args": "--sse aws:kms --sse-kms-key-id arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T14:45:47",
+      "step": "ingest_lambda_ops_config_imported",
+      "lambda_tf": null,
+      "has_reserved_concurrency": false,
+      "has_event_invoke_config": false,
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T14:56:13",
+      "step": "ingest_iam_role_imported",
+      "role_name": "lifebook-ingest-role",
+      "attached_policies": [
+        "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+        "arn:aws:iam::354630286254:policy/LifebookIngestPolicy"
+      ],
+      "inline_policies": [
+        "lifebook-ingest-dlq-access"
+      ],
+      "iam_tf": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\iam.tf.json",
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T15:01:45",
+      "step": "ingest_iam_role_fixed_and_imported",
+      "role_name": "lifebook-ingest-role",
+      "attached_policies": [
+        "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+        "arn:aws:iam::354630286254:policy/LifebookIngestPolicy"
+      ],
+      "inline_policies": [
+        "lifebook-ingest-dlq-access"
+      ],
+      "iam_tf": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\iam.tf.json",
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T16:30:05",
+      "step": "ingest_dlq_created_and_wired",
+      "queue": "lifebook-ingest-dlq",
+      "queue_arn": "arn:aws:sqs:us-east-1:354630286254:lifebook-ingest-dlq",
+      "lambda": "lifebook-ingest",
+      "tf_files": [
+        "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\sqs.tf.json",
+        "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest\\terraform\\lambda.tf.json"
+      ],
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T16:33:52",
+      "step": "ingest_dlq_pinned_attrs",
+      "queue": "lifebook-ingest-dlq",
+      "pinned": {
+        "sse": "true",
+        "tags": {
+          "Env": "prod",
+          "Project": "lifebook"
+        },
+        "visibility": "30",
+        "retention": "1209600"
+      },
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T16:38:24",
+      "step": "ingest_dlq_attrs_enforced",
+      "queue": "lifebook-ingest-dlq",
+      "resulting": {
+        "sse": "true",
+        "visibility": "30",
+        "retention": "1209600"
+      },
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T16:45:56",
+      "step": "ingest_dlq_alarms_added",
+      "queue": "lifebook-ingest-dlq",
       "alarms": [
-        "lifebook-orchestrator-dlq-visible>0",
-        "lifebook-orchestrator-errors>0-1m",
-        "lifebook-orchestrator-queue-age>60s",
-        "lifebook-orchestrator-throttles>0-1m"
+        "lifebook-ingest-dlq-backlog",
+        "lifebook-ingest-dlq-oldest-age"
+      ],
+      "sns_topic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T16:52:46",
+      "step": "sns_policy_repaired",
+      "topic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+      "policy_len": 2632,
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T18:43:20",
+      "step": "sns_policy_fixed_hashtable_write",
+      "topic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+      "policy_len": 2632,
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T18:48:44",
+      "step": "sns_policy_tf_converged",
+      "topic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+      "policy_len": 2632,
+      "tf_clean": true,
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T18:52:50",
+      "step": "ingest_dlq_composite_added",
+      "alarm": "lifebook-ingest-dlq-incident",
+      "rule": "ALARM(\"lifebook-ingest-dlq-backlog\") OR ALARM(\"lifebook-ingest-dlq-oldest-age\")",
+      "sns_topic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+      "tf_clean": false,
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T18:57:26",
+      "step": "ingest_dlq_composite_added",
+      "alarm": "lifebook-ingest-dlq-incident",
+      "rule": "ALARM(\"lifebook-ingest-dlq-backlog\") OR ALARM(\"lifebook-ingest-dlq-oldest-age\")",
+      "sns_topic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+      "tf_clean": true,
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T19:02:03",
+      "step": "ingest_dlq_widgets_added_and_composite_verified",
+      "composite": "lifebook-ingest-dlq-incident",
+      "composite_state": "OK",
+      "dashboard": "Lifebook-Ingest-Overview",
+      "visible_widget": false,
+      "oldestage_widget": false,
+      "tf_clean": false,
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T19:07:00",
+      "step": "ingest_dlq_widgets_resolved_duplicate",
+      "dashboard": "Lifebook-Ingest-Overview",
+      "visible_widget": false,
+      "oldestage_widget": false,
+      "tf_clean": true,
+      "ok": false
+    },
+    {
+      "timestamp": "2025-11-10T19:12:56",
+      "step": "ingest_dlq_widgets_fix_hashtable_indexing",
+      "dashboard": "Lifebook-Ingest-Overview",
+      "visible_widget": false,
+      "oldestage_widget": false,
+      "tf_clean": false,
+      "ok": false
+    },
+    {
+      "timestamp": "2025-11-10T19:18:23",
+      "step": "ingest_dlq_widgets_fix_tf_tags_and_resource_hashtable",
+      "dashboard": "Lifebook-Ingest-Overview",
+      "visible_widget": false,
+      "oldestage_widget": false,
+      "tf_plan_ok": true,
+      "tf_applied": true,
+      "ok": false
+    },
+    {
+      "timestamp": "2025-11-10T19:23:15",
+      "step": "ingest_dlq_widgets_metrics_array_of_arrays_fix",
+      "dashboard": "Lifebook-Ingest-Overview",
+      "visible_widget": false,
+      "oldestage_widget": false,
+      "tf_plan_ok": true,
+      "tf_applied": true,
+      "ok": false
+    },
+    {
+      "timestamp": "2025-11-10T19:30:47",
+      "step": "ingest_dlq_widgets_metrics_literal_json_fix",
+      "dashboard": "Lifebook-Ingest-Overview",
+      "titles": [
+        "Ingest - INCIDENT (composite)",
+        "Ingest - component alarms",
+        "lifebook-ingest - Invocations / Errors / Throttles (Sum, 60s)",
+        "lifebook-ingest - recent errors (Logs Insights)",
+        "Ingest DLQ ù Visible (1m)",
+        "Ingest DLQ ù OldestAge (1m)"
+      ],
+      "visible_found": false,
+      "oldestage_found": false,
+      "tf_plan_ok": true,
+      "tf_applied": true,
+      "ok": false
+    },
+    {
+      "timestamp": "2025-11-10T19:36:51",
+      "step": "ingest_dlq_widgets_raw_json_insertion",
+      "dashboard": "Lifebook-Ingest-Overview",
+      "titles": [
+        "Ingest - INCIDENT (composite)",
+        "Ingest - component alarms",
+        "lifebook-ingest - Invocations / Errors / Throttles (Sum, 60s)",
+        "lifebook-ingest - recent errors (Logs Insights)",
+        "Ingest DLQ - Visible (1m)",
+        "Ingest DLQ - OldestAge (1m)"
+      ],
+      "visible_found": 0,
+      "oldestage_found": 0,
+      "tf_plan_ok": true,
+      "tf_applied": false,
+      "ok": false
+    },
+    {
+      "timestamp": "2025-11-10T19:39:39",
+      "step": "ingest_dlq_widgets_verify_and_fix_count",
+      "dashboard": "Lifebook-Ingest-Overview",
+      "titles": [
+        "Ingest - INCIDENT (composite)",
+        "Ingest - component alarms",
+        "lifebook-ingest - Invocations / Errors / Throttles (Sum, 60s)",
+        "lifebook-ingest - recent errors (Logs Insights)",
+        "Ingest DLQ - Visible (1m)",
+        "Ingest DLQ - OldestAge (1m)"
+      ],
+      "visible_found": true,
+      "oldestage_found": true,
+      "metrics_aoa_ok": true,
+      "ok": true
+    },
+    {
+      "timestamp": "2025-11-10T19:46:05",
+      "step": "ingest_dashboard_validator_persisted",
+      "dashboard": "Lifebook-Ingest-Overview",
+      "validator_ok": true
+    },
+    {
+      "timestamp": "2025-11-10T19:50:17",
+      "step": "ingest_dashboard_validator_persisted_fixed",
+      "dashboard": "Lifebook-Ingest-Overview",
+      "validator_ok": true
+    },
+    {
+      "ts": "2025-11-10T20:28:54-05:00",
+      "step": "Phase4/18A",
+      "branch": "main",
+      "infra": {
+        "lambda": "lifebook-orchestrator-worker",
+        "table": "lifebook-orchestrator-jobs",
+        "queue": "lifebook-orchestrator-queue",
+        "dlq": "lifebook-orchestrator-dlq"
+      },
+      "s3Out": "s3://lifebook.ai/workflows/manual/manual-4c5e16d7/result.md",
+      "notion": {
+        "parent": "251159fa-88d0-804a-8a1b-c8518efa2805",
+        "used": false
+      },
+      "analytics": {
+        "spec": "analytics/spec.md",
+        "guard": ".github/workflows/analytics-guard.yml"
+      },
+      "ok": true
+    },
+    "C:\\Users\\zacha\\src\\Lifebook-Site\\state\\build-checkpoints.json",
+    "C:\\Users\\zacha\\src\\Lifebook-Site\\state\\build-checkpoints.json",
+    "C:\\Users\\zacha\\src\\Lifebook-Site\\state\\build-checkpoints.json",
+    {
+      "ts": "2025-11-11T09:49:18-05:00",
+      "step": "Phase4/18A-fixed2",
+      "infra": {
+        "lambda": "lifebook-orchestrator-worker",
+        "table": "lifebook-orchestrator-jobs",
+        "queue": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue"
+      },
+      "s3Out": "s3://lifebook.ai/workflows/manual/manual-68fa451e/result.md",
+      "notion": {
+        "used": false
+      },
+      "analytics": {
+        "spec": "analytics/spec.md",
+        "guard": ".github/workflows/analytics-guard.yml"
+      },
+      "ok": false
+    },
+    {
+      "ts": "2025-11-11T09:56:56-05:00",
+      "step": "Phase4/18A-kms-hotfix",
+      "infra": {
+        "lambda": "lifebook-orchestrator-worker",
+        "table": "lifebook-orchestrator-jobs",
+        "queue": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue"
+      },
+      "s3Out": "s3://lifebook.ai/workflows/manual/manual-5f753586/result.md",
+      "kms": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
+      "ok": false
+    },
+    {
+      "ts": "2025-11-11T10:01:19-05:00",
+      "step": "Phase4/18A-minimal-writer",
+      "infra": {
+        "lambda": "lifebook-orchestrator-worker",
+        "table": "lifebook-orchestrator-jobs",
+        "queue": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue"
+      },
+      "s3Out": "s3://lifebook.ai/workflows/manual/manual-09475024/result.md",
+      "kms": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
+      "ok": false
+    },
+    {
+      "ts": "2025-11-11T10:05:16-05:00",
+      "step": "Phase4/18A-tf-repair-kms",
+      "infra": {
+        "lambda": "lifebook-orchestrator-worker",
+        "table": "lifebook-orchestrator-jobs",
+        "queue": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue"
+      },
+      "s3Out": "s3://lifebook.ai/workflows/manual/manual-17bdc900/result.md",
+      "kms": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
+      "ok": false
+    },
+    {
+      "ts": "2025-11-11T10:10:14-05:00",
+      "step": "Phase4/18A-cjs-fix+tf-repair",
+      "infra": {
+        "lambda": "lifebook-orchestrator-worker",
+        "table": "lifebook-orchestrator-jobs",
+        "queue": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue"
+      },
+      "s3OutDirect": "s3://lifebook.ai/workflows/manual/manual-38ae6775/result.md",
+      "s3OutSqs": "s3://lifebook.ai/workflows/manual/manual-8b91876f/result.md",
+      "kms": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
+      "ok": true
+    },
+    {
+      "ts": "2025-11-11T10:15:21-05:00",
+      "step": "Phase4/18B-orchestrator-monitoring",
+      "infra": {
+        "lambda": "lifebook-orchestrator-worker",
+        "alertsTopic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+        "queue": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue"
+      },
+      "ok": true
+    },
+    {
+      "ts": "2025-11-11T10:19:21-05:00",
+      "step": "Phase4/18B-orchestrator-monitoring-fix",
+      "infra": {
+        "alertsTopic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+        "dashboard": "Lifebook-Orchestrator-Overview",
+        "alarms": [
+          "lifebook-orchestrator-dlq-visible>0",
+          "lifebook-orchestrator-errors>0-1m",
+          "lifebook-orchestrator-queue-age>60s",
+          "lifebook-orchestrator-throttles>0-1m"
+        ]
+      },
+      "ok": true
+    },
+    {
+      "ts": "2025-11-11T10:22:20-05:00",
+      "step": "Phase4/18C-orchestrator-alarms-verified",
+      "infra": {
+        "lambda": "lifebook-orchestrator-worker",
+        "alarm": "lifebook-orchestrator-errors>0-1m"
+      },
+      "alarmRaised": true,
+      "alarmBackOk": true
+    },
+    {
+      "ts": "2025-11-11T10:27:52-05:00",
+      "step": "Phase4/18D-orchestrator-monitoring-extras",
+      "infra": {
+        "dashboard": "alarms-tile",
+        "alarmsAdded": [
+          "invocations-anom",
+          "incident-composite"
+        ]
+      },
+      "ok": true
+    },
+    {
+      "ts": "2025-11-11T10:36:33-05:00",
+      "step": "Phase4/18D-orchestrator-monitoring-extras-fix",
+      "infra": {
+        "dashboard": "alarms-tile",
+        "alarmsAdded": [
+          "invocations-anom",
+          "incident-composite"
+        ]
+      },
+      "ok": true
+    },
+    {
+      "ts": "2025-11-11T10:36:33-05:00",
+      "step": "Phase4/18D-orchestrator-monitoring-extras-fix",
+      "infra": {
+        "dashboard": "alarms-tile",
+        "alarmsAdded": [
+          "invocations-anom",
+          "incident-composite"
+        ]
+      },
+      "ok": true
+    },
+    {
+      "ts": "2025-11-11T10:50:48-05:00",
+      "step": "Phase4/18E-orchestrator-monitoring-extras-verify-fix2",
+      "infra": {
+        "dashboardHasAlarmTile": true,
+        "anomPresent": true,
+        "compositePresent": true
+      },
+      "smoke": {
+        "incidentBackOk": false,
+        "ran": true,
+        "incidentRaised": true
+      }
+    },
+    {
+      "ts": "2025-11-11T10:56:51-05:00",
+      "step": "Phase4/18E-orchestrator-monitoring-extras-verify-fix2",
+      "infra": {
+        "dashboardHasAlarmTile": true,
+        "anomPresent": true,
+        "compositePresent": true
+      },
+      "smoke": {
+        "incidentBackOk": false,
+        "ran": true,
+        "incidentRaised": true
+      }
+    },
+    {
+      "ts": "2025-11-11T11:11:08-05:00",
+      "step": "Phase4/18F-orchestrator-composite-clear",
+      "alarmStates": {
+        "errors": "OK",
+        "throttles": "OK",
+        "queue_age": "OK",
+        "dlq_visible": "ALARM",
+        "inv_anom": "OK",
+        "composite": "ALARM"
+      },
+      "sqs": {
+        "dlqVisible": 3,
+        "mainVisible": 0,
+        "mainInFlight": 0
+      },
+      "actions": {
+        "remediateDLQ": false,
+        "remediateMain": false
+      },
+      "result": {
+        "incidentRaised": true,
+        "incidentBackOk": false
+      }
+    },
+    {
+      "ts": "2025-11-11T11:24:46-05:00",
+      "step": "Phase4/18G-orchestrator-redrive-dlq-clear",
+      "dlqStart": 3,
+      "moveTask": "eyJ0YXNrSWQiOiI1ZTFlNWY2ZC01MzFmLTQ3ZDktYTdhYi1kMGZmMmM2YTkwNGMiLCJzb3VyY2VBcm4iOiJhcm46YXdzOnNxczp1cy1lYXN0LTE6MzU0NjMwMjg2MjU0OmxpZmVib29rLW9yY2hlc3RyYXRvci1kbHEifQ==",
+      "purgeDLQ": false,
+      "purgeMain": false,
+      "result": {
+        "incidentRaised": false,
+        "incidentBackOk": true
+      }
+    },
+    {
+      "ts": "2025-11-11T11:34:08-05:00",
+      "step": "Phase4/18H-orchestrator-composite-tidy+dlq-inspector",
+      "compositeRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\") OR ALARM(\"lifebook-orchestrator-invocations-anom\")",
+      "dlqSamplePath": ""
+    },
+    {
+      "ts": "2025-11-11T11:37:17-05:00",
+      "step": "Phase4/18H2-orchestrator-composite-exclude-anom+dlq-inspector-fix",
+      "compositeRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\") OR ALARM(\"lifebook-orchestrator-invocations-anom\")",
+      "dlqSamplePath": ""
+    },
+    {
+      "ts": "2025-11-11T12:24:22-05:00",
+      "step": "Phase4/18H3-orchestrator-composite-exclude-anom-fixed-dotall",
+      "compositeRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\") OR ALARM(\"lifebook-orchestrator-invocations-anom\")"
+    },
+    {
+      "ts": "2025-11-11T12:28:12-05:00",
+      "step": "Phase4/18H4-orchestrator-composite-exclude-anom-brace-parse",
+      "compositeRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\") OR ALARM(\"lifebook-orchestrator-invocations-anom\")"
+    },
+    {
+      "ts": "2025-11-11T12:37:15-05:00",
+      "step": "Phase4/18H5-orchestrator-composite-canonicalized",
+      "compositeRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\") OR ALARM(\"lifebook-orchestrator-invocations-anom\")",
+      "removedBlocks": 2,
+      "backup": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\terraform\\orchestrator\\monitoring_extras.tf.bak_20251111_123716"
+    },
+    {
+      "ts": "2025-11-11T12:41:31-05:00",
+      "step": "Phase4/18H6-orchestrator-live-fix+tf-restore",
+      "tfValidated": true,
+      "liveRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\") OR ALARM(\"lifebook-orchestrator-invocations-anom\")"
+    },
+    {
+      "ts": "2025-11-11T12:47:20-05:00",
+      "step": "Phase4/18H7-orchestrator-composite-tf-canonical",
+      "removed": 2,
+      "backup": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\terraform\\orchestrator\\monitoring_extras.tf.bak_20251111_124720",
+      "liveRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\")"
+    },
+    {
+      "ts": "2025-11-11T12:50:17-05:00",
+      "step": "Phase4/18H8-orchestrator-composite-quarantine-and-rewrite",
+      "quarantined": true,
+      "newFile": "orchestrator_composite.tf",
+      "liveRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\")"
+    },
+    {
+      "ts": "2025-11-11T12:53:43-05:00",
+      "step": "Phase4/18H9-orchestrator-terraform-import-and-apply",
+      "tfExe": "C:\\Users\\zacha\\lifebook\\.tools\\terraform\\terraform.cmd",
+      "imported": false,
+      "liveRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\")"
+    },
+    {
+      "ts": "2025-11-11T12:57:24-05:00",
+      "step": "Phase4/18H10-orchestrator-terraform-exe-fixed",
+      "tfExe": null,
+      "imported": false,
+      "liveRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\")"
+    },
+    {
+      "ts": "2025-11-11T13:00:59-05:00",
+      "step": "Phase4/18H11-orchestrator-terraform-exe-resolved-or-installed",
+      "tfExe": "C:\\Users\\zacha\\src\\Lifebook-Site\\.tools\\terraform\\terraform.exe",
+      "imported": false,
+      "liveRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\")"
+    },
+    {
+      "ts": "2025-11-11T13:03:55-05:00",
+      "step": "Phase4/18H12-orchestrator-fix-tags-and-clean-index",
+      "addedLocals": true,
+      "tfExe": "C:\\Users\\zacha\\src\\Lifebook-Site\\.tools\\terraform\\terraform.exe",
+      "imported": false,
+      "liveRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\")",
+      "untrackedTools": true
+    },
+    {
+      "ts": "2025-11-11T13:09:59-05:00",
+      "step": "Phase4/18H13-orchestrator-e2e-verify-purge-anomaly-and-bump-esbuild",
+      "e2eTransitions": [],
+      "deletedAnomalyLive": false,
+      "removedAnomalyFromState": false,
+      "esbuildResolved": {}
+    },
+    {
+      "ts": "2025-11-11T13:09:59-05:00",
+      "step": "Phase4/18H13-orchestrator-e2e-verify-purge-anomaly-and-bump-esbuild",
+      "e2eTransitions": [],
+      "deletedAnomalyLive": false,
+      "removedAnomalyFromState": false,
+      "esbuildResolved": {}
+    },
+    {
+      "ts": "2025-11-11T14:13:58-05:00",
+      "step": "Phase4/18H14b-deps-esbuild-verified-treeok",
+      "esbuildTrees": [
+        {
+          "dir": "C:\\Users\\zacha\\src\\Lifebook-Site\\services\\orchestrator",
+          "versions": []
+        },
+        {
+          "dir": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest",
+          "versions": []
+        }
+      ],
+      "openEsbuildAlerts": null
+    },
+    {
+      "ts": "2025-11-11T14:23:05-05:00",
+      "step": "Phase4/18H14c-deps-esbuild-verified-lock-and-node",
+      "esbuildReport": [],
+      "dependabotEsbuild": null
+    },
+    {
+      "ts": "2025-11-11T14:25:45-05:00",
+      "step": "Phase4/18H14d-deps-esbuild-verified-robust",
+      "esbuildReport": [],
+      "dependabotOpen": null
+    },
+    {
+      "ts": "2025-11-11T14:27:47-05:00",
+      "step": "Phase4/18H14e-deps-esbuild-verified-v2",
+      "esbuildReport": [
+        {
+          "dir": "C:\\Users\\zacha\\src\\Lifebook-Site\\services\\orchestrator",
+          "lockVersions": [
+            "0.25.12"
+          ],
+          "nodeVersion": "0.25.12"
+        },
+        {
+          "dir": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest",
+          "lockVersions": [
+            "0.25.12"
+          ],
+          "nodeVersion": "0.25.12"
+        },
+        {
+          "dir": "C:/Users/zacha/src/Lifebook-Site",
+          "lockVersions": [],
+          "nodeVersion": null
+        }
+      ],
+      "dependabotOpen": null
+    },
+    {
+      "ts": "2025-11-11T14:29:53-05:00",
+      "step": "Phase4/18H14f-esbuild-assertion-fixed-count",
+      "esbuildReport": [
+        {
+          "dir": "C:\\Users\\zacha\\src\\Lifebook-Site\\services\\orchestrator",
+          "lockVersions": [
+            "0.25.12"
+          ],
+          "nodeVersion": "0.25.12"
+        },
+        {
+          "dir": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest",
+          "lockVersions": [
+            "0.25.12"
+          ],
+          "nodeVersion": "0.25.12"
+        }
       ]
     },
-    "ok": true
-  },
-  {
-    "ts": "2025-11-11T10:22:20-05:00",
-    "step": "Phase4/18C-orchestrator-alarms-verified",
-    "infra": {
+    {
+      "ts": "2025-11-11T16:33:44-05:00",
+      "step": "Phase4/18H15-orchestrator-e2e-smoke",
       "lambda": "lifebook-orchestrator-worker",
-      "alarm": "lifebook-orchestrator-errors>0-1m"
-    },
-    "alarmRaised": true,
-    "alarmBackOk": true
-  },
-  {
-    "ts": "2025-11-11T10:27:52-05:00",
-    "step": "Phase4/18D-orchestrator-monitoring-extras",
-    "infra": {
-      "dashboard": "alarms-tile",
-      "alarmsAdded": [
-        "invocations-anom",
-        "incident-composite"
-      ]
-    },
-    "ok": true
-  },
-  {
-    "ts": "2025-11-11T10:36:33-05:00",
-    "step": "Phase4/18D-orchestrator-monitoring-extras-fix",
-    "infra": {
-      "dashboard": "alarms-tile",
-      "alarmsAdded": [
-        "invocations-anom",
-        "incident-composite"
-      ]
-    },
-    "ok": true
-  },
-  {
-    "ts": "2025-11-11T10:36:33-05:00",
-    "step": "Phase4/18D-orchestrator-monitoring-extras-fix",
-    "infra": {
-      "dashboard": "alarms-tile",
-      "alarmsAdded": [
-        "invocations-anom",
-        "incident-composite"
-      ]
-    },
-    "ok": true
-  },
-  {
-    "ts": "2025-11-11T10:50:48-05:00",
-    "step": "Phase4/18E-orchestrator-monitoring-extras-verify-fix2",
-    "infra": {
-      "dashboardHasAlarmTile": true,
-      "anomPresent": true,
-      "compositePresent": true
-    },
-    "smoke": {
-      "incidentBackOk": false,
-      "ran": true,
-      "incidentRaised": true
-    }
-  },
-  {
-    "ts": "2025-11-11T10:56:51-05:00",
-    "step": "Phase4/18E-orchestrator-monitoring-extras-verify-fix2",
-    "infra": {
-      "dashboardHasAlarmTile": true,
-      "anomPresent": true,
-      "compositePresent": true
-    },
-    "smoke": {
-      "incidentBackOk": false,
-      "ran": true,
-      "incidentRaised": true
-    }
-  },
-  {
-    "ts": "2025-11-11T11:11:08-05:00",
-    "step": "Phase4/18F-orchestrator-composite-clear",
-    "alarmStates": {
-      "errors": "OK",
-      "throttles": "OK",
-      "queue_age": "OK",
-      "dlq_visible": "ALARM",
-      "inv_anom": "OK",
-      "composite": "ALARM"
-    },
-    "sqs": {
-      "dlqVisible": 3,
-      "mainVisible": 0,
-      "mainInFlight": 0
-    },
-    "actions": {
-      "remediateDLQ": false,
-      "remediateMain": false
-    },
-    "result": {
-      "incidentRaised": true,
-      "incidentBackOk": false
-    }
-  },
-  {
-    "ts": "2025-11-11T11:24:46-05:00",
-    "step": "Phase4/18G-orchestrator-redrive-dlq-clear",
-    "dlqStart": 3,
-    "moveTask": "eyJ0YXNrSWQiOiI1ZTFlNWY2ZC01MzFmLTQ3ZDktYTdhYi1kMGZmMmM2YTkwNGMiLCJzb3VyY2VBcm4iOiJhcm46YXdzOnNxczp1cy1lYXN0LTE6MzU0NjMwMjg2MjU0OmxpZmVib29rLW9yY2hlc3RyYXRvci1kbHEifQ==",
-    "purgeDLQ": false,
-    "purgeMain": false,
-    "result": {
-      "incidentRaised": false,
-      "incidentBackOk": true
-    }
-  },
-  {
-    "ts": "2025-11-11T11:34:08-05:00",
-    "step": "Phase4/18H-orchestrator-composite-tidy+dlq-inspector",
-    "compositeRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\") OR ALARM(\"lifebook-orchestrator-invocations-anom\")",
-    "dlqSamplePath": ""
-  },
-  {
-    "ts": "2025-11-11T11:37:17-05:00",
-    "step": "Phase4/18H2-orchestrator-composite-exclude-anom+dlq-inspector-fix",
-    "compositeRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\") OR ALARM(\"lifebook-orchestrator-invocations-anom\")",
-    "dlqSamplePath": ""
-  },
-  {
-    "ts": "2025-11-11T12:24:22-05:00",
-    "step": "Phase4/18H3-orchestrator-composite-exclude-anom-fixed-dotall",
-    "compositeRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\") OR ALARM(\"lifebook-orchestrator-invocations-anom\")"
-  },
-  {
-    "ts": "2025-11-11T12:28:12-05:00",
-    "step": "Phase4/18H4-orchestrator-composite-exclude-anom-brace-parse",
-    "compositeRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\") OR ALARM(\"lifebook-orchestrator-invocations-anom\")"
-  },
-  {
-    "ts": "2025-11-11T12:37:15-05:00",
-    "step": "Phase4/18H5-orchestrator-composite-canonicalized",
-    "compositeRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\") OR ALARM(\"lifebook-orchestrator-invocations-anom\")",
-    "removedBlocks": 2,
-    "backup": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\terraform\\orchestrator\\monitoring_extras.tf.bak_20251111_123716"
-  },
-  {
-    "ts": "2025-11-11T12:41:31-05:00",
-    "step": "Phase4/18H6-orchestrator-live-fix+tf-restore",
-    "tfValidated": true,
-    "liveRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\") OR ALARM(\"lifebook-orchestrator-invocations-anom\")"
-  },
-  {
-    "ts": "2025-11-11T12:47:20-05:00",
-    "step": "Phase4/18H7-orchestrator-composite-tf-canonical",
-    "removed": 2,
-    "backup": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\terraform\\orchestrator\\monitoring_extras.tf.bak_20251111_124720",
-    "liveRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\")"
-  },
-  {
-    "ts": "2025-11-11T12:50:17-05:00",
-    "step": "Phase4/18H8-orchestrator-composite-quarantine-and-rewrite",
-    "quarantined": true,
-    "newFile": "orchestrator_composite.tf",
-    "liveRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\")"
-  },
-  {
-    "ts": "2025-11-11T12:53:43-05:00",
-    "step": "Phase4/18H9-orchestrator-terraform-import-and-apply",
-    "tfExe": "C:\\Users\\zacha\\lifebook\\.tools\\terraform\\terraform.cmd",
-    "imported": false,
-    "liveRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\")"
-  },
-  {
-    "ts": "2025-11-11T12:57:24-05:00",
-    "step": "Phase4/18H10-orchestrator-terraform-exe-fixed",
-    "tfExe": null,
-    "imported": false,
-    "liveRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\")"
-  },
-  {
-    "ts": "2025-11-11T13:00:59-05:00",
-    "step": "Phase4/18H11-orchestrator-terraform-exe-resolved-or-installed",
-    "tfExe": "C:\\Users\\zacha\\src\\Lifebook-Site\\.tools\\terraform\\terraform.exe",
-    "imported": false,
-    "liveRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\")"
-  },
-  {
-    "ts": "2025-11-11T13:03:55-05:00",
-    "step": "Phase4/18H12-orchestrator-fix-tags-and-clean-index",
-    "addedLocals": true,
-    "tfExe": "C:\\Users\\zacha\\src\\Lifebook-Site\\.tools\\terraform\\terraform.exe",
-    "imported": false,
-    "liveRule": "ALARM(\"lifebook-orchestrator-errors>0-1m\") OR ALARM(\"lifebook-orchestrator-throttles>0-1m\") OR ALARM(\"lifebook-orchestrator-queue-age>60s\") OR ALARM(\"lifebook-orchestrator-dlq-visible>0\")",
-    "untrackedTools": true
-  },
-  {
-    "ts": "2025-11-11T13:09:59-05:00",
-    "step": "Phase4/18H13-orchestrator-e2e-verify-purge-anomaly-and-bump-esbuild",
-    "e2eTransitions": [],
-    "deletedAnomalyLive": false,
-    "removedAnomalyFromState": false,
-    "esbuildResolved": {}
-  },
-  {
-    "ts": "2025-11-11T13:09:59-05:00",
-    "step": "Phase4/18H13-orchestrator-e2e-verify-purge-anomaly-and-bump-esbuild",
-    "e2eTransitions": [],
-    "deletedAnomalyLive": false,
-    "removedAnomalyFromState": false,
-    "esbuildResolved": {}
-  },
-  {
-    "ts": "2025-11-11T14:13:58-05:00",
-    "step": "Phase4/18H14b-deps-esbuild-verified-treeok",
-    "esbuildTrees": [
-      {
-        "dir": "C:\\Users\\zacha\\src\\Lifebook-Site\\services\\orchestrator",
-        "versions": []
+      "queue": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue",
+      "dlq": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-dlq",
+      "smokeId": "85bf9c8b07b9445ebcdeec8cc07cbb92",
+      "baseline": {
+        "dlq": {
+          "visible": 0,
+          "inflight": 0
+        },
+        "q": {
+          "visible": 0,
+          "inflight": 0
+        },
+        "invocations": 0
       },
-      {
-        "dir": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest",
-        "versions": []
+      "result": {
+        "ok": false,
+        "invocationsAfter": 0
       }
-    ],
-    "openEsbuildAlerts": null
-  },
-  {
-    "ts": "2025-11-11T14:23:05-05:00",
-    "step": "Phase4/18H14c-deps-esbuild-verified-lock-and-node",
-    "esbuildReport": [],
-    "dependabotEsbuild": null
-  },
-  {
-    "ts": "2025-11-11T14:25:45-05:00",
-    "step": "Phase4/18H14d-deps-esbuild-verified-robust",
-    "esbuildReport": [],
-    "dependabotOpen": null
-  },
-  {
-    "ts": "2025-11-11T14:27:47-05:00",
-    "step": "Phase4/18H14e-deps-esbuild-verified-v2",
-    "esbuildReport": [
-      {
-        "dir": "C:\\Users\\zacha\\src\\Lifebook-Site\\services\\orchestrator",
-        "lockVersions": [
-          "0.25.12"
-        ],
-        "nodeVersion": "0.25.12"
-      },
-      {
-        "dir": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest",
-        "lockVersions": [
-          "0.25.12"
-        ],
-        "nodeVersion": "0.25.12"
-      },
-      {
-        "dir": "C:/Users/zacha/src/Lifebook-Site",
-        "lockVersions": [],
-        "nodeVersion": null
-      }
-    ],
-    "dependabotOpen": null
-  },
-  {
-    "ts": "2025-11-11T14:29:53-05:00",
-    "step": "Phase4/18H14f-esbuild-assertion-fixed-count",
-    "esbuildReport": [
-      {
-        "dir": "C:\\Users\\zacha\\src\\Lifebook-Site\\services\\orchestrator",
-        "lockVersions": [
-          "0.25.12"
-        ],
-        "nodeVersion": "0.25.12"
-      },
-      {
-        "dir": "C:\\Users\\zacha\\src\\Lifebook-Site\\infra\\ingest",
-        "lockVersions": [
-          "0.25.12"
-        ],
-        "nodeVersion": "0.25.12"
-      }
-    ]
-  },
-  {
-    "ts": "2025-11-11T16:33:44-05:00",
-    "step": "Phase4/18H15-orchestrator-e2e-smoke",
-    "lambda": "lifebook-orchestrator-worker",
-    "queue": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue",
-    "dlq": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-dlq",
-    "smokeId": "85bf9c8b07b9445ebcdeec8cc07cbb92",
-    "baseline": {
-      "dlq": {
-        "visible": 0,
-        "inflight": 0
-      },
-      "q": {
-        "visible": 0,
-        "inflight": 0
-      },
-      "invocations": 0
     },
-    "result": {
+    {
+      "ts": "2025-11-11T16:43:30-05:00",
+      "step": "Phase4/18H15b-orchestrator-esm-ensure-and-smoke",
+      "lambda": "lifebook-orchestrator-worker",
+      "queueUrl": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue",
+      "queueArn": "arn:aws:sqs:us-east-1:354630286254:lifebook-orchestrator-queue",
+      "smokeId": "7e5695d5211e422694442d04c6a95e23",
+      "ok": false
+    },
+    {
+      "ts": "2025-11-11T16:48:50-05:00",
+      "step": "Phase4/18H15c-orchestrator-esm-waiter-patched-and-smoke",
+      "lambda": "lifebook-orchestrator-worker",
+      "queueUrl": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue",
+      "queueArn": "arn:aws:sqs:us-east-1:354630286254:lifebook-orchestrator-queue",
+      "smokeId": "d16e039eddf344be84c61aa6ed66df1b",
       "ok": false,
-      "invocationsAfter": 0
+      "reservedConcurrency": null
+    },
+    {
+      "ts": "2025-11-11T17:11:29-05:00",
+      "step": "Phase4/18H15d-orchestrator-audit-fix-smoke",
+      "ok": false,
+      "needsManaged": true,
+      "needsKms": false,
+      "delay": 0,
+      "filters": false,
+      "smokeId": "b274a8091c18494d94ca27cdb3f8b9c3"
+    },
+    {
+      "ts": "2025-11-11T17:34:36-05:00",
+      "step": "Phase4/18H15e-orchestrator-rolefix-smoke",
+      "ok": false,
+      "role": "lifebook-orchestrator-lambda-role",
+      "attached": true,
+      "smokeId": "0fb966fa6c824960a0300f80969e8266"
+    },
+    {
+      "ts": "2025-11-11T17:50:01-05:00",
+      "step": "Phase4/18H15f-orchestrator-deep-triage",
+      "ok": false,
+      "role": "lifebook-orchestrator-lambda-role",
+      "hasQueuePolicy": false,
+      "queuePolicyHasDeny": false,
+      "sseManaged": true,
+      "kmsKeyId": "",
+      "fifo": false,
+      "delay": 0,
+      "smokeId": "6670930da36d4ac5b89676b298fb1da4",
+      "esmState": "Enabled"
+    },
+    {
+      "ts": "2025-11-11T17:57:39-05:00",
+      "step": "Phase4/18H15g-orchestrator-finish",
+      "manualDelta": 0,
+      "manualLogs": false,
+      "queueDelta": 0,
+      "queueLogs": false,
+      "dlq": 0,
+      "role": "lifebook-orchestrator-lambda-role"
     }
-  },
+  ],
   {
-    "ts": "2025-11-11T16:43:30-05:00",
-    "step": "Phase4/18H15b-orchestrator-esm-ensure-and-smoke",
-    "lambda": "lifebook-orchestrator-worker",
-    "queueUrl": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue",
-    "queueArn": "arn:aws:sqs:us-east-1:354630286254:lifebook-orchestrator-queue",
-    "smokeId": "7e5695d5211e422694442d04c6a95e23",
-    "ok": false
-  },
-  {
-    "ts": "2025-11-11T16:48:50-05:00",
-    "step": "Phase4/18H15c-orchestrator-esm-waiter-patched-and-smoke",
-    "lambda": "lifebook-orchestrator-worker",
-    "queueUrl": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue",
-    "queueArn": "arn:aws:sqs:us-east-1:354630286254:lifebook-orchestrator-queue",
-    "smokeId": "d16e039eddf344be84c61aa6ed66df1b",
-    "ok": false,
-    "reservedConcurrency": null
-  },
-  {
-    "ts": "2025-11-11T17:11:29-05:00",
-    "step": "Phase4/18H15d-orchestrator-audit-fix-smoke",
-    "ok": false,
-    "needsManaged": true,
-    "needsKms": false,
-    "delay": 0,
-    "filters": false,
-    "smokeId": "b274a8091c18494d94ca27cdb3f8b9c3"
-  },
-  {
-    "ts": "2025-11-11T17:34:36-05:00",
-    "step": "Phase4/18H15e-orchestrator-rolefix-smoke",
-    "ok": false,
-    "role": "lifebook-orchestrator-lambda-role",
-    "attached": true,
-    "smokeId": "0fb966fa6c824960a0300f80969e8266"
-  },
-  {
-    "ts": "2025-11-11T17:50:01-05:00",
-    "step": "Phase4/18H15f-orchestrator-deep-triage",
-    "ok": false,
-    "role": "lifebook-orchestrator-lambda-role",
-    "hasQueuePolicy": false,
-    "queuePolicyHasDeny": false,
-    "sseManaged": true,
-    "kmsKeyId": "",
-    "fifo": false,
-    "delay": 0,
-    "smokeId": "6670930da36d4ac5b89676b298fb1da4",
-    "esmState": "Enabled"
-  },
-  {
-    "ts": "2025-11-11T17:57:39-05:00",
-    "step": "Phase4/18H15g-orchestrator-finish",
-    "manualDelta": 0,
-    "manualLogs": false,
-    "queueDelta": 0,
-    "queueLogs": false,
-    "dlq": 0,
-    "role": "lifebook-orchestrator-lambda-role"
+    "ts": "2025-11-12T16:29:44.1716518+00:00",
+    "step": "orchestrator-alarms-ok",
+    "queue": "lifebook-orchestrator-queue",
+    "worker_fn": "lifebook-orchestrator-worker",
+    "alarms": {
+      "lbk-lifebook-orchestrator-worker-Errors>0": "OK",
+      "lbk-lifebook-orchestrator-queue-Visible>0-5m": "OK",
+      "lbk-lifebook-orchestrator-queue-Inflight>0-5m": "OK",
+      "lbk-lifebook-orchestrator-queue-OldestAge>60s": "OK"
+    }
   }
 ]
