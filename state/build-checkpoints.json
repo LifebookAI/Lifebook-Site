@@ -1536,5 +1536,37 @@
       "lbk-lifebook-orchestrator-queue-Inflight>0-5m": "OK",
       "lbk-lifebook-orchestrator-queue-OldestAge>60s": "OK"
     }
+  },
+  {
+    "ts": "2025-11-12T12:09:50.6664853-05:00",
+    "step": "Phase 1 / Step 1 — Orchestrator DLQ + logs + verify",
+    "region": "us-east-1",
+    "queue": "lifebook-orchestrator-queue",
+    "worker": "lifebook-orchestrator-worker",
+    "dlq": "lifebook-orchestrator-queue-dlq",
+    "settings": {
+      "reportBatchItemFailures": true,
+      "longPollSecs": 20,
+      "visibilitySecs": 60,
+      "structuredLogs": true,
+      "esmBatchSize": 10,
+      "maxReceiveCount": 5
+    },
+    "verify": {
+      "sawSmokeIdInLogs": false,
+      "deltaStarts": 0,
+      "sqsPre": {
+        "Delayed": 0,
+        "NotVisible": 0,
+        "Visible": 0
+      },
+      "smokeId": "9adf467e-7f48-4c64-867d-3a97facc691f",
+      "deltaInv": 0.0,
+      "sqsPost": {
+        "Delayed": 0,
+        "NotVisible": 0,
+        "Visible": 0
+      }
+    }
   }
 ]
