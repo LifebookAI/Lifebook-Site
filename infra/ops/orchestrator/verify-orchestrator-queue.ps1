@@ -65,6 +65,7 @@ $queueInfo = & $whoScript -Profile $Profile -Region $Region -MinutesBack $Minute
 
 if ($queueInfo.MissingOrInaccessible) {
     Write-Warning "Queue '$($queueInfo.QueueName)' is missing or inaccessible. Treating as SKIP (no principals to verify) until orchestrator infra is deployed."
+    $global:LASTEXITCODE = 0
     return
 }
 
@@ -76,6 +77,7 @@ if ($queueInfo.Principals) {
 if (-not $principals -or $principals.Count -eq 0) {
     Write-Host "No CloudTrail activity found for '$($queueInfo.QueueName)' in the last $MinutesBack minutes." -ForegroundColor Green
     Write-Host "Nothing to compare against allowlist; treating as OK."
+    $global:LASTEXITCODE = 0
     return
 }
 
@@ -121,3 +123,4 @@ if ($missingExpected -and $missingExpected.Count -gt 0) {
 }
 
 Write-Host "Orchestrator queue principal verification succeeded." -ForegroundColor Green
+$global:LASTEXITCODE = 0
