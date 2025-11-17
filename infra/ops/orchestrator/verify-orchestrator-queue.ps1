@@ -12,20 +12,48 @@ Write-Host "  MinutesBack : $MinutesBack"
 Write-Host "  Profile     : $Profile"
 Write-Host "  Region      : $Region"
 
-# 1) Load allowlist (JSON array of allowed principal names)
+# 1) Load allowlist (supports two shapes:
+#    - ["foo","bar"]
+#    - {"ExpectedPrincipalPrefixes":["foo","bar"]})
 $allowlistPath = Join-Path $PSScriptRoot 'orchestrator-queue-allowlist.json'
 if (-not (Test-Path $allowlistPath)) {
     throw "Missing allowlist file: $allowlistPath"
 }
 
-$allowNames = Get-Content $allowlistPath -Raw | ConvertFrom-Json
-if (-not $allowNames) {
+$raw = Get-Content $allowlistPath -Raw | ConvertFrom-Json
+[string[]]$allowNames = @()
+
+if ($null -eq $raw) {
     Write-Warning "Allowlist JSON appears empty; treating as no allowed principals."
-    $allowNames = @()
+} elseif ($raw -is [System.Array]) {
+    $allowNames = @($raw)
+} elseif ($raw.PSObject.Properties.Name -contains 'ExpectedPrincipalPrefixes') {
+    $allowNames = @($raw.ExpectedPrincipalPrefixes)
+} else {
+    # Fallback: treat as a single value
+    $allowNames = @($raw)
 }
 
-Write-Host "  Allowlist   : $([string]::Join(', ', @($allowNames)))"
+$allowNames = $allowNames | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+
+Write-Host "  Allowlist   : $([string]::Join(', ', $allowNames))"
 Write-Host ""
+
+# Helper: test if a principal string is allowed by any of the prefixes
+function Test-PrincipalAllowed {
+    param(
+        [string]   $Principal,
+        [string[]] $AllowPrefixes
+    )
+    if (-not $Principal) { return $false }
+    foreach ($p in $AllowPrefixes) {
+        if ([string]::IsNullOrWhiteSpace($p)) { continue }
+        if ($Principal -like "*$p*") {
+            return $true
+        }
+    }
+    return $false
+}
 
 # 2) Call who-touched-queue.ps1
 $whoScript = Join-Path $PSScriptRoot 'who-touched-queue.ps1'
@@ -54,9 +82,30 @@ if (-not $principals -or $principals.Count -eq 0) {
 Write-Host "Principals that touched '$($queueInfo.QueueName)' in the last $MinutesBack minutes:" -ForegroundColor Cyan
 $principals | Sort-Object | ForEach-Object { Write-Host "  - $_" }
 
-# 3) Compare to allowlist
-$unexpected = $principals | Where-Object { $_ -and ($allowNames -notcontains $_) } | Sort-Object -Unique
-$missingExpected = $allowNames | Where-Object { $_ -and ($principals -notcontains $_) } | Sort-Object -Unique
+# 3) Compare to allowlist (prefix-based)
+$unexpected = @()
+foreach ($principal in $principals) {
+    if (-not (Test-PrincipalAllowed -Principal $principal -AllowPrefixes $allowNames)) {
+        $unexpected += $principal
+    }
+}
+$unexpected = $unexpected | Where-Object { $_ } | Sort-Object -Unique
+
+$missingExpected = @()
+foreach ($p in $allowNames) {
+    if ([string]::IsNullOrWhiteSpace($p)) { continue }
+    $seen = $false
+    foreach ($principal in $principals) {
+        if ($principal -like "*$p*") {
+            $seen = $true
+            break
+        }
+    }
+    if (-not $seen) {
+        $missingExpected += $p
+    }
+}
+$missingExpected = $missingExpected | Sort-Object -Unique
 
 Write-Host ""
 if ($unexpected -and $unexpected.Count -gt 0) {
@@ -65,9 +114,9 @@ if ($unexpected -and $unexpected.Count -gt 0) {
     throw "Orchestrator queue principal allowlist violation."
 }
 
-Write-Host "All observed principals are within the allowlist." -ForegroundColor Green
+Write-Host "All observed principals are within the allowlist (by prefix match)." -ForegroundColor Green
 if ($missingExpected -and $missingExpected.Count -gt 0) {
-    Write-Host "Note: some allowlisted principals did not appear in the last $MinutesBack minutes:" -ForegroundColor Yellow
+    Write-Host "Note: some allowlisted prefixes did not appear in the last $MinutesBack minutes:" -ForegroundColor Yellow
     $missingExpected | ForEach-Object { Write-Host "  - $_" -ForegroundColor Yellow }
 }
 

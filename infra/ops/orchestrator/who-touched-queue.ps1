@@ -54,10 +54,10 @@ if (-not $queueUrl) {
     throw "Could not resolve QueueUrl for '$QueueName'."
 }
 
-# 2) Derive queue ARN (we can also ask SQS for attributes, but this is deterministic)
-$caller = Invoke-Aws sts get-caller-identity --profile $Profile --region $Region
+# 2) Derive queue ARN (deterministic)
+$caller    = Invoke-Aws sts get-caller-identity --profile $Profile --region $Region
 $accountId = $caller.Account
-$queueArn  = "arn:aws:sqs:$Region:$accountId:$QueueName"
+$queueArn  = "arn:aws:sqs:${Region}:${accountId}:${QueueName}"
 
 Write-Host "  QueueUrl : $queueUrl"
 Write-Host "  QueueArn : $queueArn"
@@ -83,7 +83,6 @@ $eventsResp = Invoke-Aws cloudtrail lookup-events `
 $records = @()
 if ($eventsResp.Events) {
     foreach ($e in $eventsResp.Events) {
-        # CloudTrailEvent is a JSON string; parse it.
         $detail = $null
         try {
             $detail = $e.CloudTrailEvent | ConvertFrom-Json
@@ -99,7 +98,7 @@ if ($eventsResp.Events) {
             }
         }
 
-        # Only keep records that actually mention this ARN as a resource (belt-and-suspenders)
+        # Only keep records that actually mention this ARN as a resource
         $hasResource = $false
         if ($e.Resources) {
             foreach ($r in $e.Resources) {
