@@ -1,24 +1,12 @@
 param(
-    [string]$Profile     = 'lifebook-sso',
-    [string]$Region      = 'us-east-1',
     [string]$QueueName   = 'lifebook-orchestrator-queue',
-    [int]   $MinutesBack = 60
+    [int]   $MinutesBack = 60,
+    [string]$Profile     = 'lifebook-sso',
+    [string]$Region      = 'us-east-1'
 )
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
-
-function Invoke-Aws {
-    param(
-        [Parameter(Mandatory, ValueFromRemainingArguments)]
-        [string[]]$Cmd
-    )
-    $out = & aws @Cmd 2>&1
-    if ($LASTEXITCODE -ne 0) {
-        throw ("aws " + ($Cmd -join ' ') + " failed:`n" + $out)
-    }
-    try { $out | ConvertFrom-Json } catch { $out }
-}
 
 Write-Host "who-touched-queue.ps1" -ForegroundColor Cyan
 Write-Host "  Profile     : $Profile"
@@ -27,117 +15,97 @@ Write-Host "  QueueName   : $QueueName"
 Write-Host "  MinutesBack : $MinutesBack"
 Write-Host ""
 
-# 1) Resolve queue URL, but treat missing/unauthorized as a soft condition
-try {
-    $queueUrlResp = Invoke-Aws sqs get-queue-url `
-        --queue-name $QueueName `
-        --profile $Profile `
-        --region $Region
-} catch {
-    $msg = $_.Exception.Message
-    if ($msg -match 'NonExistentQueue' -or $msg -match 'does not exist or you do not have access') {
-        Write-Warning "Queue '$QueueName' not found or not accessible in region '$Region' for profile '$Profile'."
-        return [pscustomobject]@{
-            QueueName             = $QueueName
-            QueueUrl              = $null
-            QueueArn              = $null
-            Principals            = @()
-            Events                = @()
-            MissingOrInaccessible = $true
-        }
+function Invoke-Aws {
+    param(
+        [Parameter(Mandatory, ValueFromRemainingArguments)]
+        [string[]]$Cmd
+    )
+
+    $out = & aws @Cmd 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        throw ("aws " + ($Cmd -join ' ') + " failed:`n" + $out)
     }
-    throw
+
+    try {
+        return $out | ConvertFrom-Json
+    } catch {
+        return $out
+    }
 }
 
-$queueUrl = $queueUrlResp.QueueUrl
-if (-not $queueUrl) {
-    throw "Could not resolve QueueUrl for '$QueueName'."
+# 1) Resolve queue URL
+try {
+    $urlResp  = Invoke-Aws sqs get-queue-url --queue-name $QueueName --profile $Profile --region $Region
+    $queueUrl = $urlResp.QueueUrl
+} catch {
+    Write-Warning "Queue '$QueueName' not found or not accessible in region '$Region' for profile '$Profile'."
+    return [pscustomobject]@{
+        QueueName            = $QueueName
+        QueueUrl             = $null
+        QueueArn             = $null
+        MissingOrInaccessible = $true
+        Principals           = @()
+    }
 }
 
-# 2) Derive queue ARN (deterministic)
-$caller    = Invoke-Aws sts get-caller-identity --profile $Profile --region $Region
-$accountId = $caller.Account
-$queueArn  = "arn:aws:sqs:${Region}:${accountId}:${QueueName}"
+# 2) Resolve queue ARN
+$attrResp = Invoke-Aws sqs get-queue-attributes --queue-url $queueUrl --attribute-names QueueArn --profile $Profile --region $Region
+$queueArn = $attrResp.Attributes.QueueArn
 
 Write-Host "  QueueUrl : $queueUrl"
 Write-Host "  QueueArn : $queueArn"
 Write-Host ""
 
-# 3) Look up recent CloudTrail events for this queue
-$endUtc   = Get-Date -AsUTC
-$startUtc = $endUtc.AddMinutes(-1 * [math]::Abs($MinutesBack))
+# 3) Compute time window for CloudTrail lookup
+$end   = (Get-Date).ToUniversalTime()
+$start = $end.AddMinutes(-$MinutesBack)
 
-$startIso = $startUtc.ToString('o')
-$endIso   = $endUtc.ToString('o')
+$startIso = $start.ToString('o')
+$endIso   = $end.ToString('o')
 
 Write-Host "Querying CloudTrail from $startIso to $endIso ..." -ForegroundColor Yellow
 
-$eventsResp = Invoke-Aws cloudtrail lookup-events `
-    --lookup-attributes AttributeKey=ResourceName,AttributeValue=$queueArn `
-    --start-time $startIso `
-    --end-time $endIso `
-    --max-results 50 `
-    --profile $Profile `
-    --region $Region
+# NOTE: Each LookupAttributes struct must be a single token:
+#   "AttributeKey=ResourceName,AttributeValue=<ARN>"
+$lookupArgs = @(
+    'cloudtrail', 'lookup-events',
+    '--lookup-attributes', "AttributeKey=ResourceName,AttributeValue=$queueArn",
+    '--start-time', $startIso,
+    '--end-time',   $endIso,
+    '--max-results', '50',
+    '--profile', $Profile,
+    '--region',  $Region
+)
 
-$records = @()
-if ($eventsResp.Events) {
-    foreach ($e in $eventsResp.Events) {
-        $detail = $null
-        try {
-            $detail = $e.CloudTrailEvent | ConvertFrom-Json
-        } catch {
-            $detail = $null
-        }
+$resp = Invoke-Aws @lookupArgs
 
-        $principal = $null
-        if ($detail -and $detail.userIdentity) {
-            $principal = $detail.userIdentity.arn
-            if (-not $principal) {
-                $principal = $detail.userIdentity.principalId
-            }
-        }
+$events = @()
+if ($resp.Events) {
+    $events = @($resp.Events)
+}
 
-        # Only keep records that actually mention this ARN as a resource
-        $hasResource = $false
-        if ($e.Resources) {
-            foreach ($r in $e.Resources) {
-                if ($r.ResourceName -eq $queueArn) {
-                    $hasResource = $true
-                    break
-                }
-            }
-        }
-
-        if (-not $hasResource) { continue }
-
-        $records += [pscustomobject]@{
-            EventTime = [DateTime]$e.EventTime
-            EventName = $e.EventName
-            Principal = $principal
-            RawId     = $e.EventId
-        }
+# 4) Collect principals (UserName) from CloudTrail events
+$principals = @()
+foreach ($ev in $events) {
+    if ($ev.Username) {
+        $principals += $ev.Username
     }
 }
 
-$principals = $records |
-    Where-Object { $_.Principal } |
-    Select-Object -ExpandProperty Principal -Unique
+$principals = $principals | Where-Object { $_ } | Sort-Object -Unique
 
-Write-Host "Found $($records.Count) CloudTrail events for the queue in the last $MinutesBack minutes."
-Write-Host "Distinct principals: $(@($principals).Count)"
-if ($principals) {
-    $principals | Sort-Object | ForEach-Object { Write-Host "  - $_" }
+if (-not $principals -or $principals.Count -eq 0) {
+    Write-Host "No CloudTrail principals found for '$QueueName' in the last $MinutesBack minutes." -ForegroundColor Yellow
 } else {
-    Write-Host "  (none)" -ForegroundColor DarkGray
+    Write-Host "Principals found in CloudTrail for '$QueueName':" -ForegroundColor Cyan
+    $principals | ForEach-Object { Write-Host "  - $_" }
 }
 
-# 4) Return a structured object for the verifier
-[pscustomobject]@{
-    QueueName             = $QueueName
-    QueueUrl              = $queueUrl
-    QueueArn              = $queueArn
-    Principals            = @($principals)
-    Events                = $records
+# 5) Return structured object expected by verify-orchestrator-queue.ps1
+return [pscustomobject]@{
+    QueueName            = $QueueName
+    QueueUrl             = $queueUrl
+    QueueArn             = $queueArn
     MissingOrInaccessible = $false
+    Principals           = $principals
 }
