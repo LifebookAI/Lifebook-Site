@@ -1,0 +1,58 @@
+name: Orchestrator queue verify
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Every hour at minute 5 (tune if needed)
+    - cron: "5 * * * *"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  verify-orchestrator-queue:
+    name: Verify orchestrator SQS principals
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::354630286254:role/GitHubOIDC_LifebookSite
+          role-session-name: lifebook-orchestrator-queue-verify
+          aws-region: us-east-1
+
+      # Script expects --profile lifebook-sso; create a short-lived profile from the OIDC session.
+      - name: Prepare lifebook-sso AWS CLI profile (ephemeral)
+        shell: bash
+        run: |
+          aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID" --profile lifebook-sso
+          aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY" --profile lifebook-sso
+          if [ -n "$AWS_SESSION_TOKEN" ]; then
+            aws configure set aws_session_token "$AWS_SESSION_TOKEN" --profile lifebook-sso
+          fi
+          aws configure set region "${AWS_REGION:-us-east-1}" --profile lifebook-sso
+
+      - name: Verify orchestrator queue principals (last 60 minutes)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          Set-StrictMode -Version Latest
+
+          $script = "infra/ops/orchestrator/verify-orchestrator-queue.ps1"
+          if (-not (Test-Path $script)) {
+            throw "Missing script: $script"
+          }
+
+          Write-Host "Running orchestrator queue verifier for last 60 minutes..." -ForegroundColor Green
+          & $script -MinutesBack 60
+          $exit = $LASTEXITCODE
+
+          Write-Host "verify-orchestrator-queue.ps1 exit code: $exit" -ForegroundColor Cyan
+          if ($exit -ne 0) {
+            throw "Orchestrator queue verify FAILED with exit code $exit"
+          }
