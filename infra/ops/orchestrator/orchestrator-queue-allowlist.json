@@ -1,0 +1,6 @@
+{
+  "ExpectedPrincipalPrefixes": [
+    "lifebook-orchestrator-lambda-role",
+    "lifebook-orchestrator-events-role"
+  ]
+}
