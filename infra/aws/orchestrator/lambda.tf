@@ -1,9 +1,10 @@
 # Orchestrator worker Lambda + IAM + SQS event source mapping
 #
 # NOTE:
-# - Code location is parameterized via S3 bucket/key variables.
-# - This is scaffold-only; we are not applying yet.
-# - Once the real artifact + config are ready, we can run plan/apply.
+# - IAM role and Lambda function are imported from existing AWS resources and
+#   protected with lifecycle.ignore_changes = all for now (read-only).
+# - Event source mapping is also imported and treated as read-only.
+# - Once the real artifact + config are stable, we can relax ignore_changes.
 
 variable "orchestrator_lambda_s3_bucket" {
   description = "S3 bucket containing the orchestrator worker Lambda artifact"
@@ -17,7 +18,7 @@ variable "orchestrator_lambda_s3_key" {
   default     = "lambda/orchestrator-worker/latest.zip" # TODO: wire to CI artifact
 }
 
-# IAM role for the worker Lambda
+# IAM role for the worker Lambda (existing role, imported into state)
 resource "aws_iam_role" "orchestrator_lambda" {
   name = "lifebook-orchestrator-lambda-role"
 
@@ -39,6 +40,10 @@ resource "aws_iam_role" "orchestrator_lambda" {
       "Stack" = "orchestrator"
     }
   )
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 # Inline policy: allow reading from orchestrator queue + writing logs
@@ -73,20 +78,21 @@ resource "aws_iam_role_policy" "orchestrator_lambda" {
   })
 }
 
-# Orchestrator worker Lambda function (code location parameterized)
+# Orchestrator worker Lambda function (existing function, imported into state)
 resource "aws_lambda_function" "orchestrator_worker" {
   function_name = "lifebook-orchestrator-worker"
 
   role    = aws_iam_role.orchestrator_lambda.arn
   handler = "index.handler"
-  runtime = "nodejs22.x"
+  # NOTE: actual runtime is nodejs20.x today; we leave this here but ignore changes
+  runtime = "nodejs20.x"
 
   s3_bucket = var.orchestrator_lambda_s3_bucket
   s3_key    = var.orchestrator_lambda_s3_key
 
-  timeout      = 30
-  memory_size  = 256
-  publish      = false
+  timeout     = 30
+  memory_size = 256
+  publish     = false
 
   environment {
     variables = {
@@ -103,9 +109,13 @@ resource "aws_lambda_function" "orchestrator_worker" {
       "Function" = "lifebook-orchestrator-worker"
     }
   )
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
-# SQS -> Lambda event source mapping
+# SQS -> Lambda event source mapping (existing mapping, imported into state)
 resource "aws_lambda_event_source_mapping" "orchestrator_sqs" {
   event_source_arn  = aws_sqs_queue.orchestrator.arn
   function_name     = aws_lambda_function.orchestrator_worker.arn
@@ -114,4 +124,8 @@ resource "aws_lambda_event_source_mapping" "orchestrator_sqs" {
   maximum_batching_window_in_seconds = 5
 
   enabled = true
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
