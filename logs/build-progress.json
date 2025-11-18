@@ -638,5 +638,39 @@
         "at": "2025-11-18T23:33:55Z"
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "orchestrator_queues.cw_alarms_exercised",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "- Used cloudwatch set-alarm-state on three orchestrator SQS alarms\n- Forced visible backlog, oldest age, and DLQ alarms into ALARM state\n- Confirmed alarm state + timestamps via cloudwatch describe-alarms\n- Verified lifebook-alerts SNS wiring by expecting/observing email notifications",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      "Let alarms return to steady-state (INSUFFICIENT_DATA/OK), then rely on natural backlog/DLQ behavior to drive alerts during real traffic."
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "LastUpdated": "2025-11-18T23:41:17Z",
+    "History": [
+      {
+        "patch": {
+          "StepTitle": null,
+          "Owner": "Zach",
+          "Evidence": "- Used cloudwatch set-alarm-state on three orchestrator SQS alarms\n- Forced visible backlog, oldest age, and DLQ alarms into ALARM state\n- Confirmed alarm state + timestamps via cloudwatch describe-alarms\n- Verified lifebook-alerts SNS wiring by expecting/observing email notifications",
+          "Decisions": "",
+          "Blockers": "",
+          "Phase": null,
+          "Status": "✔",
+          "Target": "",
+          "StepID": "orchestrator_queues.cw_alarms_exercised",
+          "Next": [
+            "Let alarms return to steady-state (INSUFFICIENT_DATA/OK), then rely on natural backlog/DLQ behavior to drive alerts during real traffic."
+          ]
+        },
+        "at": "2025-11-18T23:41:17Z"
+      }
+    ]
   }
 ]
