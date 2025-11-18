@@ -1,0 +1,47 @@
+name: Orchestrator E2E Smoke
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  orchestrator-e2e-smoke:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::354630286254:role/GitHubOIDC_LifebookSite
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Create AWS CLI profile for Lifebook scripts
+        shell: bash
+        run: |
+          aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID" --profile lifebook-ci
+          aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY" --profile lifebook-ci
+          if [ -n "$AWS_SESSION_TOKEN" ]; then
+            aws configure set aws_session_token "$AWS_SESSION_TOKEN" --profile lifebook-ci
+          fi
+          aws configure set region "$AWS_REGION" --profile lifebook-ci
+
+      - name: Run orchestrator E2E smoke
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Set-StrictMode -Version Latest
+          $Region  = "${{ env.AWS_REGION }}"
+          $Profile = 'lifebook-ci'
+          Write-Host "Running orchestrator E2E smoke with Region=$Region Profile=$Profile..."
+          ./infra/orchestrator/smoke-orchestrator-e2e.ps1 -Region $Region -Profile $Profile

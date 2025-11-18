@@ -599,9 +599,7 @@
           ],
           "Filter": {
             "Key": {
-              "FilterRules": [
-                "@{Name=Prefix; Value=sources/}"
-              ]
+              "FilterRules": "@{Name=Prefix; Value=sources/}"
             }
           }
         },
@@ -1567,6 +1565,438 @@
         "NotVisible": 0,
         "Visible": 0
       }
+    }
+  },
+  {
+    "ts": "2025-11-17T11:43:11.8471122-05:00",
+    "step": "Phase 1 / Step 1 — Orchestrator DLQ + logs + verify",
+    "region": "us-east-1",
+    "queue": "lifebook-orchestrator-queue",
+    "worker": "lifebook-orchestrator-worker",
+    "dlq": "lifebook-orchestrator-queue-dlq",
+    "settings": {
+      "batchSize": 10,
+      "longPollSecs": 20,
+      "visibilitySecs": 60,
+      "maxReceiveCount": 5
+    },
+    "verify": {
+      "sawSmokeIdInLogs": false,
+      "smokeId": "5aae522b-f732-4c55-b385-4915a2ff7bbb",
+      "qUrl": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue",
+      "deltaInv": 1.0,
+      "qArn": "arn:aws:sqs:us-east-1:354630286254:lifebook-orchestrator-queue"
+    }
+  },
+  {
+    "ts": "2025-11-17T11:59:07.4294259-05:00",
+    "step": "Phase 1 / Step 2 — Orchestrator alarms + DLQ health",
+    "region": "us-east-1",
+    "worker": "lifebook-orchestrator-worker",
+    "dlq": "lifebook-orchestrator-queue-dlq",
+    "topic": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+    "alarms": [
+      "lifebook-orch-worker-errors",
+      "lifebook-orch-worker-throttles",
+      "lifebook-orch-dlq-depth",
+      "lifebook-orch-dlq-oldest"
+    ],
+    "dlqArn": "arn:aws:sqs:us-east-1:354630286254:lifebook-orchestrator-queue-dlq"
+  },
+  {
+    "kind": "checkpoint",
+    "timestamp": "2025-11-17T13:54:22",
+    "area": "orchestrator-queue-audit",
+    "summary": "CloudTrail Lake used to audit lifebook-orchestrator-queue; confirmed only expected roles touched the queue in the last ~30 minutes.",
+    "details": {
+      "receiveSourceIPs": [
+        "98.81.237.55",
+        "18.207.161.107"
+      ],
+      "cloudtrailQueryWindow": "last ~30 minutes",
+      "queue": "lifebook-orchestrator-queue",
+      "notes": "Built PS7 formatter for CloudTrail Lake QueryResultRows (eventTime, eventName, uiType, principal, sourceIPAddress, queueUrl).",
+      "receivePrincipalRole": "arn:aws:sts::354630286254:assumed-role/lifebook-orchestrator-lambda-role/*",
+      "sendPrincipalRole": "arn:aws:sts::354630286254:assumed-role/lifebook-orchestrator-events-role/*",
+      "unexpectedPrincipals": [],
+      "sendSource": "events.amazonaws.com"
+    },
+    "nextActions": [
+      "Optionally promote this ad-hoc probe into infra/ops/orchestrator/who-touched-queue.ps1 for reuse."
+    ]
+  },
+  {
+    "timestamp": "2025-11-17T18:12:43.9019706-05:00",
+    "area": "orchestrator_queue",
+    "step": "orchestrator_principal_verifier_ci",
+    "status": "ok",
+    "evidence": {
+      "workflow": "orchestrator-queue-verify.yml",
+      "gh_run_id": 19447720734,
+      "gh_status": "completed",
+      "gh_conclusion": "success",
+      "gh_created_at": "2025-11-17T23:10:13Z",
+      "branch": "main",
+      "queue_arn": "arn:aws:sqs:us-east-1:354630286254:lifebook-orchestrator-queue"
+    },
+    "next": [
+      "Wire orchestrator worker + EventBridge so queue starts seeing real principals.",
+      "Later tighten allowlist once normal producers are finalized."
+    ]
+  },
+  {
+    "timestamp": "2025-11-17T21:07:19.313797-05:00",
+    "area": "orchestrator_tf",
+    "step": "sqs_queue_imported",
+    "status": "ok",
+    "evidence": {
+      "tf_dir": "infra/aws/orchestrator",
+      "resource": "aws_sqs_queue.orchestrator",
+      "queue_name": "lifebook-orchestrator-queue",
+      "queue_url": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue",
+      "queue_arn": "arn:aws:sqs:us-east-1:354630286254:lifebook-orchestrator-queue",
+      "dlq_arn": "arn:aws:sqs:us-east-1:354630286254:lifebook-orchestrator-queue-dlq",
+      "visibility_timeout_seconds": 120,
+      "receive_wait_time_seconds": 20,
+      "message_retention_seconds": 600,
+      "redrive_max_receive_count": 5,
+      "sqs_managed_sse_enabled": true,
+      "ignore_changes_mode": "all"
+    },
+    "next": [
+      "Model worker Lambda + DLQ + EventBridge rules in orchestrator Terraform stack.",
+      "Wire worker + queue health into orchestrator CI once Lambda exists."
+    ]
+  },
+  {
+    "timestamp": "2025-11-17T21:13:37.1172418-05:00",
+    "area": "orchestrator_tf",
+    "step": "lambda_scaffolded",
+    "status": "ok",
+    "evidence": {
+      "tf_dir": "infra/aws/orchestrator",
+      "lambda_function": "lifebook-orchestrator-worker",
+      "iam_role": "lifebook-orchestrator-lambda-role",
+      "event_source": "aws_lambda_event_source_mapping.orchestrator_sqs",
+      "s3_bucket_var": "orchestrator_lambda_s3_bucket",
+      "s3_key_var": "orchestrator_lambda_s3_key",
+      "runtime": "nodejs22.x",
+      "applied": false
+    },
+    "next": [
+      "Decide S3 bucket/key for orchestrator worker artifact and wire via CI.",
+      "Once artifact path is real, run terraform plan/apply for orchestrator stack.",
+      "Then wire EventBridge producers that enqueue work into lifebook-orchestrator-queue."
+    ]
+  },
+  {
+    "timestamp": "2025-11-17T21:39:59.1391927-05:00",
+    "area": "orchestrator_tf",
+    "step": "all_imported_readonly",
+    "status": "ok",
+    "evidence": {
+      "tf_dir": "infra/aws/orchestrator",
+      "queue_name": "lifebook-orchestrator-queue",
+      "queue_arn": "arn:aws:sqs:us-east-1:354630286254:lifebook-orchestrator-queue",
+      "queue_url": "https://sqs.us-east-1.amazonaws.com/354630286254/lifebook-orchestrator-queue",
+      "iam_role": "lifebook-orchestrator-lambda-role",
+      "lambda_function": "lifebook-orchestrator-worker",
+      "mapping_uuid": "e64ec2b0-b547-4ea1-a74d-9d81cbd72550",
+      "role_ignore_changes": true,
+      "lambda_ignore_changes": true,
+      "mapping_ignore_changes": true,
+      "imported": [
+        "aws_sqs_queue.orchestrator",
+        "aws_iam_role.orchestrator_lambda",
+        "aws_lambda_function.orchestrator_worker",
+        "aws_lambda_event_source_mapping.orchestrator_sqs"
+      ]
+    },
+    "next": [
+      "Relax ignore_changes for Lambda + role once orchestrator worker deploy is fully under CI.",
+      "Add orchestrator queue/Lambda health checks + alarms (DLQ, age, backlog) and wire into CI status.",
+      "Document orchestrator contract (job table, payload format, retries) in Master Sheet appendix."
+    ]
+  },
+  {
+    "timestamp": "2025-11-17T22:28:22",
+    "area": "orchestrator_contract",
+    "step": "jobs_table_and_doc",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "createdNew": false,
+      "docPath": "C:\\Users\\zacha\\src\\Lifebook-Site\\docs\\orchestrator-job-contract.md"
+    }
+  },
+  {
+    "timestamp": "2025-11-17T22:31:29",
+    "area": "orchestrator_contract",
+    "step": "jobs_table_dynamodb_ok",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "createdNew": false,
+      "billingMode": "PAY_PER_REQUEST",
+      "gsi": null,
+      "ttlStatus": "ENABLED",
+      "ttlAttr": "ttl_at"
+    }
+  },
+  {
+    "timestamp": "2025-11-17T22:31:29",
+    "area": "orchestrator_contract",
+    "step": "jobs_table_dynamodb_ok",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "createdNew": false,
+      "billingMode": "PAY_PER_REQUEST",
+      "gsi": null,
+      "ttlStatus": "ENABLED",
+      "ttlAttr": "ttl_at"
+    }
+  },
+  {
+    "timestamp": "2025-11-17T22:44:53",
+    "area": "orchestrator_alarms",
+    "step": "queue_and_worker_alarms_wired",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "queueName": "lifebook-orchestrator-queue",
+      "queueArn": "arn:aws:sqs:us-east-1:354630286254:lifebook-orchestrator-queue",
+      "dlqName": "lifebook-orchestrator-queue-dlq",
+      "dlqArn": "arn:aws:sqs:us-east-1:354630286254:lifebook-orchestrator-queue-dlq",
+      "lambdaFunc": "lifebook-orchestrator-worker",
+      "lambdaArn": "arn:aws:lambda:us-east-1:354630286254:function:lifebook-orchestrator-worker",
+      "snsTopicArn": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+      "alarmNames": [
+        "lifebook-orchestrator-queue-age-high",
+        "lifebook-orchestrator-queue-depth-high",
+        "lifebook-orchestrator-dlq-depth",
+        "lifebook-orchestrator-worker-errors",
+        "lifebook-orchestrator-worker-throttles"
+      ]
+    }
+  },
+  {
+    "timestamp": "2025-11-17T23:12:11",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-ee52dd1943c7479788148d04cdfa6928",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-17T23:37:14",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-12d5dad36c03413aa4ef2022d7f9815d",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-18T11:45:07",
+    "area": "orchestrator_worker",
+    "step": "workflow_result_written_to_s3",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "bucket": "lifebook.ai",
+      "key": "workflows/manual/manual-5aynrcz6/result.md",
+      "content_length": 116,
+      "sse": "aws:kms",
+      "sse_kms_key_id": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a"
+    }
+  },
+  {
+    "timestamp": "2025-11-18T12:12:04",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-a6a9e46cac8e4db294670e8c388f9ea1",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-18T12:13:39",
+    "area": "orchestrator_e2e",
+    "step": "synthetic_smoke",
+    "status": "fail",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "job_id": "job-a6a9e46cac8e4db294670e8c388f9ea1",
+      "status": "queued",
+      "attempts": 0,
+      "max_attempts": 5,
+      "last_error_code": null,
+      "last_error_msg": null,
+      "elapsed_seconds": 95,
+      "polls": 13,
+      "timed_out": true,
+      "reason": "Timed out after 95 seconds while status='queued'"
+    }
+  },
+  {
+    "timestamp": "2025-11-18T12:55:37",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-20da9f0a591749249879beffc4b31b29",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-18T12:57:15",
+    "area": "orchestrator_e2e",
+    "step": "synthetic_smoke",
+    "status": "fail",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "job_id": "job-20da9f0a591749249879beffc4b31b29",
+      "status": "queued",
+      "attempts": 0,
+      "max_attempts": 5,
+      "last_error_code": null,
+      "last_error_msg": null,
+      "elapsed_seconds": 95,
+      "polls": 13,
+      "timed_out": true,
+      "reason": "Timed out after 95 seconds while status='queued'"
+    }
+  },
+  {
+    "timestamp": "2025-11-18T13:19:49",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-1f0de0b12215450b9a2b812ca5ccfbf0",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-18T13:21:30",
+    "area": "orchestrator_e2e",
+    "step": "synthetic_smoke",
+    "status": "pass",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "job_id": "job-1f0de0b12215450b9a2b812ca5ccfbf0",
+      "status": "queued",
+      "attempts": 0,
+      "max_attempts": 5,
+      "last_error_code": null,
+      "last_error_msg": null,
+      "elapsed_seconds": 95,
+      "polls": 13,
+      "timed_out": true,
+      "has_s3_output": true,
+      "s3_bucket": "lifebook.ai",
+      "s3_key": "workflows/manual/job-1f0de0b12215450b9a2b812ca5ccfbf0.md",
+      "reason": "Timed out after 95 seconds waiting for DDB status, but S3 output exists at s3://lifebook.ai/workflows/manual/job-1f0de0b12215450b9a2b812ca5ccfbf0.md."
+    }
+  },
+  {
+    "timestamp": "2025-11-18T14:41:21",
+    "area": "orchestrator_queues",
+    "step": "dlq_cleanup_synthetic",
+    "status": "pass",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "queue": "lifebook-orchestrator-queue",
+      "dlq": "lifebook-orchestrator-queue-dlq",
+      "queue_ApproximateNumberOfMessages": 0,
+      "dlq_ApproximateNumberOfMessages": 2,
+      "note": "Drained synthetic scheduler messages from orchestrator DLQ via guarded script."
+    }
+  },
+  {
+    "timestamp": "2025-11-18T14:54:55",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-01a46c6859af45a18df05ce07d48e5a8",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-18T14:56:36",
+    "area": "orchestrator_e2e",
+    "step": "synthetic_smoke",
+    "status": "pass",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "job_id": "job-01a46c6859af45a18df05ce07d48e5a8",
+      "status": "queued",
+      "attempts": 0,
+      "max_attempts": 5,
+      "last_error_code": null,
+      "last_error_msg": null,
+      "elapsed_seconds": 95,
+      "polls": 13,
+      "timed_out": true,
+      "has_s3_output": true,
+      "s3_bucket": "lifebook.ai",
+      "s3_key": "workflows/manual/job-01a46c6859af45a18df05ce07d48e5a8.md",
+      "reason": "Timed out after 95 seconds waiting for DDB status, but S3 output exists at s3://lifebook.ai/workflows/manual/job-01a46c6859af45a18df05ce07d48e5a8.md."
     }
   }
 ]
