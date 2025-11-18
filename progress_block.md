@@ -1,3 +1,3 @@
 Phase | Step ID | Step Title | Status (☐/⏳/✔/⛔) | Evidence (IDs/ARNs/links) | Decisions | Blockers | Next actions (max 3) | Owner | Target (YYYY-MM-DD)
 --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
-Phase 0 — Infra | Phase4-18A-orchestrator |  | ✔ | TF updated (KMS perms/env, 30s timeout). Minimal handler writes SSE-KMS to S3. Smoke ran. |  |  | Fold SSE-KMS util into TS; re-enable full orchestrator steps; add alarms/DLQ dashboard. | Zach | 
+Phase 0 — Infra | orchestrator_e2e_smoke_ci |  | ✔ | - Added orchestrator queue health + DLQ inspector/drainer scripts - Drained synthetic scheduler messages from lifebook-orchestrator-queue-dlq - Ran orchestrator E2E synthetic smoke (SQS→worker→S3) successfully - Wired orchestrator-e2e-smoke GitHub Actions workflow (OIDC) for PRs |  |  | Mark orchestrator-e2e-smoke check as required on main and run it on the next PR. | Zach | 

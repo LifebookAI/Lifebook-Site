@@ -429,5 +429,180 @@
         }
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "18A.orchestrator.dlq",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "SQS attrs via file:// applied: vis=120s, longpoll=20s, redrive to DLQ, allow policy set; ESM Enabled.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [],
+    "Owner": "Zach",
+    "Target": "",
+    "LastUpdated": "2025-11-12T19:01:47Z",
+    "History": [
+      {
+        "patch": {
+          "Evidence": "SQS attrs via file:// applied: vis=120s, longpoll=20s, redrive to DLQ, allow policy set; ESM Enabled.",
+          "StepTitle": null,
+          "Owner": "Zach",
+          "Phase": null,
+          "Decisions": "",
+          "Next": [],
+          "StepID": "18A.orchestrator.dlq",
+          "Target": "",
+          "Status": "✔",
+          "Blockers": ""
+        },
+        "at": "2025-11-12T19:01:47Z"
+      }
+    ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "18B.orchestrator.alarms+redrive",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "CW SQS alarms created with quoted dimensions; SNS wired; SetAlarmState smoke verified.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [],
+    "Owner": "Zach",
+    "Target": "",
+    "LastUpdated": "2025-11-12T19:09:07Z",
+    "History": [
+      {
+        "patch": {
+          "Evidence": "CW SQS alarms created with quoted dimensions; SNS wired; SetAlarmState smoke verified.",
+          "StepTitle": null,
+          "Owner": "Zach",
+          "Phase": null,
+          "Decisions": "",
+          "Next": [],
+          "StepID": "18B.orchestrator.alarms+redrive",
+          "Target": "",
+          "Status": "✔",
+          "Blockers": ""
+        },
+        "at": "2025-11-12T19:09:07Z"
+      }
+    ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "p1_orchestrator_dlq_logs",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "ESM Enabled for lifebook-orchestrator-queue; SQS smoke produced +1 Lambda invocation (deltaInv=1); queue URL/ARN verified.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [],
+    "Owner": "Zach",
+    "Target": "",
+    "LastUpdated": "2025-11-17T16:48:38Z",
+    "History": [
+      {
+        "at": "2025-11-17T16:43:35Z",
+        "patch": {
+          "Blockers": "",
+          "Phase": null,
+          "Owner": "Zach",
+          "Next": [],
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "StepTitle": null,
+          "StepID": "p1_orchestrator_dlq_logs",
+          "Evidence": ""
+        }
+      },
+      {
+        "at": "2025-11-17T16:48:38Z",
+        "patch": {
+          "Blockers": "",
+          "Phase": "Phase 0 — Infra",
+          "Owner": "Zach",
+          "Next": [
+            ""
+          ],
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "StepTitle": "",
+          "StepID": "p1_orchestrator_dlq_logs",
+          "Evidence": "ESM Enabled for lifebook-orchestrator-queue; SQS smoke produced +1 Lambda invocation (deltaInv=1); queue URL/ARN verified."
+        }
+      }
+    ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "p1_orchestrator_alarms",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "CloudWatch alarms lifebook-orch-worker-errors/-throttles/-dlq-depth/-dlq-oldest present and targeting lifebook-alerts; DLQ ARN=arn:aws:sqs:us-east-1:354630286254:lifebook-orchestrator-queue-dlq.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      ""
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "LastUpdated": "2025-11-17T16:59:07Z",
+    "History": [
+      {
+        "at": "2025-11-17T16:59:07Z",
+        "patch": {
+          "Blockers": "",
+          "Phase": null,
+          "Owner": "Zach",
+          "Next": [
+            ""
+          ],
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "StepTitle": null,
+          "StepID": "p1_orchestrator_alarms",
+          "Evidence": "CloudWatch alarms lifebook-orch-worker-errors/-throttles/-dlq-depth/-dlq-oldest present and targeting lifebook-alerts; DLQ ARN=arn:aws:sqs:us-east-1:354630286254:lifebook-orchestrator-queue-dlq."
+        }
+      }
+    ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "orchestrator_e2e_smoke_ci",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "- Added orchestrator queue health + DLQ inspector/drainer scripts\n- Drained synthetic scheduler messages from lifebook-orchestrator-queue-dlq\n- Ran orchestrator E2E synthetic smoke (SQS→worker→S3) successfully\n- Wired orchestrator-e2e-smoke GitHub Actions workflow (OIDC) for PRs",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      "Mark orchestrator-e2e-smoke check as required on main and run it on the next PR."
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "LastUpdated": "2025-11-18T20:03:34Z",
+    "History": [
+      {
+        "patch": {
+          "StepTitle": null,
+          "Owner": "Zach",
+          "Evidence": "- Added orchestrator queue health + DLQ inspector/drainer scripts\n- Drained synthetic scheduler messages from lifebook-orchestrator-queue-dlq\n- Ran orchestrator E2E synthetic smoke (SQS→worker→S3) successfully\n- Wired orchestrator-e2e-smoke GitHub Actions workflow (OIDC) for PRs",
+          "Decisions": "",
+          "Blockers": "",
+          "Phase": null,
+          "Status": "✔",
+          "Target": "",
+          "StepID": "orchestrator_e2e_smoke_ci",
+          "Next": [
+            "Mark orchestrator-e2e-smoke check as required on main and run it on the next PR."
+          ]
+        },
+        "at": "2025-11-18T20:03:34Z"
+      }
+    ]
   }
 ]
