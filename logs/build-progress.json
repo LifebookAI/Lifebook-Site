@@ -604,5 +604,39 @@
         "at": "2025-11-18T20:03:34Z"
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "orchestrator_queues.cw_alarms",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "- Created infra/orchestrator/orchestrator-queue-alarms.ps1 (idempotent SQS CW alarms tool)\n- Upserted alarms for main queue backlog, oldest age, and DLQ non-empty\n- Wired all three alarms to lifebook-alerts SNS and tagged with Project=lifebook, Env=prod, Component=orchestrator\n- Verified alarms via cloudwatch describe-alarms (three AWS/SQS alarms in INSUFFICIENT_DATA state)",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      "Exercise alarms with a small synthetic backlog/DLQ message to confirm lifebook-alerts notifications fire as expected."
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "LastUpdated": "2025-11-18T23:33:55Z",
+    "History": [
+      {
+        "patch": {
+          "StepTitle": null,
+          "Owner": "Zach",
+          "Evidence": "- Created infra/orchestrator/orchestrator-queue-alarms.ps1 (idempotent SQS CW alarms tool)\n- Upserted alarms for main queue backlog, oldest age, and DLQ non-empty\n- Wired all three alarms to lifebook-alerts SNS and tagged with Project=lifebook, Env=prod, Component=orchestrator\n- Verified alarms via cloudwatch describe-alarms (three AWS/SQS alarms in INSUFFICIENT_DATA state)",
+          "Decisions": "",
+          "Blockers": "",
+          "Phase": null,
+          "Status": "✔",
+          "Target": "",
+          "StepID": "orchestrator_queues.cw_alarms",
+          "Next": [
+            "Exercise alarms with a small synthetic backlog/DLQ message to confirm lifebook-alerts notifications fire as expected."
+          ]
+        },
+        "at": "2025-11-18T23:33:55Z"
+      }
+    ]
   }
 ]
