@@ -1998,5 +1998,22 @@
       "s3_key": "workflows/manual/job-01a46c6859af45a18df05ce07d48e5a8.md",
       "reason": "Timed out after 95 seconds waiting for DDB status, but S3 output exists at s3://lifebook.ai/workflows/manual/job-01a46c6859af45a18df05ce07d48e5a8.md."
     }
+  },
+  {
+    "timestamp": "2025-11-18T18:07:45",
+    "area": "orchestrator_queues",
+    "step": "cw_alarms",
+    "status": "pass",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "alarms": [
+        "lifebook-orchestrator-queue-visible-messages-high",
+        "lifebook-orchestrator-queue-oldest-age-high",
+        "lifebook-orchestrator-queue-dlq-visible-messages-high"
+      ],
+      "sns_topic_arn": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
+      "note": "Upserted orchestrator SQS backlog/DLQ CloudWatch alarms wired to lifebook-alerts."
+    }
   }
 ]
