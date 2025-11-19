@@ -27,11 +27,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup PowerShell
-        uses: PowerShell/PowerShell-For-GitHub-Actions@v1
-        with:
-          pwsh-version: '7.4.x'
-
       # NOTE: Set repo secret AWS_ORCHESTRATOR_ROLE_ARN to the ARN of your GitHubOIDC_LifebookSite role.
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
