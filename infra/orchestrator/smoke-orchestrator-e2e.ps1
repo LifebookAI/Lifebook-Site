@@ -297,16 +297,12 @@ $cp = [pscustomobject]@{
 $list = @($list + $cp)
 $list | ConvertTo-Json -Depth 6 | Set-Content -Path $cpFile -Encoding utf8
 
-Write-Host "Checkpoint (orchestrator_e2e.synthetic_smoke) appended to state/build-checkpoints.json" -ForegroundColor Green
+Write-Host "Write-Host "Write-Host 'Checkpoint (orchestrator_e2e.synthetic_smoke) appended to state/build-checkpoints.json'
 
-Write-Host ""
-$pass   = $cp.pass
-$reason = $cp.reason
-
+# --- Final exit based on local pass flag (no checkpoint re-read) ---
 if (-not $pass) {
-    Write-Host "E2E orchestrator smoke: FAIL — $reason" -ForegroundColor Red
+    Write-Host 'E2E orchestrator smoke: FAIL (exit 1)' -ForegroundColor Red
     exit 1
-} else {
-    Write-Host "E2E orchestrator smoke: PASS — $reason" -ForegroundColor Green
-    exit 0
 }
+
+Write-Host 'E2E orchestrator smoke: PASS (exit 0)' -ForegroundColor Green
