@@ -302,3 +302,14 @@ Write-Host "Checkpoint (orchestrator_e2e.synthetic_smoke) appended to state/buil
 if (-not $pass) {
     exit 1
 }
+
+# === E2E orchestrator PASS/FAIL exit block ===
+if (-not ($pass)) {
+    Write-Host ""
+    Write-Host "E2E orchestrator smoke: FAIL — $reason" -ForegroundColor Red
+    exit 1
+} else {
+    Write-Host ""
+    Write-Host "E2E orchestrator smoke: PASS — $reason" -ForegroundColor Green
+    exit 0
+}
