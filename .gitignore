@@ -89,3 +89,6 @@ state/build-checkpoints.json.bak_*
 
 # Tools (local only)
 .tools/terraform/
+
+# Orchestrator run artifacts
+logs/orchestrator/
