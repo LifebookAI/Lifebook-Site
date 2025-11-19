@@ -2015,5 +2015,93 @@
       "sns_topic_arn": "arn:aws:sns:us-east-1:354630286254:lifebook-alerts",
       "note": "Upserted orchestrator SQS backlog/DLQ CloudWatch alarms wired to lifebook-alerts."
     }
+  },
+  {
+    "timestamp": "2025-11-18T18:38:26",
+    "area": "orchestrator_queues",
+    "step": "cw_alarms_exercised",
+    "status": "pass",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "alarms": [
+        "lifebook-orchestrator-queue-visible-messages-high",
+        "lifebook-orchestrator-queue-oldest-age-high",
+        "lifebook-orchestrator-queue-dlq-visible-messages-high"
+      ],
+      "reason": "Synthetic test of orchestrator SQS alarm wiring (should send to lifebook-alerts).",
+      "note": "Used cloudwatch set-alarm-state to force orchestrator SQS alarms to ALARM and fire lifebook-alerts notifications."
+    }
+  },
+  {
+    "timestamp": "2025-11-18T19:48:48",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-514730baa0804168af76326b92bd43e1",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-18T20:43:24",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-5be49ab08674458cb08e959e9a83fa8a",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-19T09:50:08",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-c6c2a447ab924dcea491f09ed5dca15c",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-19T09:51:47",
+    "area": "orchestrator_e2e",
+    "step": "synthetic_smoke",
+    "status": "pass",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "job_id": "job-c6c2a447ab924dcea491f09ed5dca15c",
+      "status": "queued",
+      "attempts": 0,
+      "max_attempts": 5,
+      "last_error_code": null,
+      "last_error_msg": null,
+      "elapsed_seconds": 93,
+      "polls": 13,
+      "timed_out": true,
+      "has_s3_output": true,
+      "s3_bucket": "lifebook.ai",
+      "s3_key": "workflows/manual/job-c6c2a447ab924dcea491f09ed5dca15c.md",
+      "reason": "Timed out after 93 seconds waiting for DDB status, but S3 output exists at s3://lifebook.ai/workflows/manual/job-c6c2a447ab924dcea491f09ed5dca15c.md."
+    }
   }
 ]

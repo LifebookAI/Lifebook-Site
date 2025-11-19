@@ -299,17 +299,14 @@ $list | ConvertTo-Json -Depth 6 | Set-Content -Path $cpFile -Encoding utf8
 
 Write-Host "Checkpoint (orchestrator_e2e.synthetic_smoke) appended to state/build-checkpoints.json" -ForegroundColor Green
 
-if (-not $pass) {
-    exit 1
-}
+Write-Host ""
+$pass   = $cp.pass
+$reason = $cp.reason
 
-# === E2E orchestrator PASS/FAIL exit block ===
-if (-not ($pass)) {
-    Write-Host ""
+if (-not $pass) {
     Write-Host "E2E orchestrator smoke: FAIL — $reason" -ForegroundColor Red
     exit 1
 } else {
-    Write-Host ""
     Write-Host "E2E orchestrator smoke: PASS — $reason" -ForegroundColor Green
     exit 0
 }
