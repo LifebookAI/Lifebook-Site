@@ -10,14 +10,17 @@ if (-not $repo) {
 }
 Set-Location $repo
 
-# 2) Ensure AWS context (override if needed)
-if (-not $env:AWS_PROFILE) { $env:AWS_PROFILE = 'lifebook-sso' }
+# 2) Ensure region only; do NOT force AWS_PROFILE here so CI can use OIDC env creds.
 if (-not $env:AWS_REGION)  { $env:AWS_REGION  = 'us-east-1' }
 
 # Orchestrator table override (optional)
 if (-not $env:LFLBK_ORCH_JOBS_TABLE) {
     $env:LFLBK_ORCH_JOBS_TABLE = 'lifebook-orchestrator-jobs'
 }
+
+$profile = $env:AWS_PROFILE
+$region  = $env:AWS_REGION
+Write-Host "[orchestrator-e2e] Using AWS env: profile='$profile' region='$region'" -ForegroundColor Cyan
 
 # 3) Locate smoke script
 $smokePath = Join-Path $repo 'infra/orchestrator/smoke-orchestrator-e2e.ps1'

@@ -1,0 +1,25 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "OrchestratorJobsDdb",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:PutItem",
+        "dynamodb:GetItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DescribeTable"
+      ],
+      "Resource": "arn:aws:dynamodb:us-east-1:354630286254:table/lifebook-orchestrator-jobs"
+    },
+    {
+      "Sid": "OrchestratorQueueSend",
+      "Effect": "Allow",
+      "Action": [
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
+      ],
+      "Resource": "arn:aws:sqs:us-east-1:354630286254:lifebook-orchestrator-queue"
+    }
+  ]
+}
