@@ -677,16 +677,16 @@
     "Phase": "Phase 0 — Infra",
     "StepID": "orchestrator_e2e.synthetic_smoke",
     "StepTitle": "",
-    "Status": "✔",
-    "Evidence": "Added explicit PASS/FAIL exit block to smoke-orchestrator-e2e.ps1; local smoke via lifebook-sso in us-east-1 passes.",
+    "Status": "⏳",
+    "Evidence": "Local orchestrator smoke PASS with env-based AWS creds; removed --profile usage from orchestrator scripts; CI still red but ready to re-run.",
     "Decisions": "",
     "Blockers": "",
     "Next": [
-      ""
+      "Re-run orchestrator-e2e workflow in CI and confirm it passes using OIDC env creds only."
     ],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-11-19T14:41:03Z",
+    "LastUpdated": "2025-11-20T18:03:54Z",
     "History": [
       {
         "patch": {
@@ -704,6 +704,23 @@
           "StepID": "orchestrator_e2e.synthetic_smoke"
         },
         "at": "2025-11-19T14:41:03Z"
+      },
+      {
+        "at": "2025-11-20T18:03:54Z",
+        "patch": {
+          "Owner": "Zach",
+          "StepID": "orchestrator_e2e.synthetic_smoke",
+          "Next": [
+            "Re-run orchestrator-e2e workflow in CI and confirm it passes using OIDC env creds only."
+          ],
+          "Decisions": "",
+          "Blockers": "",
+          "Target": "",
+          "StepTitle": "",
+          "Status": "⏳",
+          "Evidence": "Local orchestrator smoke PASS with env-based AWS creds; removed --profile usage from orchestrator scripts; CI still red but ready to re-run.",
+          "Phase": "Phase 0 — Infra"
+        }
       }
     ]
   }

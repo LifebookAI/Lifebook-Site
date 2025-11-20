@@ -74,8 +74,7 @@ try {
     aws sqs send-message `
         --queue-url $queueUrl `
         --message-body $bodyJson `
-        --region $Region `
-        --profile $Profile `
+        --region $Region ` `
         --output json 
     Write-Host "SQS message enqueued successfully." -ForegroundColor Green
 } catch {
@@ -108,8 +107,7 @@ while ($true) {
         $resp = aws dynamodb get-item `
             --table-name $tableName `
             --key $keyJson `
-            --region $Region `
-            --profile $Profile `
+            --region $Region ` `
             --output json | ConvertFrom-Json
     } catch {
         throw "aws dynamodb get-item failed during poll: $($_.Exception.Message)"
@@ -192,8 +190,7 @@ try {
     aws s3api head-object `
         --bucket $bucket `
         --key $key `
-        --region $Region `
-        --profile $Profile `
+        --region $Region ` `
         --output json 
     $hasS3 = $true
     Write-Host ("Found S3 output object s3://{0}/{1}" -f $bucket, $key) -ForegroundColor Green
@@ -306,4 +303,5 @@ if (-not $pass) {
 }
 
 Write-Host 'E2E orchestrator smoke: PASS (exit 0)' -ForegroundColor Green
+
 
