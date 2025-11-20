@@ -76,7 +76,7 @@ try {
         --message-body $bodyJson `
         --region $Region `
         --profile $Profile `
-        --output json | Out-Null
+        --output json 
     Write-Host "SQS message enqueued successfully." -ForegroundColor Green
 } catch {
     throw "aws sqs send-message failed: $($_.Exception.Message)"
@@ -194,7 +194,7 @@ try {
         --key $key `
         --region $Region `
         --profile $Profile `
-        --output json | Out-Null
+        --output json 
     $hasS3 = $true
     Write-Host ("Found S3 output object s3://{0}/{1}" -f $bucket, $key) -ForegroundColor Green
 } catch {
@@ -306,3 +306,4 @@ if (-not $pass) {
 }
 
 Write-Host 'E2E orchestrator smoke: PASS (exit 0)' -ForegroundColor Green
+
