@@ -677,16 +677,14 @@
     "Phase": "Phase 0 — Infra",
     "StepID": "orchestrator_e2e.synthetic_smoke",
     "StepTitle": "",
-    "Status": "⏳",
-    "Evidence": "Local orchestrator smoke PASS with env-based AWS creds; removed --profile usage from orchestrator scripts; CI still red but ready to re-run.",
+    "Status": "✔",
+    "Evidence": "Local + CI orchestrator synthetic smoke PASS using GitHubOIDC_LifebookSite via OIDC env creds only; DDB/SQS path healthy; S3 output at workflows/manual/<job>.md with SSE-KMS; timed-out DDB status still treated as pass when S3 output exists.",
     "Decisions": "",
     "Blockers": "",
-    "Next": [
-      "Re-run orchestrator-e2e workflow in CI and confirm it passes using OIDC env creds only."
-    ],
+    "Next": [],
     "Owner": "Zach",
     "Target": "",
-    "LastUpdated": "2025-11-20T18:03:54Z",
+    "LastUpdated": "2025-11-20T19:03:31Z",
     "History": [
       {
         "patch": {
@@ -719,6 +717,23 @@
           "StepTitle": "",
           "Status": "⏳",
           "Evidence": "Local orchestrator smoke PASS with env-based AWS creds; removed --profile usage from orchestrator scripts; CI still red but ready to re-run.",
+          "Phase": "Phase 0 — Infra"
+        }
+      },
+      {
+        "at": "2025-11-20T19:03:31Z",
+        "patch": {
+          "Owner": "Zach",
+          "StepID": "orchestrator_e2e.synthetic_smoke",
+          "Next": [
+            ""
+          ],
+          "Decisions": "",
+          "Blockers": "",
+          "Target": "",
+          "StepTitle": "",
+          "Status": "✔",
+          "Evidence": "Local + CI orchestrator synthetic smoke PASS using GitHubOIDC_LifebookSite via OIDC env creds only; DDB/SQS path healthy; S3 output at workflows/manual/<job>.md with SSE-KMS; timed-out DDB status still treated as pass when S3 output exists.",
           "Phase": "Phase 0 — Infra"
         }
       }
