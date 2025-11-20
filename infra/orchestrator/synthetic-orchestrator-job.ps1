@@ -90,7 +90,7 @@ $putReq = @{
 }
 
 $putJson = $putReq | ConvertTo-Json -Depth 10
-Invoke-AwsCli -Args @("dynamodb","put-item","--cli-input-json",$putJson) | Out-Null
+Invoke-AwsCli -Args @("dynamodb","put-item","--cli-input-json",$putJson) 
 Write-Host "DynamoDB put-item succeeded for job_id=$jobId." -ForegroundColor Green
 
 # --- Build SQS payload matching the v1 contract ---
@@ -113,7 +113,7 @@ Invoke-AwsCli -Args @(
     "sqs","send-message",
     "--queue-url",$queueUrl,
     "--message-body",$body
-) | Out-Null
+) 
 
 Write-Host "`nSynthetic orchestrator job created and enqueued." -ForegroundColor Green
 Write-Host "job_id      : $jobId"       -ForegroundColor Cyan
@@ -163,3 +163,4 @@ $list = @($list + $checkpoint)
 $list | ConvertTo-Json -Depth 6 | Set-Content -Path $cpFile -Encoding utf8
 
 Write-Host "Checkpoint (orchestrator_synthetic.job_created_and_enqueued) appended to state/build-checkpoints.json" -ForegroundColor Green
+
