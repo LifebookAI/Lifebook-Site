@@ -29,7 +29,7 @@ function Invoke-AwsCli {
         [Parameter(Mandatory)][string[]]$Args,
         [switch]$AsJson
     )
-    $allArgs = @($Args + @("--region", $Region, "--profile", $Profile))
+    $allArgs = @($Args + @("--region", $Region))
     Write-Verbose ("Running: aws " + ($allArgs -join ' '))
     $output = & aws @allArgs
     if ($LASTEXITCODE -ne 0) {
@@ -171,5 +171,6 @@ $list = @($list + $checkpoint)
 $list | ConvertTo-Json -Depth 6 | Set-Content -Path $cpFile -Encoding utf8
 
 Write-Host "Checkpoint (orchestrator_synthetic.job_created_and_enqueued) appended to state/build-checkpoints.json" -ForegroundColor Green
+
 
 
