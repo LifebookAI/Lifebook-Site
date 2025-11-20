@@ -10,6 +10,14 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
+# In CI (GitHub Actions), prefer env-based credentials (OIDC) over a local SSO profile.
+$__isCi = ($env:CI -eq 'true' -or $env:GITHUB_ACTIONS -eq 'true')
+if ($__isCi) {
+    Write-Host "[synthetic-orchestrator-job] CI detected; clearing AWS_PROFILE to use GitHub OIDC env credentials." -ForegroundColor Yellow
+    $env:AWS_PROFILE = $null
+} else {
+    Write-Host ("[synthetic-orchestrator-job] Using AWS_PROFILE='{0}' AWS_REGION='{1}'." -f $env:AWS_PROFILE, $env:AWS_REGION) -ForegroundColor Cyan
+}
 if (-not $Region)  { $Region  = "us-east-1" }
 if (-not $Profile) { $Profile = "lifebook-sso" }
 
@@ -163,4 +171,5 @@ $list = @($list + $checkpoint)
 $list | ConvertTo-Json -Depth 6 | Set-Content -Path $cpFile -Encoding utf8
 
 Write-Host "Checkpoint (orchestrator_synthetic.job_created_and_enqueued) appended to state/build-checkpoints.json" -ForegroundColor Green
+
 
