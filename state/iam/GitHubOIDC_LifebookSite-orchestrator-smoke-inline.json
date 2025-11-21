@@ -1,0 +1,39 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DDBOrchestratorSmoke",
+      "Resource": "arn:aws:dynamodb:us-east-1:354630286254:table/lifebook-orchestrator-jobs",
+      "Action": [
+        "dynamodb:PutItem",
+        "dynamodb:GetItem"
+      ],
+      "Effect": "Allow"
+    },
+    {
+      "Sid": "SQSOrchestratorSmoke",
+      "Resource": "arn:aws:sqs:us-east-1:354630286254:lifebook-orchestrator-queue",
+      "Action": [
+        "sqs:SendMessage"
+      ],
+      "Effect": "Allow"
+    },
+    {
+      "Sid": "S3OrchestratorOutputHead",
+      "Resource": "arn:aws:s3:::lifebook.ai/workflows/manual/*",
+      "Action": [
+        "s3:GetObject"
+      ],
+      "Effect": "Allow"
+    },
+    {
+      "Sid": "KMSForS3OrchestratorOutput",
+      "Resource": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
+      "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey"
+      ],
+      "Effect": "Allow"
+    }
+  ]
+}

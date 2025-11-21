@@ -23,6 +23,9 @@ jobs:
       id-token: write      # required for OIDC to AWS
       contents: read
 
+    env:
+      AWS_REGION: us-east-1
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -32,7 +35,53 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ORCHESTRATOR_ROLE_ARN }}
-          aws-region: us-east-1
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Export OIDC creds into lifebook-sso CLI profile
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Set-StrictMode -Version Latest
+
+          $home   = $HOME
+          $awsDir = Join-Path $home '.aws'
+          if (-not (Test-Path $awsDir)) {
+            New-Item -ItemType Directory -Path $awsDir -Force | Out-Null
+          }
+
+          $credsPath  = Join-Path $awsDir 'credentials'
+          $configPath = Join-Path $awsDir 'config'
+
+          $region = $env:AWS_REGION
+          if (-not $region) { $region = 'us-east-1' }
+
+          $credsLines = @(
+            '[lifebook-sso]'
+            "aws_access_key_id = $($env:AWS_ACCESS_KEY_ID)"
+            "aws_secret_access_key = $($env:AWS_SECRET_ACCESS_KEY)"
+            "aws_session_token = $($env:AWS_SESSION_TOKEN)"
+          )
+
+          Set-Content -Path $credsPath -Value ($credsLines -join "`n") -Encoding ascii
+
+          $configLines = @(
+            '[profile lifebook-sso]'
+            "region = $region"
+            'output = json'
+          )
+
+          Set-Content -Path $configPath -Value ($configLines -join "`n") -Encoding ascii
+
+          # Make sure all subsequent steps see AWS_PROFILE=lifebook-sso
+          $env:AWS_PROFILE = 'lifebook-sso'
+          "AWS_PROFILE=lifebook-sso" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+          Write-Host "Configured AWS CLI profile 'lifebook-sso' pointing at env credentials in region $region." -ForegroundColor Green
+
+          # Quick sanity checks so we fail with a clear error if IAM is off
+          aws sts get-caller-identity | Out-Host
+          aws dynamodb describe-table --table-name lifebook-orchestrator-jobs | Out-Host
+          aws sqs get-queue-url --queue-name lifebook-orchestrator-queue | Out-Host
 
       - name: Run orchestrator E2E smoke
         shell: pwsh
