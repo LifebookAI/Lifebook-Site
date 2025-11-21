@@ -1,0 +1,40 @@
+name: orchestrator-e2e-nightly
+
+on:
+  schedule:
+    # Daily at 07:15 UTC (~2:15am Eastern)
+    - cron: "15 7 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  orchestrator-e2e-nightly:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Configure AWS credentials (GitHubOIDC_LifebookSite)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::354630286254:role/GitHubOIDC_LifebookSite
+          aws-region: us-east-1
+
+      - name: Run orchestrator quality gate (full E2E)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          Set-StrictMode -Version Latest
+          pwsh -NoProfile -ExecutionPolicy Bypass -File "infra/orchestrator/run-orchestrator-quality-gate.ps1"
