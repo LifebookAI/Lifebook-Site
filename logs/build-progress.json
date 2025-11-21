@@ -738,5 +738,73 @@
         }
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "orchestrator_worker_ddb_adapter",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "Updated orchestrator job-store adapter to support pk/sk, job_id, and jobId key shapes; Fixed updateJobStatus to use discovered key shape + correct UpdateExpression (status, updated_at, attempts, payload, error fields); Smoke script now parses job_id from output, scans DDB, and tails worker logs for the specific job; Latest orchestrator E2E smoke: PASS — job reached status 'succeeded', attempts=1, S3 result object present",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      ""
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "LastUpdated": "2025-11-21T05:36:39Z",
+    "History": [
+      {
+        "patch": {
+          "Phase": null,
+          "Target": "",
+          "StepID": "orchestrator_worker_ddb_adapter",
+          "Evidence": "Updated orchestrator job-store adapter to support pk/sk, job_id, and jobId key shapes; Fixed updateJobStatus to use discovered key shape + correct UpdateExpression (status, updated_at, attempts, payload, error fields); Smoke script now parses job_id from output, scans DDB, and tails worker logs for the specific job; Latest orchestrator E2E smoke: PASS — job reached status 'succeeded', attempts=1, S3 result object present",
+          "Decisions": "",
+          "Owner": "Zach",
+          "StepTitle": null,
+          "Next": [
+            ""
+          ],
+          "Blockers": "",
+          "Status": "✔"
+        },
+        "at": "2025-11-21T05:36:39Z"
+      }
+    ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "18A_orchestrator_worker_idempotency",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "job-status.ts + status/concurrency harness + orchestrator E2E smoke green; second-worker races modeled as idempotent noise.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      ""
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "LastUpdated": "2025-11-21T18:31:45Z",
+    "History": [
+      {
+        "patch": {
+          "Phase": null,
+          "Target": "",
+          "StepID": "18A_orchestrator_worker_idempotency",
+          "Evidence": "job-status.ts + status/concurrency harness + orchestrator E2E smoke green; second-worker races modeled as idempotent noise.",
+          "Decisions": "",
+          "Owner": "Zach",
+          "StepTitle": null,
+          "Next": [
+            ""
+          ],
+          "Blockers": "",
+          "Status": "✔"
+        },
+        "at": "2025-11-21T18:31:45Z"
+      }
+    ]
   }
 ]

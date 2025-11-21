@@ -1,28 +1,43 @@
 import { build } from "esbuild";
 import { mkdirSync, createWriteStream } from "node:fs";
-import { join } from "node:path";
-import { createGzip } from "node:zlib";
-import { pipeline } from "node:stream/promises";
-import archiver from "node:archiver"; // Node 20 doesn't have archiver; but we can zip via archiver? fallback to PowerShell pack.
+import archiver from "archiver";
 
-console.log("Bundling Lambda handler...");
+/**
+ * Build script for lifebook-orchestrator-worker Lambda
+ *
+ * - Bundles src/index.ts -> dist/index.js
+ * - Output is CommonJS (format: "cjs") for Node 20
+ * - Packaged as orchestrator_lambda.zip with index.js as handler file
+ *
+ * Lambda config:
+ *   Runtime: nodejs20.x
+ *   Handler: index.handler
+ */
+
+console.log("Bundling Lambda handler as CommonJS for Node 20...");
+
 await build({
   entryPoints: ["src/index.ts"],
-  outfile: "dist/index.mjs",
+  outfile: "dist/index.js",
   bundle: true,
   platform: "node",
-  format: "esm",
+  format: "cjs",
   target: "node20",
-  external: []
+  sourcemap: true,
+  logLevel: "info",
 });
+
 console.log("Packaging zip...");
-const { createWriteStream: cws } = await import("node:fs");
-const fs = await import("node:fs");
-const path = await import("node:path");
 mkdirSync("dist", { recursive: true });
-const output = cws("dist/orchestrator_lambda.zip");
-const archive = archiver("zip", { zlib: { level: 9 }});
+
+const output = createWriteStream("dist/orchestrator_lambda.zip");
+const archive = archiver("zip", { zlib: { level: 9 } });
+
 archive.pipe(output);
-archive.file("dist/index.mjs", { name: "index.mjs" });
+
+// Expose the CommonJS bundle as index.js (Lambda handler file)
+archive.file("dist/index.js", { name: "index.js" });
+
 await archive.finalize();
+
 console.log("Lambda artifact at dist/orchestrator_lambda.zip");

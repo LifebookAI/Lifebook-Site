@@ -4,9 +4,15 @@
     "module": "ES2022",
     "moduleResolution": "Bundler",
     "outDir": "dist",
-    "rootDir": "src",
+    "rootDir": ".",
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*", "tests/**/*", "scripts/**/*"]
+  "include": [
+    "src/**/*",
+    "scripts/**/*"
+  ],
+  "exclude": [
+    "tests/**/*"
+  ]
 }

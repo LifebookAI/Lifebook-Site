@@ -2454,5 +2454,450 @@
       "s3_key": "workflows/manual/job-e6e229432fe544e7b30d0e56c7adae62.md",
       "reason": "Timed out after 95 seconds waiting for DDB status, but S3 output exists at s3://lifebook.ai/workflows/manual/job-e6e229432fe544e7b30d0e56c7adae62.md."
     }
+  },
+  {
+    "timestamp": "2025-11-20T22:18:42",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-d35c60f1b66049d4aaab89ab854922ac",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-20T22:18:51",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-fe3560d8e13545d19a84b5d3bde55b74",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-20T22:20:33",
+    "area": "orchestrator_e2e",
+    "step": "synthetic_smoke",
+    "status": "pass",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "job_id": "job-fe3560d8e13545d19a84b5d3bde55b74",
+      "status": "queued",
+      "attempts": 0,
+      "max_attempts": 5,
+      "last_error_code": null,
+      "last_error_msg": null,
+      "elapsed_seconds": 96,
+      "polls": 13,
+      "timed_out": true,
+      "has_s3_output": true,
+      "s3_bucket": "lifebook.ai",
+      "s3_key": "workflows/manual/job-fe3560d8e13545d19a84b5d3bde55b74.md",
+      "reason": "Timed out after 96 seconds waiting for DDB status, but S3 output exists at s3://lifebook.ai/workflows/manual/job-fe3560d8e13545d19a84b5d3bde55b74.md."
+    }
+  },
+  {
+    "timestamp": "2025-11-20T22:31:55",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-27427b7c12ca4fc6b178749b97c5a4f7",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-20T22:33:37",
+    "area": "orchestrator_e2e",
+    "step": "synthetic_smoke",
+    "status": "pass",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "job_id": "job-27427b7c12ca4fc6b178749b97c5a4f7",
+      "status": "queued",
+      "attempts": 0,
+      "max_attempts": 5,
+      "last_error_code": null,
+      "last_error_msg": null,
+      "elapsed_seconds": 97,
+      "polls": 13,
+      "timed_out": true,
+      "has_s3_output": true,
+      "s3_bucket": "lifebook.ai",
+      "s3_key": "workflows/manual/job-27427b7c12ca4fc6b178749b97c5a4f7.md",
+      "reason": "Timed out after 97 seconds waiting for DDB status, but S3 output exists at s3://lifebook.ai/workflows/manual/job-27427b7c12ca4fc6b178749b97c5a4f7.md."
+    }
+  },
+  {
+    "timestamp": "2025-11-20T22:50:42",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-9db07b998eb34d9ca4d62b3023248bb4",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-20T22:52:18",
+    "area": "orchestrator_e2e",
+    "step": "synthetic_smoke",
+    "status": "pass",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "job_id": "job-9db07b998eb34d9ca4d62b3023248bb4",
+      "status": "queued",
+      "attempts": 0,
+      "max_attempts": 5,
+      "last_error_code": null,
+      "last_error_msg": null,
+      "elapsed_seconds": 90,
+      "polls": 12,
+      "timed_out": true,
+      "has_s3_output": true,
+      "s3_bucket": "lifebook.ai",
+      "s3_key": "workflows/manual/job-9db07b998eb34d9ca4d62b3023248bb4.md",
+      "reason": "Timed out after 90 seconds waiting for DDB status, but S3 output exists at s3://lifebook.ai/workflows/manual/job-9db07b998eb34d9ca4d62b3023248bb4.md."
+    }
+  },
+  {
+    "timestamp": "2025-11-20T23:16:27",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-83f60aa0d32f43869a0c6b301ee396d9",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-20T23:18:10",
+    "area": "orchestrator_e2e",
+    "step": "synthetic_smoke",
+    "status": "pass",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "job_id": "job-83f60aa0d32f43869a0c6b301ee396d9",
+      "status": "queued",
+      "attempts": 0,
+      "max_attempts": 5,
+      "last_error_code": null,
+      "last_error_msg": null,
+      "elapsed_seconds": 97,
+      "polls": 13,
+      "timed_out": true,
+      "has_s3_output": true,
+      "s3_bucket": "lifebook.ai",
+      "s3_key": "workflows/manual/job-83f60aa0d32f43869a0c6b301ee396d9.md",
+      "reason": "Timed out after 97 seconds waiting for DDB status, but S3 output exists at s3://lifebook.ai/workflows/manual/job-83f60aa0d32f43869a0c6b301ee396d9.md."
+    }
+  },
+  {
+    "timestamp": "2025-11-20T23:46:55",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-69dfffad3ef44de08246d90af5e88f40",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-20T23:48:37",
+    "area": "orchestrator_e2e",
+    "step": "synthetic_smoke",
+    "status": "pass",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "job_id": "job-69dfffad3ef44de08246d90af5e88f40",
+      "status": "queued",
+      "attempts": 0,
+      "max_attempts": 5,
+      "last_error_code": null,
+      "last_error_msg": null,
+      "elapsed_seconds": 96,
+      "polls": 13,
+      "timed_out": true,
+      "has_s3_output": true,
+      "s3_bucket": "lifebook.ai",
+      "s3_key": "workflows/manual/job-69dfffad3ef44de08246d90af5e88f40.md",
+      "reason": "Timed out after 96 seconds waiting for DDB status, but S3 output exists at s3://lifebook.ai/workflows/manual/job-69dfffad3ef44de08246d90af5e88f40.md."
+    }
+  },
+  {
+    "timestamp": "2025-11-20T23:59:18",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-55458695656e4533beafb107dbe5de1d",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-21T00:01:00",
+    "area": "orchestrator_e2e",
+    "step": "synthetic_smoke",
+    "status": "pass",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "job_id": "job-55458695656e4533beafb107dbe5de1d",
+      "status": "queued",
+      "attempts": 0,
+      "max_attempts": 5,
+      "last_error_code": null,
+      "last_error_msg": null,
+      "elapsed_seconds": 96,
+      "polls": 13,
+      "timed_out": true,
+      "has_s3_output": true,
+      "s3_bucket": "lifebook.ai",
+      "s3_key": "workflows/manual/job-55458695656e4533beafb107dbe5de1d.md",
+      "reason": "Timed out after 96 seconds waiting for DDB status, but S3 output exists at s3://lifebook.ai/workflows/manual/job-55458695656e4533beafb107dbe5de1d.md."
+    }
+  },
+  {
+    "timestamp": "2025-11-21T00:16:00",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-3ed58040421a4dfeb532072adc77fc85",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-21T00:16:08",
+    "area": "orchestrator_e2e",
+    "step": "synthetic_smoke",
+    "status": "pass",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "job_id": "job-3ed58040421a4dfeb532072adc77fc85",
+      "status": "succeeded",
+      "attempts": 1,
+      "max_attempts": 5,
+      "last_error_code": null,
+      "last_error_msg": null,
+      "elapsed_seconds": 3,
+      "polls": 1,
+      "timed_out": false,
+      "has_s3_output": true,
+      "s3_bucket": "lifebook.ai",
+      "s3_key": "workflows/manual/job-3ed58040421a4dfeb532072adc77fc85.md",
+      "reason": "Job reached completed-like status 'succeeded' in 3 seconds."
+    }
+  },
+  {
+    "timestamp": "2025-11-21T00:22:51",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-dfdb3d9894b44254899bb6367f199cc5",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-21T00:22:59",
+    "area": "orchestrator_e2e",
+    "step": "synthetic_smoke",
+    "status": "pass",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "job_id": "job-dfdb3d9894b44254899bb6367f199cc5",
+      "status": "succeeded",
+      "attempts": 1,
+      "max_attempts": 5,
+      "last_error_code": null,
+      "last_error_msg": null,
+      "elapsed_seconds": 3,
+      "polls": 1,
+      "timed_out": false,
+      "has_s3_output": true,
+      "s3_bucket": "lifebook.ai",
+      "s3_key": "workflows/manual/job-dfdb3d9894b44254899bb6367f199cc5.md",
+      "reason": "Job reached completed-like status 'succeeded' in 3 seconds."
+    }
+  },
+  {
+    "timestamp": "2025-11-21T00:27:05",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-3c10e7c6dcf04e1a9124c9d7b058351e",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-21T00:27:13",
+    "area": "orchestrator_e2e",
+    "step": "synthetic_smoke",
+    "status": "pass",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "job_id": "job-3c10e7c6dcf04e1a9124c9d7b058351e",
+      "status": "succeeded",
+      "attempts": 1,
+      "max_attempts": 5,
+      "last_error_code": null,
+      "last_error_msg": null,
+      "elapsed_seconds": 3,
+      "polls": 1,
+      "timed_out": false,
+      "has_s3_output": true,
+      "s3_bucket": "lifebook.ai",
+      "s3_key": "workflows/manual/job-3c10e7c6dcf04e1a9124c9d7b058351e.md",
+      "reason": "Job reached completed-like status 'succeeded' in 3 seconds."
+    }
+  },
+  {
+    "timestamp": "2025-11-21T00:29:34",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-e5bc63a110694be89431e3afeda9e5d9",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-21T00:29:42",
+    "area": "orchestrator_e2e",
+    "step": "synthetic_smoke",
+    "status": "pass",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "job_id": "job-e5bc63a110694be89431e3afeda9e5d9",
+      "status": "succeeded",
+      "attempts": 1,
+      "max_attempts": 5,
+      "last_error_code": null,
+      "last_error_msg": null,
+      "elapsed_seconds": 2,
+      "polls": 1,
+      "timed_out": false,
+      "has_s3_output": true,
+      "s3_bucket": "lifebook.ai",
+      "s3_key": "workflows/manual/job-e5bc63a110694be89431e3afeda9e5d9.md",
+      "reason": "Job reached completed-like status 'succeeded' in 2 seconds."
+    }
+  },
+  {
+    "timestamp": "2025-11-21T13:20:19",
+    "area": "orchestrator_synthetic",
+    "step": "job_created_and_enqueued",
+    "status": "ok",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "tableName": "lifebook-orchestrator-jobs",
+      "queueName": "lifebook-orchestrator-queue",
+      "jobId": "job-d5a7f69636124c9e9192b449ba91e2f4",
+      "workspaceId": "ws_synthetic_smoke",
+      "workflowId": "wf_synthetic_orchestrator_smoke",
+      "triggerType": "manual"
+    }
+  },
+  {
+    "timestamp": "2025-11-21T13:20:28",
+    "area": "orchestrator_e2e",
+    "step": "synthetic_smoke",
+    "status": "pass",
+    "details": {
+      "profile": "lifebook-sso",
+      "region": "us-east-1",
+      "job_id": "job-d5a7f69636124c9e9192b449ba91e2f4",
+      "status": "succeeded",
+      "attempts": 1,
+      "max_attempts": 5,
+      "last_error_code": null,
+      "last_error_msg": null,
+      "elapsed_seconds": 3,
+      "polls": 1,
+      "timed_out": false,
+      "has_s3_output": true,
+      "s3_bucket": "lifebook.ai",
+      "s3_key": "workflows/manual/job-d5a7f69636124c9e9192b449ba91e2f4.md",
+      "reason": "Job reached completed-like status 'succeeded' in 3 seconds."
+    }
   }
 ]
