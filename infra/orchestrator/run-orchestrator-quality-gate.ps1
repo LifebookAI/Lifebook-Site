@@ -1,12 +1,13 @@
-# NORMAL (PS7) — Orchestrator quality gate: status harness + idempotency tests + E2E smoke
+# NORMAL (PS7) — Orchestrator quality gate: status harness + idempotency tests + optional E2E smoke
 # What this does:
 # - Resolves repo root from this script's location
 # - Ensures node, npx, pwsh, and a JS package manager (pnpm or npm) are available
-# - Ensures tailwindcss + autoprefixer devDependencies are present for PostCSS
+# - Ensures tailwindcss + autoprefixer devDependencies are present for PostCSS at repo root
 # - Runs, in order:
 #     1) infra/orchestrator/test-job-status-transitions.mjs  (status/concurrency harness)
 #     2) services/orchestrator/tests/idempotency.test.js     (via npx vitest)
 #     3) infra/orchestrator/smoke-orchestrator-e2e.ps1       (full orchestrator E2E smoke)
+# - Honors LFLBK_SKIP_E2E=1 to skip the AWS E2E step (for CI); still runs 1 & 2
 # - Fails fast on any non-zero exit; prints a final ✅ only if everything passes
 
 [CmdletBinding()]
@@ -107,14 +108,27 @@ if ($idemExit -ne 0) {
 }
 Write-Host "[2/3] Idempotency tests passed." -ForegroundColor Green
 
-# 6) Run orchestrator E2E smoke
-Write-Host "[3/3] Running orchestrator E2E smoke..." -ForegroundColor Cyan
-pwsh -NoProfile -ExecutionPolicy Bypass -File $SmokeScript
-$smokeExit = $LASTEXITCODE
-if ($smokeExit -ne 0) {
-    throw "Orchestrator E2E smoke failed with exit code $smokeExit"
+# 6) Run orchestrator E2E smoke (can be skipped via LFLBK_SKIP_E2E)
+$skipE2E = $false
+if ($env:LFLBK_SKIP_E2E) {
+    $val = $env:LFLBK_SKIP_E2E.ToLowerInvariant()
+    if ($val -in @('1', 'true', 'yes', 'y')) {
+        $skipE2E = $true
+    }
 }
-Write-Host "[3/3] Orchestrator E2E smoke passed." -ForegroundColor Green
+
+if ($skipE2E) {
+    Write-Host "[3/3] Skipping orchestrator E2E smoke because LFLBK_SKIP_E2E='$($env:LFLBK_SKIP_E2E)'." -ForegroundColor Yellow
+}
+else {
+    Write-Host "[3/3] Running orchestrator E2E smoke..." -ForegroundColor Cyan
+    pwsh -NoProfile -ExecutionPolicy Bypass -File $SmokeScript
+    $smokeExit = $LASTEXITCODE
+    if ($smokeExit -ne 0) {
+        throw "Orchestrator E2E smoke failed with exit code $smokeExit"
+    }
+    Write-Host "[3/3] Orchestrator E2E smoke passed." -ForegroundColor Green
+}
 
 Write-Host ""
-Write-Host "[orchestrator-quality-gate] All orchestrator checks (status, idempotency, E2E) completed successfully ✅" -ForegroundColor Green
+Write-Host "[orchestrator-quality-gate] All orchestrator checks (status, idempotency, E2E-or-skipped) completed successfully ✅" -ForegroundColor Green
