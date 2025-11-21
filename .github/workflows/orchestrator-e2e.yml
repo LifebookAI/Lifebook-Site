@@ -43,8 +43,7 @@ jobs:
           $ErrorActionPreference = 'Stop'
           Set-StrictMode -Version Latest
 
-          $home   = $HOME
-          $awsDir = Join-Path $homeDir '.aws'
+          $awsDir = Join-Path $HOME '.aws'
           if (-not (Test-Path $awsDir)) {
             New-Item -ItemType Directory -Path $awsDir -Force | Out-Null
           }
@@ -87,3 +86,4 @@ jobs:
         shell: pwsh
         run: |
           pwsh -NoProfile -ExecutionPolicy Bypass -File infra/orchestrator/run-orchestrator-e2e.ps1
+
