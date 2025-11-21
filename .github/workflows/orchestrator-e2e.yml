@@ -44,7 +44,7 @@ jobs:
           Set-StrictMode -Version Latest
 
           $home   = $HOME
-          $awsDir = Join-Path $home '.aws'
+          $awsDir = Join-Path $homeDir '.aws'
           if (-not (Test-Path $awsDir)) {
             New-Item -ItemType Directory -Path $awsDir -Force | Out-Null
           }
