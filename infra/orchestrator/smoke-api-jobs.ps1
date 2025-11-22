@@ -5,6 +5,17 @@ param(
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
+# Allow CI to pass BaseUrl via APP_BASE_URL if the parameter is omitted/blank
+if (-not $BaseUrl -or -not $BaseUrl.Trim()) {
+    if ($env:APP_BASE_URL -and $env:APP_BASE_URL.Trim()) {
+        $BaseUrl = $env:APP_BASE_URL
+    }
+}
+
+if (-not $BaseUrl -or -not $BaseUrl.Trim()) {
+    throw "BaseUrl was not provided and APP_BASE_URL env var is empty. Set APP_BASE_URL in CI or pass -BaseUrl."
+}
+
 Write-Host "== /api/jobs smoke test ==" -ForegroundColor Cyan
 Write-Host "BaseUrl: $BaseUrl" -ForegroundColor DarkCyan
 Write-Host ""

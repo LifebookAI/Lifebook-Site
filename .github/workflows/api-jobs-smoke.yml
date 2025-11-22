@@ -1,0 +1,21 @@
+name: api-jobs-smoke
+
+on:
+  workflow_dispatch:
+
+jobs:
+  smoke-api-jobs:
+    runs-on: ubuntu-latest
+    env:
+      # Set this in GitHub → Settings → Variables (or environment vars) to point
+      # at your deployed app, e.g. https://lifebook.ai
+      APP_BASE_URL: ${{ vars.LIFEBOOK_APP_BASE_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run /api/jobs smoke
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          ./infra/orchestrator/smoke-api-jobs.ps1
