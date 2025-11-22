@@ -1,76 +1,228 @@
+# NORMAL (PS7) — Inspect orchestrator job E2E (DynamoDB job + run logs + S3 result.md)
 param(
-    [Parameter(Mandatory = $true)]
-    [string]$JobId,
-
-    [string]$Region  = $env:AWS_REGION,
-    [string]$Profile = $env:AWS_PROFILE
+    [string]$JobId
 )
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
-if (-not $Region)  { $Region  = "us-east-1" }
-if (-not $Profile) { $Profile = "lifebook-sso" }
-
-$tableName = "lifebook-orchestrator-jobs"
-
-Write-Host ("Inspecting orchestrator job '{0}' in table '{1}' (region={2}, profile={3})..." -f $JobId, $tableName, $Region, $Profile) -ForegroundColor Cyan
-
-# Build key (pk+sk)
-$keyObj = @{
-    pk = @{ S = $JobId }
-    sk = @{ S = "job" }
+# -----------------------
+# AWS context
+# -----------------------
+$Profile = $env:AWS_PROFILE
+if (-not $Profile -or -not $Profile.Trim()) {
+    $Profile = 'lifebook-sso'
 }
-$keyJson = $keyObj | ConvertTo-Json -Depth 5
+
+$Region     = 'us-east-1'
+$JobsTable  = 'lifebook-orchestrator-jobs'
+$LogsTable  = 'lifebook-orchestrator-run-logs'
+$Bucket     = 'lifebook.ai'
+
+Write-Host "Using AWS profile '$Profile' in region '$Region'." -ForegroundColor Cyan
+Write-Host "Jobs table : $JobsTable" -ForegroundColor DarkCyan
+Write-Host "Run logs   : $LogsTable" -ForegroundColor DarkCyan
+Write-Host "Result bucket: $Bucket" -ForegroundColor DarkCyan
+Write-Host ""
+
+# -----------------------
+# Helper: flatten DynamoDB JSON item
+# -----------------------
+function Convert-DdbItem {
+    param(
+        [Parameter(Mandatory = $true)]
+        $Item
+    )
+
+    $result = [ordered]@{}
+
+    foreach ($prop in $Item.PSObject.Properties) {
+        $name = $prop.Name
+        $val  = $prop.Value
+
+        if ($null -eq $val) {
+            $result[$name] = $null
+            continue
+        }
+
+        if ($val.S) {
+            $result[$name] = $val.S
+        }
+        elseif ($val.N) {
+            if ($val.N -as [double] -ne $null) {
+                $result[$name] = [double]$val.N
+            } else {
+                $result[$name] = $val.N
+            }
+        }
+        elseif ($val.BOOL -ne $null) {
+            $result[$name] = [bool]$val.BOOL
+        }
+        elseif ($val.M) {
+            $result[$name] = Convert-DdbItem -Item $val.M
+        }
+        elseif ($val.L) {
+            $list = @()
+            foreach ($elem in $val.L) {
+                $list += Convert-DdbItem -Item $elem
+            }
+            $result[$name] = $list
+        }
+        elseif ($val.SS) {
+            $result[$name] = $val.SS
+        }
+        elseif ($val.NS) {
+            $result[$name] = $val.NS
+        }
+        else {
+            $result[$name] = $val
+        }
+    }
+
+    [pscustomobject]$result
+}
+
+# -----------------------
+# JobId input
+# -----------------------
+if (-not $JobId -or -not $JobId.Trim()) {
+    $JobId = Read-Host "Enter jobId to inspect (e.g., 413f23f4b1218fad4804c180d2c04535)"
+    if (-not $JobId -or -not $JobId.Trim()) {
+        throw "jobId is required."
+    }
+}
+
+Write-Host ""
+Write-Host "Inspecting orchestrator job E2E for jobId '$JobId'..." -ForegroundColor Yellow
+Write-Host ""
+
+# -----------------------
+# 1) Job record (pk=jobId, sk='JOB')
+# -----------------------
+Write-Host "=== Job record ===" -ForegroundColor Yellow
+
+$keyJson = @{
+    pk = @{ S = $JobId }
+    sk = @{ S = 'JOB' }
+} | ConvertTo-Json -Compress
+
+$jobRaw = $null
+try {
+    $jobRaw = aws dynamodb get-item `
+        --table-name $JobsTable `
+        --key $keyJson `
+        --profile $Profile `
+        --region $Region `
+        --output json
+} catch {
+    Write-Host "GetItem failed for jobs table '$JobsTable': $_" -ForegroundColor Red
+}
+
+if (-not $jobRaw) {
+    Write-Host "No response from DynamoDB when fetching job." -ForegroundColor Red
+} else {
+    $jobObj = $jobRaw | ConvertFrom-Json
+
+    if (-not $jobObj.Item) {
+        Write-Host "No job found with pk='$JobId' and sk='JOB' in '$JobsTable'." -ForegroundColor Yellow
+    } else {
+        $jobFlat = Convert-DdbItem -Item $jobObj.Item
+
+        Write-Host "--- Job item (flattened) ---" -ForegroundColor DarkGray
+        $jobFlat | Format-List *
+
+        Write-Host ""
+        Write-Host "Compact summary:" -ForegroundColor DarkYellow
+
+        $summaryProps = [ordered]@{
+            pk           = $jobFlat.pk
+            sk           = $jobFlat.sk
+            jobId        = $jobFlat.jobId
+            status       = $jobFlat.status
+            workflowSlug = $jobFlat.workflowSlug
+            clientReqId  = $jobFlat.clientRequestId
+            createdAt    = $jobFlat.createdAt
+            updatedAt    = $jobFlat.updatedAt
+        }
+
+        [pscustomobject]$summaryProps | Format-List *
+    }
+}
+
+# -----------------------
+# 2) Run logs for this jobId
+# -----------------------
+Write-Host ""
+Write-Host "=== Run logs ===" -ForegroundColor Yellow
+
+$eavLogs = @{ ':jobId' = @{ S = $JobId } } | ConvertTo-Json -Compress
+
+$logsRaw = $null
+try {
+    $logsRaw = aws dynamodb query `
+        --table-name $LogsTable `
+        --key-condition-expression "jobId = :jobId" `
+        --expression-attribute-values $eavLogs `
+        --scan-index-forward `
+        --profile $Profile `
+        --region $Region `
+        --output json
+} catch {
+    Write-Host "Query failed for run logs table '$LogsTable': $_" -ForegroundColor Red
+}
+
+if (-not $logsRaw) {
+    Write-Host "No response from DynamoDB when querying run logs." -ForegroundColor Red
+} else {
+    $logsObj  = $logsRaw | ConvertFrom-Json
+    $logItems = $logsObj.Items
+
+    if (-not $logItems -or $logItems.Count -eq 0) {
+        Write-Host "No run logs found for jobId '$JobId' in '$LogsTable'." -ForegroundColor Yellow
+    } else {
+        $logsFlat = $logItems | ForEach-Object { Convert-DdbItem -Item $_ }
+        Write-Host "Found $($logsFlat.Count) run log item(s)." -ForegroundColor DarkYellow
+        Write-Host ""
+
+        foreach ($log in $logsFlat) {
+            Write-Host "--- Log ---" -ForegroundColor DarkGray
+            $log |
+                Select-Object `
+                    jobId,
+                    createdAt,
+                    logId,
+                    eventType,
+                    message,
+                    actor `
+                | Format-List *
+        }
+    }
+}
+
+# -----------------------
+# 3) S3 result.md (workflows/manual/<jobId>/result.md)
+# -----------------------
+Write-Host ""
+Write-Host "=== S3 result.md ===" -ForegroundColor Yellow
+
+$ResultKey = "workflows/manual/$JobId/result.md"
+$OutFile   = Join-Path (Get-Location) ("job-{0}-result.md" -f $JobId)
+
+Write-Host "Attempting to download s3://$Bucket/$ResultKey" -ForegroundColor DarkYellow
 
 try {
-    $resp = aws dynamodb get-item `
-        --table-name $tableName `
-        --key $keyJson `
-        --region $Region `
+    aws s3 cp "s3://$Bucket/$ResultKey" $OutFile `
         --profile $Profile `
-        --output json | ConvertFrom-Json
+        --region $Region | Out-Null
+
+    Write-Host "Downloaded result to $OutFile" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "First few lines of result.md:" -ForegroundColor DarkYellow
+    Get-Content $OutFile -TotalCount 20 | ForEach-Object { Write-Host $_ }
 } catch {
-    throw "aws dynamodb get-item failed: $($_.Exception.Message)"
+    Write-Host "Could not download s3://$Bucket/$ResultKey — it may not exist for this jobId." -ForegroundColor Yellow
+    Write-Host "Error: $_" -ForegroundColor DarkGray
 }
 
-if (-not $resp.Item) {
-    Write-Error ("No job found with pk='{0}', sk='job' in table '{1}'." -f $JobId, $tableName)
-    exit 1
-}
-
-$item = $resp.Item
-
-function Get-AttrValue {
-    param($Attr)
-    if (-not $Attr) { return $null }
-    if ($Attr.S)    { return $Attr.S }
-    if ($Attr.N)    { return $Attr.N }
-    if ($Attr.BOOL -ne $null) { return [bool]$Attr.BOOL }
-    if ($Attr.NULL) { return $null }
-    return $Attr
-}
-
-$summary = [pscustomobject]@{
-    job_id          = (Get-AttrValue $item.job_id)
-    status          = (Get-AttrValue $item.status)
-    attempts        = if ($item.attempts)     { [int]$item.attempts.N }     else { $null }
-    max_attempts    = if ($item.max_attempts) { [int]$item.max_attempts.N } else { $null }
-    last_error_code = if ($item.last_error_code) {
-                          if ($item.last_error_code.NULL) { $null } else { $item.last_error_code.S }
-                      } else { $null }
-    last_error_msg  = if ($item.last_error_message) {
-                          if ($item.last_error_message.NULL) { $null } else { $item.last_error_message.S }
-                      } else { $null }
-    workspace_id    = (Get-AttrValue $item.workspace_id)
-    workflow_id     = (Get-AttrValue $item.workflow_id)
-    trigger_type    = (Get-AttrValue $item.trigger_type)
-    created_at      = (Get-AttrValue $item.created_at)
-    updated_at      = (Get-AttrValue $item.updated_at)
-    started_at      = if ($item.started_at -and -not $item.started_at.NULL)   { $item.started_at.S }   else { $null }
-    completed_at    = if ($item.completed_at -and -not $item.completed_at.NULL) { $item.completed_at.S } else { $null }
-    ttl_at          = if ($item.ttl_at) { [int64]$item.ttl_at.N } else { $null }
-}
-
-Write-Host "`nOrchestrator job summary:" -ForegroundColor Green
-$summary | Format-List
+Write-Host ""
+Write-Host "Done." -ForegroundColor Green
