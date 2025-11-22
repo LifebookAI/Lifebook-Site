@@ -3172,5 +3172,12 @@
       "s3_key": "workflows/manual/job-3b7fe089e2b647f4b5829275706309f3.md",
       "reason": "Job reached completed-like status 'succeeded' in 3 seconds."
     }
+  },
+  {
+    "Kind": "step",
+    "Step": "18A",
+    "Status": "pass",
+    "Timestamp": "2025-11-21T19:54:14.4632765-05:00",
+    "Evidence": "Orchestrator idempotency harness + tests + docs in repo; orchestrator-quality-gate and orchestrator-e2e nightly green as of 2025-11-21."
   }
 ]
