@@ -806,5 +806,39 @@
         "at": "2025-11-21T18:31:45Z"
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "18 Core App Architecture",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "Next 15 app shell + (dashboard) routes; workflows/captures/library skeleton; AppShell typed routes; /api/jobs POST contract + curl+UI 501 smoke; npm run typecheck + npm run dev both clean.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      "Continue Step 19: wire /api/jobs to orchestrator job creation + surface basic job status list for sample_hello_world."
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "LastUpdated": "2025-11-22T02:03:57Z",
+    "History": [
+      {
+        "patch": {
+          "StepTitle": null,
+          "Evidence": "Next 15 app shell + (dashboard) routes; workflows/captures/library skeleton; AppShell typed routes; /api/jobs POST contract + curl+UI 501 smoke; npm run typecheck + npm run dev both clean.",
+          "Decisions": "",
+          "Blockers": "",
+          "Owner": "Zach",
+          "Status": "✔",
+          "Target": "",
+          "Next": [
+            "Continue Step 19: wire /api/jobs to orchestrator job creation + surface basic job status list for sample_hello_world."
+          ],
+          "StepID": "18 Core App Architecture",
+          "Phase": null
+        },
+        "at": "2025-11-22T02:03:57Z"
+      }
+    ]
   }
 ]

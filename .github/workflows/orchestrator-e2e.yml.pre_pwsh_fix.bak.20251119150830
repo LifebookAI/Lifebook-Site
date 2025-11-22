@@ -1,0 +1,45 @@
+name: orchestrator-e2e
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'infra/orchestrator/**'
+      - '.github/workflows/orchestrator-e2e.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'infra/orchestrator/**'
+      - '.github/workflows/orchestrator-e2e.yml'
+
+jobs:
+  orchestrator-e2e:
+    name: Orchestrator E2E smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    permissions:
+      id-token: write      # required for OIDC to AWS
+      contents: read
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup PowerShell
+        uses: PowerShell/PowerShell-For-GitHub-Actions@v1
+        with:
+          pwsh-version: '7.4.x'
+
+      # NOTE: Set repo secret AWS_ORCHESTRATOR_ROLE_ARN to the ARN of your GitHubOIDC_LifebookSite role.
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ORCHESTRATOR_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Run orchestrator E2E smoke
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -ExecutionPolicy Bypass -File infra/orchestrator/run-orchestrator-e2e.ps1

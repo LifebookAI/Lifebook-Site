@@ -1,0 +1,207 @@
+Orchestrator E2E smoke	Set up job	∩╗┐2025-11-20T18:45:58.2754062Z Current runner version: '2.329.0'
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2778539Z ##[group]Runner Image Provisioner
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2779503Z Hosted Compute Agent
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2780208Z Version: 20251016.436
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2780936Z Commit: 8ab8ac8bfd662a3739dab9fe09456aba92132568
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2781679Z Build Date: 2025-10-15T20:44:12Z
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2782397Z ##[endgroup]
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2783240Z ##[group]Operating System
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2783848Z Ubuntu
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2784426Z 24.04.3
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2784943Z LTS
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2785487Z ##[endgroup]
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2786095Z ##[group]Runner Image
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2786740Z Image: ubuntu-24.04
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2787323Z Version: 20251112.124.1
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2788480Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20251112.124/images/ubuntu/Ubuntu2404-Readme.md
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2789919Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20251112.124
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2791244Z ##[endgroup]
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2792325Z ##[group]GITHUB_TOKEN Permissions
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2794476Z Contents: read
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2795101Z Metadata: read
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2795682Z ##[endgroup]
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2797695Z Secret source: Actions
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.2798639Z Prepare workflow directory
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.3126508Z Prepare all required actions
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.3163920Z Getting action download info
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:58.7305587Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+Orchestrator E2E smoke	Set up job	2025-11-20T18:45:59.5940088Z Download action repository 'aws-actions/configure-aws-credentials@v4' (SHA:7474bc4690e29a8392af63c5b98e7449536d5c3a)
+Orchestrator E2E smoke	Set up job	2025-11-20T18:46:00.5174639Z Complete job name: Orchestrator E2E smoke
+Orchestrator E2E smoke	Checkout repo	∩╗┐2025-11-20T18:46:00.5849930Z ##[group]Run actions/checkout@v4
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.5850643Z with:
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.5850952Z   repository: LifebookAI/Lifebook-Site
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.5851477Z   token: ***
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.5851745Z   ssh-strict: true
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.5852044Z   ssh-user: git
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.5852336Z   persist-credentials: true
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.5852744Z   clean: true
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.5853176Z   sparse-checkout-cone-mode: true
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.5853526Z   fetch-depth: 1
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.5853794Z   fetch-tags: false
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.5854075Z   show-progress: true
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.5854359Z   lfs: false
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.5854626Z   submodules: false
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.5854907Z   set-safe-directory: true
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.5855481Z ##[endgroup]
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.6911595Z Syncing repository: LifebookAI/Lifebook-Site
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.6913729Z ##[group]Getting Git version info
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.6914325Z Working directory is '/home/runner/work/Lifebook-Site/Lifebook-Site'
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.6915170Z [command]/usr/bin/git version
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7005424Z git version 2.51.2
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7031539Z ##[endgroup]
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7048145Z Temporarily overriding HOME='/home/runner/work/_temp/a25cb341-7024-4b75-b2be-a6db611bb322' before making global git config changes
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7049915Z Adding repository directory to the temporary git global config as a safe directory
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7061767Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Lifebook-Site/Lifebook-Site
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7100514Z Deleting the contents of '/home/runner/work/Lifebook-Site/Lifebook-Site'
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7104403Z ##[group]Initializing the repository
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7108995Z [command]/usr/bin/git init /home/runner/work/Lifebook-Site/Lifebook-Site
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7244799Z hint: Using 'master' as the name for the initial branch. This default branch name
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7246031Z hint: is subject to change. To configure the initial branch name to use in all
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7247318Z hint: of your new repositories, which will suppress this warning, call:
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7247996Z hint:
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7248439Z hint: 	git config --global init.defaultBranch <name>
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7249395Z hint:
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7249966Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7250992Z hint: 'development'. The just-created branch can be renamed via this command:
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7251815Z hint:
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7252279Z hint: 	git branch -m <name>
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7252800Z hint:
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7253755Z hint: Disable this message with "git config set advice.defaultBranchName false"
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7254663Z Initialized empty Git repository in /home/runner/work/Lifebook-Site/Lifebook-Site/.git/
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7262284Z [command]/usr/bin/git remote add origin https://github.com/LifebookAI/Lifebook-Site
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7297918Z ##[endgroup]
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7298862Z ##[group]Disabling automatic garbage collection
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7302646Z [command]/usr/bin/git config --local gc.auto 0
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7331378Z ##[endgroup]
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7332383Z ##[group]Setting up auth
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7339242Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7370047Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7778066Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.7808159Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.8030800Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.8070595Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.8295573Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.8330855Z ##[endgroup]
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.8332010Z ##[group]Fetching the repository
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:00.8340695Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +683b479dfc1d403ebee8be48a5d1e42ead80d9e6:refs/remotes/origin/main
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:01.7230150Z From https://github.com/LifebookAI/Lifebook-Site
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:01.7230896Z  * [new ref]         683b479dfc1d403ebee8be48a5d1e42ead80d9e6 -> origin/main
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:01.7263795Z ##[endgroup]
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:01.7264561Z ##[group]Determining the checkout info
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:01.7266502Z ##[endgroup]
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:01.7271717Z [command]/usr/bin/git sparse-checkout disable
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:01.7314028Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:01.7339993Z ##[group]Checking out the ref
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:01.7343991Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:01.7801581Z Switched to a new branch 'main'
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:01.7803741Z branch 'main' set up to track 'origin/main'.
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:01.7814288Z ##[endgroup]
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:01.7849925Z [command]/usr/bin/git log -1 --format=%H
+Orchestrator E2E smoke	Checkout repo	2025-11-20T18:46:01.7872359Z 683b479dfc1d403ebee8be48a5d1e42ead80d9e6
+Orchestrator E2E smoke	Configure AWS credentials (OIDC)	∩╗┐2025-11-20T18:46:01.8096310Z ##[group]Run aws-actions/configure-aws-credentials@v4
+Orchestrator E2E smoke	Configure AWS credentials (OIDC)	2025-11-20T18:46:01.8096712Z with:
+Orchestrator E2E smoke	Configure AWS credentials (OIDC)	2025-11-20T18:46:01.8097161Z   role-to-assume: ***
+Orchestrator E2E smoke	Configure AWS credentials (OIDC)	2025-11-20T18:46:01.8097409Z   aws-region: us-east-1
+Orchestrator E2E smoke	Configure AWS credentials (OIDC)	2025-11-20T18:46:01.8097665Z   audience: sts.amazonaws.com
+Orchestrator E2E smoke	Configure AWS credentials (OIDC)	2025-11-20T18:46:01.8097943Z   output-env-credentials: true
+Orchestrator E2E smoke	Configure AWS credentials (OIDC)	2025-11-20T18:46:01.8098203Z ##[endgroup]
+Orchestrator E2E smoke	Configure AWS credentials (OIDC)	2025-11-20T18:46:02.3077164Z Assuming role with OIDC
+Orchestrator E2E smoke	Configure AWS credentials (OIDC)	2025-11-20T18:46:02.5941563Z Authenticated as assumedRoleId AROAVFEM4XOXDWDBYRI4I:GitHubActions
+Orchestrator E2E smoke	Run orchestrator E2E smoke	∩╗┐2025-11-20T18:46:02.6766777Z ##[group]Run pwsh -NoProfile -ExecutionPolicy Bypass -File infra/orchestrator/run-orchestrator-e2e.ps1
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:02.6767754Z [36;1mpwsh -NoProfile -ExecutionPolicy Bypass -File infra/orchestrator/run-orchestrator-e2e.ps1[0m
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:02.6823763Z shell: /usr/bin/pwsh -command ". '{0}'"
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:02.6824067Z env:
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:02.6824264Z   AWS_DEFAULT_REGION: us-east-1
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:02.6824513Z   AWS_REGION: us-east-1
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:02.6824846Z   AWS_ACCESS_KEY_ID: ***
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:02.6825183Z   AWS_SECRET_ACCESS_KEY: ***
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:02.6829848Z   AWS_SESSION_TOKEN: ***
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:02.6830066Z ##[endgroup]
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:07.8821508Z [orchestrator-e2e] Using AWS env: profile='' region='us-east-1'
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:07.8949158Z [orchestrator-e2e] Running orchestrator smoke in child PowerShell...
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:08.7000271Z Using profile 'lifebook-sso' in region 'us-east-1' for orchestrator E2E smoke...
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:08.7951122Z 
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:08.7952147Z [1/3] Enqueuing synthetic orchestrator job...
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:16.1285861Z Synthetic job enqueued with job_id=job-6046e694139b4d929e3d0fbb7fab6e42
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:16.1294040Z Putting SQS message onto lifebook-orchestrator-queue for job_id=job-6046e694139b4d929e3d0fbb7fab6e42...
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:16.9986098Z {
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:16.9986749Z     "MD5OfMessageBody": "50ef09483656ee7a0348931b604d8678",
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:16.9987350Z     "MessageId": "1e46337c-b12c-471e-97a2-83c8cf27f75a"
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:16.9987775Z }
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:17.0759535Z SQS message enqueued successfully.
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:17.0760157Z 
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:17.0760373Z [2/3] Polling DynamoDB for job status...
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:17.9419954Z Poll #1: status=queued, attempts=0/5, last_error_code=<none>
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:23.8313663Z Poll #2: status=queued, attempts=0/5, last_error_code=<none>
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:29.7002361Z Poll #3: status=queued, attempts=0/5, last_error_code=<none>
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:35.5670415Z Poll #4: status=queued, attempts=0/5, last_error_code=<none>
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:41.4451800Z Poll #5: status=queued, attempts=0/5, last_error_code=<none>
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:47.3034687Z Poll #6: status=queued, attempts=0/5, last_error_code=<none>
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:53.1643332Z Poll #7: status=queued, attempts=0/5, last_error_code=<none>
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:46:59.0344370Z Poll #8: status=queued, attempts=0/5, last_error_code=<none>
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:04.9169333Z Poll #9: status=queued, attempts=0/5, last_error_code=<none>
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:10.7925050Z Poll #10: status=queued, attempts=0/5, last_error_code=<none>
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:16.6913968Z Poll #11: status=queued, attempts=0/5, last_error_code=<none>
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:22.5779981Z Poll #12: status=queued, attempts=0/5, last_error_code=<none>
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:28.4295285Z Poll #13: status=queued, attempts=0/5, last_error_code=<none>
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:34.2910841Z Poll #14: status=queued, attempts=0/5, last_error_code=<none>
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:40.1505461Z Poll #15: status=queued, attempts=0/5, last_error_code=<none>
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:45.9977469Z Poll #16: status=queued, attempts=0/5, last_error_code=<none>
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:51.8645911Z Poll #17: status=queued, attempts=0/5, last_error_code=<none>
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:51.8657058Z 
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:51.8657618Z Checking for S3 output at s3://lifebook.ai/workflows/manual/job-6046e694139b4d929e3d0fbb7fab6e42.md ...
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.8138196Z {
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.8138655Z     "AcceptRanges": "bytes",
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.8140380Z     "LastModified": "2025-11-20T18:46:18+00:00",
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.8140832Z     "ContentLength": 137,
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.8141190Z     "ETag": "\"8bf5dc7638bd258ab434dbe2200d53b2\"",
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.8141674Z     "VersionId": "4Rg0bNAODLPHYNZiyuXDiLjWeUkyPC2d",
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.8142162Z     "ContentType": "text/markdown; charset=utf-8",
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.8142603Z     "ServerSideEncryption": "aws:kms",
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.8142968Z     "Metadata": {},
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.8143745Z     "SSEKMSKeyId": "arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.8144923Z     "BucketKeyEnabled": true
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.8145244Z }
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9124867Z Found S3 output object s3://lifebook.ai/workflows/manual/job-6046e694139b4d929e3d0fbb7fab6e42.md
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9137287Z 
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9137697Z [3/3] Orchestrator E2E result summary:
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9340986Z 
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9381048Z [32;1mjob_id          : [0mjob-6046e694139b4d929e3d0fbb7fab6e42
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9381813Z [32;1mstatus          : [0mqueued
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9382360Z [32;1mattempts        : [0m0
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9382868Z [32;1mmax_attempts    : [0m5
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9383579Z [32;1mlast_error_code : [0m
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9384066Z [32;1mlast_error_msg  : [0m
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9384521Z [32;1melapsed_seconds : [0m95
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9384967Z [32;1mpolls           : [0m17
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9385387Z [32;1mtimed_out       : [0mTrue
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9385864Z [32;1mhas_s3_output   : [0mTrue
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9386392Z [32;1ms3_bucket       : [0mlifebook.ai
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9387106Z [32;1ms3_key          : [0mworkflows/manual/job-6046e694139b4d929e3d0fbb7fab6e42.md
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9387784Z [32;1mpass            : [0mTrue
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9388496Z [32;1mreason          : [0mTimed out after 95 seconds waiting for DDB status, but S3 out
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9389251Z                   put exists at s3://lifebook.ai/workflows/manual/job-6046e6941
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9389834Z                   39b4d929e3d0fbb7fab6e42.md.
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9390138Z 
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9390146Z 
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9391356Z E2E orchestrator smoke: PASS ΓÇö Timed out after 95 seconds waiting for DDB status, but S3 output exists at s3://lifebook.ai/workflows/manual/job-6046e694139b4d929e3d0fbb7fab6e42.md.
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9636827Z Write-Host  Write-Host Checkpoint (orchestrator_e2e.synthetic_smoke) appended to state/build-checkpoints.json
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:52.9637811Z E2E orchestrator smoke: PASS (exit 0)
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:53.0175848Z [orchestrator-e2e] Child smoke exit code: 0
+Orchestrator E2E smoke	Run orchestrator E2E smoke	2025-11-20T18:47:53.0245819Z [orchestrator-e2e] Smoke completed successfully with exit code 0.
+Orchestrator E2E smoke	Post Configure AWS credentials (OIDC)	∩╗┐2025-11-20T18:47:53.1998040Z Post job cleanup.
+Orchestrator E2E smoke	Post Checkout repo	∩╗┐2025-11-20T18:47:53.3316656Z Post job cleanup.
+Orchestrator E2E smoke	Post Checkout repo	2025-11-20T18:47:53.4270416Z [command]/usr/bin/git version
+Orchestrator E2E smoke	Post Checkout repo	2025-11-20T18:47:53.4314310Z git version 2.51.2
+Orchestrator E2E smoke	Post Checkout repo	2025-11-20T18:47:53.4361659Z Temporarily overriding HOME='/home/runner/work/_temp/59106694-a1c8-4551-9c70-ee28ff879dfc' before making global git config changes
+Orchestrator E2E smoke	Post Checkout repo	2025-11-20T18:47:53.4364522Z Adding repository directory to the temporary git global config as a safe directory
+Orchestrator E2E smoke	Post Checkout repo	2025-11-20T18:47:53.4370220Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Lifebook-Site/Lifebook-Site
+Orchestrator E2E smoke	Post Checkout repo	2025-11-20T18:47:53.4411736Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Orchestrator E2E smoke	Post Checkout repo	2025-11-20T18:47:53.4448264Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Orchestrator E2E smoke	Post Checkout repo	2025-11-20T18:47:53.4709596Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Orchestrator E2E smoke	Post Checkout repo	2025-11-20T18:47:53.4736981Z http.https://github.com/.extraheader
+Orchestrator E2E smoke	Post Checkout repo	2025-11-20T18:47:53.4749807Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+Orchestrator E2E smoke	Post Checkout repo	2025-11-20T18:47:53.4784739Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Orchestrator E2E smoke	Post Checkout repo	2025-11-20T18:47:53.5025218Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Orchestrator E2E smoke	Post Checkout repo	2025-11-20T18:47:53.5057106Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Orchestrator E2E smoke	Complete job	∩╗┐2025-11-20T18:47:53.5392626Z Cleaning up orphan processes
