@@ -993,5 +993,38 @@
         }
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "19F_settings_placeholder",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "/settings now shows a Settings explainer, privacy/export note, and link back to Study Tracks.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      ""
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "at": "2025-11-23T18:26:35Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "/settings now shows a Settings explainer, privacy/export note, and link back to Study Tracks.",
+          "StepID": "19F_settings_placeholder",
+          "StepTitle": null,
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "Next": [
+            ""
+          ],
+          "Owner": "Zach",
+          "Phase": null
+        }
+      }
+    ]
   }
 ]
