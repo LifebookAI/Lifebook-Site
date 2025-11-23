@@ -1,0 +1,25 @@
+name: library-smoke
+
+on:
+  # Manual trigger only for now; can add schedule or push filters later.
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "Base URL for Lifebook app (e.g., https://uselifebook.ai or http://localhost:3000)"
+        required: true
+        default: "https://uselifebook.ai"
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Run library smoke
+        shell: pwsh
+        run: |
+          $baseUrl = "${{ github.event.inputs.base_url }}"
+          Write-Host "Running infra/library/smoke-library.ps1 against $baseUrl"
+          ./infra/library/smoke-library.ps1 -BaseUrl $baseUrl
