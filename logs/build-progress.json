@@ -929,5 +929,38 @@
         }
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "19D_library_placeholder",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "/library now shows a generic Library explainer and links to Study Tracks; fully decoupled from SAA plans.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      ""
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "at": "2025-11-23T06:31:01Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "/library now shows a generic Library explainer and links to Study Tracks; fully decoupled from SAA plans.",
+          "StepID": "19D_library_placeholder",
+          "StepTitle": null,
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "Next": [
+            ""
+          ],
+          "Owner": "Zach",
+          "Phase": null
+        }
+      }
+    ]
   }
 ]
