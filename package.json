@@ -8,7 +8,7 @@
     "@aws-sdk/client-secrets-manager": "^3.922.0",
     "@aws-sdk/client-sqs": "^3.936.0",
     "@aws-sdk/lib-dynamodb": "^3.936.0",
-    "@aws-sdk/s3-request-presigner": "^3.927.0",
+    "@aws-sdk/s3-request-presigner": "^3.937.0",
     "dotenv": "^17.2.3",
     "next": "15.4.7",
     "react": "19.2.0",
