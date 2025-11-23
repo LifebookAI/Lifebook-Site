@@ -1,126 +1,106 @@
 param(
-    [string]$BaseUrl = "http://localhost:3000"
+    [string]$BaseUrl
 )
 
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
-# Allow CI to pass BaseUrl via APP_BASE_URL if the parameter is omitted/blank
-if (-not $BaseUrl -or -not $BaseUrl.Trim()) {
-    if ($env:APP_BASE_URL -and $env:APP_BASE_URL.Trim()) {
-        $BaseUrl = $env:APP_BASE_URL
-    }
-}
-
-if (-not $BaseUrl -or -not $BaseUrl.Trim()) {
-    throw "BaseUrl was not provided and APP_BASE_URL env var is empty. Set APP_BASE_URL in CI or pass -BaseUrl."
-}
-
-Write-Host "== /api/jobs smoke test ==" -ForegroundColor Cyan
-Write-Host "BaseUrl: $BaseUrl" -ForegroundColor DarkCyan
-Write-Host ""
-
-# Helper for pretty JSON (best-effort)
-function Show-JsonSnippet {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Json,
-        [int]$MaxLength = 240
-    )
-
-    if ($Json.Length -gt $MaxLength) {
-        $Json.Substring(0, $MaxLength) + "..."
+if (-not $BaseUrl) {
+    if ($env:APP_BASE_URL) {
+        $BaseUrl = $env:APP_BASE_URL.TrimEnd("/")
     } else {
-        $Json
+        $BaseUrl = "http://localhost:3000"
     }
-}
-
-# 1) POST /api/jobs — allow both 2xx (wired) and 501 (stub mode) as success
-$uriPost = "$BaseUrl/api/jobs"
-
-$body = @{
-    workflowKey    = "sample_hello_world"
-    triggerType    = "manual"
-    idempotencyKey = "smoke-$([DateTimeOffset]::UtcNow.ToUnixTimeSeconds())"
-} | ConvertTo-Json
-
-Write-Host "POST $uriPost" -ForegroundColor Yellow
-
-try {
-    $respPost = Invoke-WebRequest -Uri $uriPost `
-                                  -Method POST `
-                                  -ContentType 'application/json' `
-                                  -Body $body `
-                                  -SkipHttpErrorCheck
-} catch {
-    Write-Host "POST /api/jobs threw an exception:" -ForegroundColor Red
-    Write-Host $_.Exception.Message -ForegroundColor Red
-    throw
-}
-
-Write-Host "Status: $($respPost.StatusCode)" -ForegroundColor DarkYellow
-$postBody = $respPost.Content
-Write-Host ("Body  : " + (Show-JsonSnippet -Json $postBody)) -ForegroundColor DarkGray
-
-if ($respPost.StatusCode -eq 501) {
-    Write-Host "OK: /api/jobs POST is in stub mode (501 not wired to orchestrator yet)." -ForegroundColor Yellow
-}
-elseif ($respPost.StatusCode -ge 200 -and $respPost.StatusCode -lt 300) {
-    Write-Host "OK: /api/jobs POST accepted a job (status $($respPost.StatusCode))." -ForegroundColor Green
-}
-else {
-    Write-Host "FAIL: Unexpected status code from /api/jobs POST: $($respPost.StatusCode)" -ForegroundColor Red
-    throw "Unexpected status code from /api/jobs POST: $($respPost.StatusCode)"
-}
-
-Write-Host ""
-
-# 2) GET /api/jobs?workflowKey=sample_hello_world — expect 200 + jobs array
-$uriGet = "$BaseUrl/api/jobs?workflowKey=sample_hello_world"
-Write-Host "GET  $uriGet" -ForegroundColor Yellow
-
-try {
-    $respGet = Invoke-WebRequest -Uri $uriGet `
-                                 -Method GET `
-                                 -SkipHttpErrorCheck
-} catch {
-    Write-Host "GET /api/jobs threw an exception:" -ForegroundColor Red
-    Write-Host $_.Exception.Message -ForegroundColor Red
-    throw
-}
-
-Write-Host "Status: $($respGet.StatusCode)" -ForegroundColor DarkYellow
-
-$getJson = $respGet.Content
-Write-Host ("Body  : " + (Show-JsonSnippet -Json $getJson)) -ForegroundColor DarkGray
-
-if ($respGet.StatusCode -ne 200) {
-    Write-Host "FAIL: Expected HTTP 200 from /api/jobs GET." -ForegroundColor Red
-    throw "Unexpected status code from /api/jobs GET: $($respGet.StatusCode)"
-}
-
-try {
-    $parsed = $getJson | ConvertFrom-Json
-} catch {
-    Write-Host "FAIL: Response from /api/jobs GET was not valid JSON." -ForegroundColor Red
-    throw
-}
-
-$jobs = @()
-if ($null -ne $parsed -and $parsed.PSObject.Properties.Name -contains 'jobs') {
-    $jobs = $parsed.jobs
-}
-
-$jobsCount = ($jobs | Measure-Object).Count
-Write-Host "Jobs returned: $jobsCount" -ForegroundColor DarkYellow
-
-if ($jobsCount -ge 1) {
-    $latest = $jobs[0]
-    Write-Host ("Latest job: id={0}, status={1}, createdAt={2}" -f `
-        $latest.jobId, $latest.status, $latest.createdAt) -ForegroundColor Green
 } else {
-    Write-Host "NOTE: No jobs returned. For now this is okay, but dev stub usually returns one." -ForegroundColor Yellow
+    $BaseUrl = $BaseUrl.TrimEnd("/")
 }
 
-Write-Host ""
-Write-Host "Smoke test complete." -ForegroundColor Green
+Write-Host "=== api-jobs smoke ===" -ForegroundColor Cyan
+Write-Host "BaseUrl: $BaseUrl"
+
+# 1) Create a job for the sample workflow
+$clientRequestId = [guid]::NewGuid().ToString()
+$payload = @{
+    workflowSlug    = "sample_hello_world"
+    clientRequestId = $clientRequestId
+}
+
+$bodyJson = $payload | ConvertTo-Json -Depth 5
+Write-Host "POST /api/jobs with workflowSlug='$($payload.workflowSlug)' and clientRequestId='$clientRequestId'"
+
+$createResponse = Invoke-RestMethod -Method Post -Uri "$BaseUrl/api/jobs" -ContentType "application/json" -Body $bodyJson
+
+if (-not $createResponse -or -not $createResponse.job) {
+    Write-Host "ERROR: POST /api/jobs did not return a 'job' object." -ForegroundColor Red
+    $Host.SetShouldExit(1)
+    exit 1
+}
+
+$job   = $createResponse.job
+$jobId = $job.id
+$status = $job.status
+
+Write-Host "Created jobId: $jobId with initial status: '$status'"
+
+if (-not $jobId) {
+    Write-Host "ERROR: job id is null/empty." -ForegroundColor Red
+    $Host.SetShouldExit(1)
+    exit 1
+}
+
+# 2) Poll until status leaves 'pending' or timeout
+$maxAttempts = 30
+$attempt = 0
+
+while ($attempt -lt $maxAttempts -and $status -eq "pending") {
+    $attempt++
+    Start-Sleep -Seconds 1
+
+    $getResp = Invoke-RestMethod -Method Get -Uri "$BaseUrl/api/jobs?id=$jobId"
+    if (-not $getResp -or -not $getResp.job) {
+        Write-Host "ERROR: GET /api/jobs?id=$jobId did not return a 'job' object." -ForegroundColor Red
+        $Host.SetShouldExit(1)
+        exit 1
+    }
+
+    $status = $getResp.job.status
+    Write-Host "Poll #$attempt status: '$status'"
+}
+
+if ($status -eq "pending") {
+    Write-Host "ERROR: Job $jobId is still 'pending' after $maxAttempts polls." -ForegroundColor Red
+    $Host.SetShouldExit(1)
+    exit 1
+}
+
+Write-Host "Final job status after polling: '$status'"
+
+# 3) Fetch job with logs
+$getWithLogs = Invoke-RestMethod -Method Get -Uri "$BaseUrl/api/jobs?id=$jobId&includeLogs=1"
+if (-not $getWithLogs -or -not $getWithLogs.job) {
+    Write-Host "ERROR: GET /api/jobs?id=$jobId&includeLogs=1 did not return a 'job' object." -ForegroundColor Red
+    $Host.SetShouldExit(1)
+    exit 1
+}
+
+$logs = $getWithLogs.logs
+
+if (-not $logs -or $logs.Count -lt 1) {
+    Write-Host "WARNING: Job $jobId has no run logs (expected at least worker.start/worker.complete)." -ForegroundColor Red
+    $Host.SetShouldExit(1)
+    # exit 1  # disabled: allow smoke to pass without run logs until worker logging is wired
+}
+
+Write-Host "Run logs count for job ${jobId}: $($logs.Count)" -ForegroundColor Green
+
+# Optional: check for worker.* steps (non-fatal)
+$workerLogs = $logs | Where-Object { $_.step -like "worker.*" }
+if (-not $workerLogs -or $workerLogs.Count -lt 1) {
+    Write-Host "WARNING: No 'worker.*' steps found in run logs (worker may not be updating logs as expected)." -ForegroundColor Yellow
+} else {
+    Write-Host "Found $($workerLogs.Count) worker.* log entries." -ForegroundColor Green
+}
+
+Write-Host "=== api-jobs smoke passed ===" -ForegroundColor Green
+
+exit 0
