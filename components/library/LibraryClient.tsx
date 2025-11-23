@@ -186,9 +186,7 @@ export function LibraryClient() {
               <select
                 value={sourceType}
                 onChange={(event) =>
-                  setSourceType(
-                    event.target.value as SourceTypeFilterValue,
-                  )
+                  setSourceType(event.target.value as SourceTypeFilterValue)
                 }
                 className="rounded-md border border-gray-600 bg-slate-900 px-2 py-1 text-xs text-gray-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
               >
@@ -282,6 +280,15 @@ export function LibraryClient() {
               <p className="mt-2 text-xs text-gray-500">
                 Created: {new Date(item.createdAt).toLocaleString()}
               </p>
+
+              <div className="mt-2 flex justify-end">
+                <a
+                  href={`/library/${item.id}`}
+                  className="text-xs font-medium text-sky-400 hover:text-sky-300"
+                >
+                  Open details →
+                </a>
+              </div>
             </article>
           ))}
         </div>
