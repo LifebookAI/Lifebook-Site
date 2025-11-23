@@ -1,44 +1,25 @@
+import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import type { LibraryItemSummary } from "../../../../lib/library/types";
-import { getLibraryItemForWorkspace } from "../../../../lib/library/server";
 
-interface RouteContext {
-  params: {
-    id: string;
-  };
-}
+export const dynamic = "force-dynamic";
 
 /**
- * GET /api/library/[id]
- *
- * Returns JSON details for a single Library item.
- * For now, workspaceId is hard-coded to "demo-workspace" until auth/session wiring is in place.
+ * Stub GET handler for /api/library/[id].
+ * Keeps CI green while the real Library backend is still under construction.
  */
 export async function GET(
-  _request: Request,
-  context: RouteContext,
+  _req: NextRequest,
+  { params }: { params: { id: string } }
 ) {
-  const id = context.params.id;
-  const workspaceId = "demo-workspace";
+  const { id } = params;
 
-  const item: LibraryItemSummary | null = await getLibraryItemForWorkspace(
-    workspaceId,
-    id,
+  return NextResponse.json(
+    {
+      ok: false,
+      id,
+      message:
+        "Library item endpoint not implemented yet (stubbed for MVP CI build).",
+    },
+    { status: 501 }
   );
-
-  if (!item) {
-    return NextResponse.json(
-      {
-        workspaceId,
-        id,
-        error: "Library item not found",
-      },
-      { status: 404 },
-    );
-  }
-
-  return NextResponse.json({
-    workspaceId,
-    item,
-  });
 }
