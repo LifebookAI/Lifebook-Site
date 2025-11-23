@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { LibraryItemSummary } from "../../../lib/library/types";
-import { listLibraryItemsForWorkspace } from "../../../lib/library/server";
+import { getLibraryItemForWorkspace } from "../../../lib/library/server";
 
 interface PageProps {
   params: {
@@ -11,9 +11,7 @@ interface PageProps {
 async function getLibraryItem(id: string): Promise<LibraryItemSummary | null> {
   // TODO: derive workspaceId from auth/session once available.
   const workspaceId = "demo-workspace";
-  const { items } = await listLibraryItemsForWorkspace(workspaceId, {});
-  const match = items.find((item) => item.id === id);
-  return match ?? null;
+  return getLibraryItemForWorkspace(workspaceId, id);
 }
 
 export default async function LibraryItemPage({ params }: PageProps) {

@@ -167,3 +167,14 @@ export async function listLibraryItemsForWorkspace(
   const items = await store.list(query);
   return { workspaceId, items };
 }
+
+/**
+ * Helper used by /library/[id] and future routes to load a single item by id.
+ */
+export async function getLibraryItemForWorkspace(
+  workspaceId: string,
+  id: string,
+): Promise<LibraryItemSummary | null> {
+  const store = await getLibraryStore();
+  return store.getById(workspaceId, id);
+}
