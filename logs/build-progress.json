@@ -249,20 +249,14 @@
     "StepID": "19C",
     "StepTitle": "Transcription → OpenAI adapter (feature-flagged, dry-run if no key)",
     "Status": "✔",
-    "Owner": "Founder",
-    "Target": "2026-01-01 (Closed Beta MVP)",
-    "Evidence": [
-      "OpenAI adapter present; dry-run path works without secrets",
-      "Tag: checkpoint/phase4.step19c/20251105_1155"
-    ],
+    "Owner": "Zach",
+    "Target": "",
+    "Evidence": "Study Tracks surface added: /tracks and /tracks/[id] with AWS Foundations and DevOps Essentials (5+ steps each) plus infra/tracks/smoke-study-tracks.ps1 hitting the new pages.",
     "Decisions": [
       "Introduce provider adapter layer: OpenAI primary, stub fallback if no key.",
       "Keep behind FEATURE_TRANSCRIBE for controlled rollout."
     ],
-    "Next": [
-      "20 — SQS DLQ alarm + basic job metrics (count/latency); wire into dashboard.",
-      "21 — persist transcript → chapterizer/summary pipeline entry (stub first)."
-    ],
+    "Next": [],
     "Timestamp": "2025-11-05T11:55:15"
   },
   {
