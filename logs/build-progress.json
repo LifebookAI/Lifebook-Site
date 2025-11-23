@@ -840,5 +840,73 @@
         "at": "2025-11-22T02:03:57Z"
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "19 Workflows run surface + jobs API",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "Sample workflow wired to /api/jobs POST+GET; job list stubbed; /api/jobs smoke-api-jobs.ps1; api-jobs-smoke GitHub Actions workflow using APP_BASE_URL.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      "Continue with Step 20: wire orchestrator job store + worker to back /api/jobs with real jobs instead of dev stub."
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "LastUpdated": "2025-11-22T04:19:28Z",
+    "History": [
+      {
+        "patch": {
+          "StepTitle": null,
+          "Evidence": "Sample workflow wired to /api/jobs POST+GET; job list stubbed; /api/jobs smoke-api-jobs.ps1; api-jobs-smoke GitHub Actions workflow using APP_BASE_URL.",
+          "Decisions": "",
+          "Blockers": "",
+          "Owner": "Zach",
+          "Status": "✔",
+          "Target": "",
+          "Next": [
+            "Continue with Step 20: wire orchestrator job store + worker to back /api/jobs with real jobs instead of dev stub."
+          ],
+          "StepID": "19 Workflows run surface + jobs API",
+          "Phase": null
+        },
+        "at": "2025-11-22T04:19:28Z"
+      }
+    ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "orchestrator_e2e_smoke",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "Local orchestrator API + DDB/S3 smokes passing; orchestrator-e2e-nightly GitHub Actions workflow green (latest runId=19603266195).",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      ""
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "LastUpdated": "2025-11-23T00:27:16Z",
+    "History": [
+      {
+        "at": "2025-11-23T00:27:16Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "Local orchestrator API + DDB/S3 smokes passing; orchestrator-e2e-nightly GitHub Actions workflow green (latest runId=19603266195).",
+          "StepID": "orchestrator_e2e_smoke",
+          "StepTitle": null,
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "Next": [
+            ""
+          ],
+          "Owner": "Zach",
+          "Phase": null
+        }
+      }
+    ]
   }
 ]

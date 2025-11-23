@@ -56,10 +56,18 @@ if (-not $cpObj) {
 
 "`nLast checkpoint:" | Write-Host
 "  timestamp : {0}" -f $cpObj.timestamp | Write-Host
-"  area      : {0}" -f $cpObj.area      | Write-Host
-"  summary   : {0}" -f $cpObj.summary   | Write-Host
+if ($cpObj -and ($cpObj.PSObject.Properties.Name -contains 'area')) {
+    "  area      : {0}" -f $cpObj.area | Write-Host
+} else {
+    "  area      : (none)" | Write-Host
+}
+if ($cpObj -and ($cpObj.PSObject.Properties.Name -contains 'summary')) {
+    "  summary   : {0}" -f $cpObj.summary | Write-Host
+} else {
+    "  summary   : (none)" | Write-Host
+}
 
-if ($cpObj.nextActions) {
+if ($cpObj -and ($cpObj.PSObject.Properties.Name -contains 'nextActions') -and $cpObj.nextActions) {
     "  nextActions:" | Write-Host
     $cpObj.nextActions | ForEach-Object {
         "    - $_" | Write-Host
@@ -67,15 +75,23 @@ if ($cpObj.nextActions) {
 }
 
 # Build a ready-to-paste starter prompt for the next chat.
-$nextText = if ($cpObj.nextActions -and $cpObj.nextActions.Count -gt 0) {
+$nextText = if ($cpObj -and ($cpObj.PSObject.Properties.Name -contains 'nextActions') -and $cpObj.nextActions -and $cpObj.nextActions.Count -gt 0) {
     $cpObj.nextActions -join '; '
 } else {
     "pick the next open item from the Master Sheet."
 }
 
-$summaryTrim = ($cpObj.summary ?? "").Trim().TrimEnd(".")
+if ($cpObj -and ($cpObj.PSObject.Properties.Name -contains 'summary') -and $cpObj.summary) {
+    $summaryRaw = $cpObj.summary
+} else {
+    $summaryRaw = ""
+}
+$summaryTrim = $summaryRaw.Trim().TrimEnd(".")
 
 "`n[Starter prompt for next chat]" | Write-Host
-$starter = "Continue Lifebook build from checkpoint '{0}' in area '{1}'. We just {2}. Next, we should: {3}" -f `
-    $cpObj.timestamp, $cpObj.area, $summaryTrim, $nextText
+$starterArea = if ($cpObj -and ($cpObj.PSObject.Properties.Name -contains 'area') -and $cpObj.area) { $cpObj.area } else { '(none)' }
+$starterSummary = $summaryTrim
+$starterTimestamp = if ($cpObj -and ($cpObj.PSObject.Properties.Name -contains 'timestamp') -and $cpObj.timestamp) { $cpObj.timestamp } else { "" }
+$starter = "Continue Lifebook build from checkpoint '{0}' in area '{1}' — summary: {2}" -f $starterTimestamp, $starterArea, $starterSummary
+$starter = "Continue Lifebook build from checkpoint '{0}' in area '{1}' — summary: {2} (Next: {3})" -f $starterTimestamp, $starterArea, $starterSummary, $nextText
 $starter | Write-Host

@@ -1,5 +1,3 @@
 Phase | Step ID | Step Title | Status (☐/⏳/✔/⛔) | Evidence (IDs/ARNs/links) | Decisions | Blockers | Next actions (max 3) | Owner | Target (YYYY-MM-DD)
 --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
-Phase 0 — Infra | orchestrator_worker_ddb_adapter |  | ✔ | Updated orchestrator job-store adapter to support pk/sk, job_id, and jobId key shapes; Fixed updateJobStatus to use discovered key shape + correct UpdateExpression (status, updated_at, attempts, payload, error fields); Smoke script now parses job_id from output, scans DDB, and… |  |  |  | Zach | 
-Phase 0 — Infra | 18A_orchestrator_worker_idempotency |  | ✔ | job-status.ts + status/concurrency harness + orchestrator E2E smoke green; second-worker races modeled as idempotent noise. |  |  |  | Zach | 
-Phase 0 — Infra | 18 Core App Architecture |  | ✔ | Next 15 app shell + (dashboard) routes; workflows/captures/library skeleton; AppShell typed routes; /api/jobs POST contract + curl+UI 501 smoke; npm run typecheck + npm run dev both clean. |  |  | Continue Step 19: wire /api/jobs to orchestrator job creation + surface basic job status list for sample_hello_world. | Zach | 
+Phase 0 — Infra | orchestrator_e2e_smoke |  | ✔ | Local orchestrator API + DDB/S3 smokes passing; orchestrator-e2e-nightly GitHub Actions workflow green (latest runId=19603266195). |  |  |  | Zach | 
