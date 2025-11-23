@@ -48,6 +48,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   FAQ
                 </Link>
               </li>
+        <li>
+          <Link href="/tracks" className="text-gray-300 hover:text-white">
+            Study Tracks
+          </Link>
+        </li>
               <li>
                 <a
                   href="https://x.com/UseLifebookAi"
@@ -89,4 +94,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+
 

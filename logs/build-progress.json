@@ -896,5 +896,38 @@
         }
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "19C_study_tracks_baseline",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "Study Tracks (AWS Foundations & DevOps Essentials) are live at /tracks with per-step local progress (checkboxes + Mark all done / Clear progress), smoke-tested.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      ""
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "at": "2025-11-23T05:05:16Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "Study Tracks (AWS Foundations & DevOps Essentials) are live at /tracks with per-step local progress (checkboxes + Mark all done / Clear progress), smoke-tested.",
+          "StepID": "19C_study_tracks_baseline",
+          "StepTitle": null,
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "Next": [
+            ""
+          ],
+          "Owner": "Zach",
+          "Phase": null
+        }
+      }
+    ]
   }
 ]
