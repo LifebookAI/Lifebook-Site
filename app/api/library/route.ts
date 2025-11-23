@@ -1,15 +1,17 @@
 import { NextResponse } from "next/server";
-import type { LibrarySearchFilters } from "../../../lib/library/types";
-import type { LibraryStoreQuery } from "../../../lib/library/store";
-import { createMemoryLibraryStore } from "../../../lib/library/store-memory";
+import type {
+  LibrarySearchFilters,
+  LibraryItemKind,
+  LibraryItemSourceType,
+} from "../../../lib/library/types";
+import { listLibraryItemsForWorkspace } from "../../../lib/library/server";
 
 /**
  * GET /api/library
  *
- * MVP Personal Library route (19B).
- * - Parses querystring filters into LibrarySearchFilters
- * - Delegates listing to LibraryStore (currently memory-backed)
- * - Returns { workspaceId, items[] }
+ * Personal Library API (MVP, read-only).
+ * - Parses querystring filters (q, project, tags, kind, sourceType, pinned)
+ * - Delegates to LibraryStore (Postgres when available; otherwise in-memory stub)
  */
 
 function parseFilters(searchParams: URLSearchParams): LibrarySearchFilters {
@@ -43,16 +45,16 @@ function parseFilters(searchParams: URLSearchParams): LibrarySearchFilters {
 
   const kindParams = searchParams.getAll("kind");
   if (kindParams.length === 1) {
-    filters.kind = kindParams[0] as any;
+    filters.kind = kindParams[0] as LibraryItemKind;
   } else if (kindParams.length > 1) {
-    filters.kind = kindParams as any;
+    filters.kind = kindParams as LibraryItemKind[];
   }
 
   const sourceTypeParams = searchParams.getAll("sourceType");
   if (sourceTypeParams.length === 1) {
-    filters.sourceType = sourceTypeParams[0] as any;
+    filters.sourceType = sourceTypeParams[0] as LibraryItemSourceType;
   } else if (sourceTypeParams.length > 1) {
-    filters.sourceType = sourceTypeParams as any;
+    filters.sourceType = sourceTypeParams as LibraryItemSourceType[];
   }
 
   return filters;
@@ -60,22 +62,12 @@ function parseFilters(searchParams: URLSearchParams): LibrarySearchFilters {
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const searchParams = url.searchParams;
-  const filters = parseFilters(searchParams);
+  const filters = parseFilters(url.searchParams);
 
   // TODO: derive workspaceId from auth/session once available.
   const workspaceId = "demo-workspace";
 
-  const store = createMemoryLibraryStore({});
-  const query: LibraryStoreQuery = {
-    workspaceId,
-    filters,
-    limit: 50,
-    offset: 0,
-    orderBy: "created_at_desc",
-  };
-
-  const items = await store.list(query);
+  const { items } = await listLibraryItemsForWorkspace(workspaceId, filters);
 
   return NextResponse.json({ workspaceId, items });
 }
