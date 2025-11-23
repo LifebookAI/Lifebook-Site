@@ -8,15 +8,18 @@ interface LibraryResponse {
   items: LibraryItemSummary[];
 }
 
+type KindFilterValue = "any" | "workflow_output" | "capture";
+type SourceTypeFilterValue = "any" | "workflow" | "capture";
+
 /**
- * Basic Personal Library client for MVP (19B).
+ * Personal Library client for MVP (19B).
  * - Fetches from /api/library
- * - Drives querystring filters (q, pinned) from the UI
+ * - Drives querystring filters (q, tags, kind, sourceType, pinned) from the UI
  * - Renders a simple list of items with title, kind, project, and tags
  *
  * Later:
- * - Add tag and kind/source filters
- * - Wire to real workspace/auth + LibraryStore (Postgres)
+ * - Wire to real workspace/auth + Postgres LibraryStore
+ * - Add pagination and more advanced search UX
  */
 export function LibraryClient() {
   const [items, setItems] = useState<LibraryItemSummary[]>([]);
@@ -26,6 +29,9 @@ export function LibraryClient() {
 
   const [query, setQuery] = useState("");
   const [pinnedOnly, setPinnedOnly] = useState(false);
+  const [tags, setTags] = useState("");
+  const [kind, setKind] = useState<KindFilterValue>("any");
+  const [sourceType, setSourceType] = useState<SourceTypeFilterValue>("any");
 
   useEffect(() => {
     const controller = new AbortController();
@@ -44,6 +50,25 @@ export function LibraryClient() {
 
         if (pinnedOnly) {
           params.set("pinned", "1");
+        }
+
+        if (tags.trim()) {
+          const cleaned = tags
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean)
+            .join(",");
+          if (cleaned) {
+            params.set("tags", cleaned);
+          }
+        }
+
+        if (kind !== "any") {
+          params.append("kind", kind);
+        }
+
+        if (sourceType !== "any") {
+          params.append("sourceType", sourceType);
         }
 
         const qs = params.toString();
@@ -79,7 +104,7 @@ export function LibraryClient() {
     return () => {
       controller.abort();
     };
-  }, [query, pinnedOnly]);
+  }, [query, pinnedOnly, tags, kind, sourceType]);
 
   const hasItems = items.length > 0;
 
@@ -97,7 +122,7 @@ export function LibraryClient() {
         </div>
 
         <form
-          className="flex flex-col gap-2 md:flex-row md:items-center"
+          className="flex flex-col gap-2 md:flex-row md:flex-wrap md:items-center"
           onSubmit={(event) => {
             event.preventDefault();
           }}
@@ -121,15 +146,68 @@ export function LibraryClient() {
             )}
           </div>
 
-          <label className="inline-flex items-center gap-2 text-xs text-gray-300">
+          <div className="flex items-center gap-2">
             <input
-              type="checkbox"
-              className="h-3 w-3 rounded border-gray-500 bg-transparent"
-              checked={pinnedOnly}
-              onChange={(event) => setPinnedOnly(event.target.checked)}
+              type="text"
+              value={tags}
+              onChange={(event) => setTags(event.target.value)}
+              placeholder="Tags (comma-separated)"
+              className="w-56 rounded-md border border-gray-600 bg-white/5 px-2 py-1 text-sm text-gray-100 placeholder:text-gray-500 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
             />
-            Pinned only
-          </label>
+            {tags && (
+              <button
+                type="button"
+                onClick={() => setTags("")}
+                className="text-xs text-gray-400 hover:text-gray-200"
+              >
+                Clear tags
+              </button>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 text-xs text-gray-300">
+            <label className="flex items-center gap-1">
+              <span className="text-gray-400">Kind</span>
+              <select
+                value={kind}
+                onChange={(event) =>
+                  setKind(event.target.value as KindFilterValue)
+                }
+                className="rounded-md border border-gray-600 bg-slate-900 px-2 py-1 text-xs text-gray-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+              >
+                <option value="any">Any</option>
+                <option value="workflow_output">Workflow output</option>
+                <option value="capture">Capture</option>
+              </select>
+            </label>
+
+            <label className="flex items-center gap-1">
+              <span className="text-gray-400">Source</span>
+              <select
+                value={sourceType}
+                onChange={(event) =>
+                  setSourceType(
+                    event.target.value as SourceTypeFilterValue,
+                  )
+                }
+                className="rounded-md border border-gray-600 bg-slate-900 px-2 py-1 text-xs text-gray-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+              >
+                <option value="any">Any</option>
+                <option value="workflow">Workflow</option>
+                <option value="capture">Capture</option>
+              </select>
+            </label>
+
+            <label className="inline-flex items-center gap-2">
+              <input
+                type="checkbox"
+                className="h-3 w-3 rounded border-gray-500 bg-transparent"
+                checked={pinnedOnly}
+                onChange={(event) => setPinnedOnly(event.target.checked)}
+              />
+              Pinned only
+            </label>
+          </div>
         </form>
       </div>
 
