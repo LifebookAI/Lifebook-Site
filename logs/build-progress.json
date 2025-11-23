@@ -962,5 +962,36 @@
         }
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "19E_capture_placeholder",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "/capture now shows a generic Capture explainer and links to Study Tracks; decoupled from SAA plans.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "at": "2025-11-23T18:10:09Z",
+        "patch": {
+          "Blockers": "",
+          "Evidence": "/capture now shows a generic Capture explainer and links to Study Tracks.",
+          "StepID": "19E_capture_placeholder",
+          "StepTitle": null,
+          "Decisions": "",
+          "Status": "✔",
+          "Target": "",
+          "Next": [
+            ""
+          ],
+          "Owner": "Zach",
+          "Phase": null
+        }
+      }
+    ]
   }
 ]
