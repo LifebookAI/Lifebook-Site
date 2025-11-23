@@ -234,20 +234,14 @@
     "StepID": "19B",
     "StepTitle": "Transcription stub → request+result artifacts (feature-flagged)",
     "Status": "✔",
-    "Owner": "Founder",
-    "Target": "2026-01-01 (Closed Beta MVP)",
-    "Evidence": [
-      "S3 artifacts: requests/* queued→completed; results/* written",
-      "Tag: checkpoint/phase4.step19b/20251105_1150"
-    ],
+    "Owner": "Zach",
+    "Target": "",
+    "Evidence": "Library list/detail HTML + JSON endpoints wired to LibraryStore.getById; local smoke (infra/library/smoke-library.ps1) and GitHub Actions library-smoke workflow both added and passing.",
     "Decisions": [
       "Record lifecycle: requests/* → results/*, update request with completion + link.",
       "Keep the real STT call behind FEATURE_TRANSCRIBE until 19C."
     ],
-    "Next": [
-      "19C — replace stub with real Whisper v3 call (adapter), same result contract.",
-      "20 — add SQS DLQ alarm + basic job metrics (count, latency)."
-    ],
+    "Next": [],
     "Timestamp": "2025-11-05T11:50:53"
   },
   {

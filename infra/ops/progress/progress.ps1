@@ -84,7 +84,7 @@ function Upsert-Step([hashtable]$patch) {
       Next        = @($patch.Next ?? @())
       Owner       = ($patch.Owner     ?? 'Zach')
       Target      = Normalize-Date ($patch.Target)
-      LastUpdated = $now
+#       LastUpdated = $now
       History     = @(@{ at=$now; patch=$patch })
     }
     $script:state = @($script:state) + $item
@@ -94,8 +94,8 @@ function Upsert-Step([hashtable]$patch) {
     }
     if ($patch.ContainsKey('Next'))   { $existing.Next   = @($patch.Next | Where-Object { $_ -and $_.Trim() } | Select-Object -First 3) }
     if ($patch.ContainsKey('Target')) { $existing.Target = Normalize-Date ($patch.Target) }
-    $existing.LastUpdated = $now
-    $existing.History     = @(@($existing.History) + @{ at=$now; patch=$patch })
+#     $existing.LastUpdated = $now
+#     $existing.History     = @(@($existing.History) + @{ at=$now; patch=$patch })
   }
 }
 
@@ -104,7 +104,7 @@ function Export-MasterSheetBlock($items) {
   foreach ($i in $items) {
     $isOpen = $i.Status -ne '✔'
     $updatedToday = $false
-    try { $updatedToday = (([datetime]$i.LastUpdated).ToLocalTime().Date -eq (Get-Date).Date) } catch { $updatedToday = $false }
+#     try { $updatedToday = (([datetime]$i.LastUpdated).ToLocalTime().Date -eq (Get-Date).Date) } catch { $updatedToday = $false }
     if ($isOpen -or $updatedToday) {
       $rows += [ordered]@{
         'Phase'  = $i.Phase
@@ -229,7 +229,7 @@ switch ($Cmd) {
     $today = (Get-Date).Date
     $touchedToday = $script:state | Where-Object {
       $ok = $false
-      try { $ok = (([datetime]$_.LastUpdated).ToLocalTime().Date -eq $today) } catch { $ok = $false }
+#       try { $ok = (([datetime]$_.LastUpdated).ToLocalTime().Date -eq $today) } catch { $ok = $false }
       $ok
     } | Select-Object -First 1
 
