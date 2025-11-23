@@ -1,6 +1,6 @@
-import { notFound } from 'next/navigation';
-import { getAllStudyTracks, getStudyTrackById } from '@/lib/study-tracks';
-import { StudyTrackDetail } from '@/components/study-track-detail';
+import { notFound } from "next/navigation";
+import { getAllStudyTracks, getStudyTrackById } from "@/lib/study-tracks";
+import { StudyTrackClient } from "./StudyTrackClient";
 
 type TrackPageProps = {
   params: {
@@ -19,5 +19,5 @@ export default function StudyTrackPage({ params }: TrackPageProps) {
     notFound();
   }
 
-  return <StudyTrackDetail track={track} />;
+  return <StudyTrackClient track={track} />;
 }
