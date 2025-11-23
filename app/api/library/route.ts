@@ -1,17 +1,15 @@
 import { NextResponse } from "next/server";
-import type {
-  LibraryItemSummary,
-  LibraryItemKind,
-  LibraryItemSourceType,
-  LibrarySearchFilters,
-} from "../../../lib/library/types";
+import type { LibrarySearchFilters } from "../../../lib/library/types";
+import type { LibraryStoreQuery } from "../../../lib/library/store";
+import { createMemoryLibraryStore } from "../../../lib/library/store-memory";
 
 /**
  * GET /api/library
  *
- * MVP stub for Personal Library (19B).
- * - Supports basic querystring filters (q, project, tags, kind, sourceType, pinned).
- * - Currently uses in-memory sample data; later we wire this to LibraryStore.
+ * MVP Personal Library route (19B).
+ * - Parses querystring filters into LibrarySearchFilters
+ * - Delegates listing to LibraryStore (currently memory-backed)
+ * - Returns { workspaceId, items[] }
  */
 
 function parseFilters(searchParams: URLSearchParams): LibrarySearchFilters {
@@ -45,74 +43,19 @@ function parseFilters(searchParams: URLSearchParams): LibrarySearchFilters {
 
   const kindParams = searchParams.getAll("kind");
   if (kindParams.length === 1) {
-    filters.kind = kindParams[0] as LibraryItemKind;
+    filters.kind = kindParams[0] as any;
   } else if (kindParams.length > 1) {
-    filters.kind = kindParams as LibraryItemKind[];
+    filters.kind = kindParams as any;
   }
 
   const sourceTypeParams = searchParams.getAll("sourceType");
   if (sourceTypeParams.length === 1) {
-    filters.sourceType = sourceTypeParams[0] as LibraryItemSourceType;
+    filters.sourceType = sourceTypeParams[0] as any;
   } else if (sourceTypeParams.length > 1) {
-    filters.sourceType = sourceTypeParams as LibraryItemSourceType[];
+    filters.sourceType = sourceTypeParams as any;
   }
 
   return filters;
-}
-
-function matchesFilters(
-  item: LibraryItemSummary,
-  filters: LibrarySearchFilters,
-): boolean {
-  if (filters.pinnedOnly && !item.isPinned) {
-    return false;
-  }
-
-  if (filters.project && item.project !== filters.project) {
-    return false;
-  }
-
-  if (filters.tags && filters.tags.length > 0) {
-    const hasOverlap = item.tags.some((tag) =>
-      filters.tags!.includes(tag),
-    );
-    if (!hasOverlap) {
-      return false;
-    }
-  }
-
-  if (filters.kind) {
-    const kinds = Array.isArray(filters.kind) ? filters.kind : [filters.kind];
-    if (!kinds.includes(item.kind)) {
-      return false;
-    }
-  }
-
-  if (filters.sourceType) {
-    const sourceTypes = Array.isArray(filters.sourceType)
-      ? filters.sourceType
-      : [filters.sourceType];
-    if (!sourceTypes.includes(item.sourceType)) {
-      return false;
-    }
-  }
-
-  if (filters.query) {
-    const needle = filters.query.toLowerCase();
-    const haystack = [
-      item.title,
-      item.project ?? "",
-      item.tags.join(" "),
-    ]
-      .join(" ")
-      .toLowerCase();
-
-    if (!haystack.includes(needle)) {
-      return false;
-    }
-  }
-
-  return true;
 }
 
 export async function GET(request: Request) {
@@ -123,35 +66,16 @@ export async function GET(request: Request) {
   // TODO: derive workspaceId from auth/session once available.
   const workspaceId = "demo-workspace";
 
-  const items: LibraryItemSummary[] = [
-    {
-      id: "example-1",
-      title: "Sample workflow run output",
-      kind: "workflow_output",
-      sourceType: "workflow",
-      project: "demo",
-      tags: ["sample", "hello-world"],
-      isPinned: true,
-      createdAt: new Date().toISOString(),
-      lastViewedAt: null,
-    },
-    {
-      id: "example-2",
-      title: "Capture: S3 lab notes",
-      kind: "capture",
-      sourceType: "capture",
-      project: "aws-foundations",
-      tags: ["aws", "study-track"],
-      isPinned: false,
-      createdAt: new Date().toISOString(),
-      lastViewedAt: null,
-    },
-  ];
+  const store = createMemoryLibraryStore({});
+  const query: LibraryStoreQuery = {
+    workspaceId,
+    filters,
+    limit: 50,
+    offset: 0,
+    orderBy: "created_at_desc",
+  };
 
-  const filtered =
-    Object.keys(filters).length === 0
-      ? items
-      : items.filter((item) => matchesFilters(item, filters));
+  const items = await store.list(query);
 
-  return NextResponse.json({ workspaceId, items: filtered });
+  return NextResponse.json({ workspaceId, items });
 }
