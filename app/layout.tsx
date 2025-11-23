@@ -59,7 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </a>
               </li>
               <li>
-                <Link href="/contact" className="text-gray-300 hover:text-white">
+                <Link href={{ pathname: "/contact" }} className="text-gray-300 hover:text-white">
                   Contact
                 </Link>
               </li>
@@ -73,10 +73,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-8 text-sm text-gray-400">
             <p>© {new Date().getFullYear()} Lifebook.AI</p>
             <div className="flex items-center gap-5">
-              <Link href="/privacy" className="hover:text-white">
+              <Link href={{ pathname: "/privacy" }} className="hover:text-white">
                 Privacy
               </Link>
-              <Link href="/terms" className="hover:text-white">
+              <Link href={{ pathname: "/terms" }} className="hover:text-white">
                 Terms
               </Link>
               <a href="mailto:support@uselifebook.ai" className="hover:text-white">
@@ -89,3 +89,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+

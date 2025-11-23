@@ -29,7 +29,7 @@ export default function TermsPage() {
       <h2 className="mt-10 text-xl font-medium text-white">Privacy</h2>
       <p className="mt-4 text-gray-100">
         See our{" "}
-        <Link href="/privacy" className="text-sky-400 underline hover:text-sky-300">
+        <Link href={{ pathname: "/privacy" }} className="text-sky-400 underline hover:text-sky-300">
           Privacy Policy
         </Link>
         .
@@ -50,3 +50,4 @@ export default function TermsPage() {
     </main>
   );
 }
+
