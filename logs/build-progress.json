@@ -999,12 +999,10 @@
     "StepID": "19F_settings_placeholder",
     "StepTitle": "",
     "Status": "✔",
-    "Evidence": "/settings now shows a Settings explainer, privacy/export note, and link back to Study Tracks.",
+    "Evidence": "/settings now shows a generic Settings explainer (workspace/billing/controls placeholder); navigation is stable for the MVP.",
     "Decisions": "",
     "Blockers": "",
-    "Next": [
-      ""
-    ],
+    "Next": [],
     "Owner": "Zach",
     "Target": "",
     "History": [
