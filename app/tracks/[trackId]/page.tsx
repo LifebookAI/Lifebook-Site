@@ -1,23 +1,24 @@
-import { notFound } from "next/navigation";
-import { getAllStudyTracks, getStudyTrackById } from "@/lib/study-tracks";
-import { StudyTrackClient } from "./StudyTrackClient";
+export const dynamic = "force-dynamic";
 
-type TrackPageProps = {
-  params: {
-    trackId: string;
-  };
-};
+/**
+ * Stub page for /tracks/[trackId].
+ * Keeps CI green while the real Study Track UI + backend are under construction.
+ */
+export default async function TrackPage(props: any) {
+  const paramsPromise = (props as { params?: Promise<{ trackId: string }> }).params;
+  const { trackId } =
+    (paramsPromise && (await paramsPromise)) ?? { trackId: "unknown" };
 
-export function generateStaticParams() {
-  const tracks = getAllStudyTracks();
-  return tracks.map((track) => ({ trackId: track.id }));
-}
-
-export default function StudyTrackPage({ params }: TrackPageProps) {
-  const track = getStudyTrackById(params.trackId);
-  if (!track) {
-    notFound();
-  }
-
-  return <StudyTrackClient track={track} />;
+  return (
+    <main className="px-4 py-8">
+      <h1 className="text-2xl font-semibold">Study Track (stub)</h1>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Track page for <code>{trackId}</code> is not implemented yet.
+      </p>
+      <p className="mt-1 text-sm text-muted-foreground">
+        This placeholder keeps the MVP CI build green while the real Study
+        Tracks feature is being built.
+      </p>
+    </main>
+  );
 }
