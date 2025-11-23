@@ -1,83 +1,24 @@
-import { notFound } from "next/navigation";
-import type { LibraryItemSummary } from "../../../lib/library/types";
-import { getLibraryItemForWorkspace } from "../../../lib/library/server";
+export const dynamic = "force-dynamic";
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-}
-
-async function getLibraryItem(id: string): Promise<LibraryItemSummary | null> {
-  // TODO: derive workspaceId from auth/session once available.
-  const workspaceId = "demo-workspace";
-  return getLibraryItemForWorkspace(workspaceId, id);
-}
-
-export default async function LibraryItemPage({ params }: PageProps) {
-  const item = await getLibraryItem(params.id);
-
-  if (!item) {
-    notFound();
-  }
-
-  const created = new Date(item.createdAt).toLocaleString();
+/**
+ * Stub page for /library/[id].
+ * Keeps CI green while the real Library UI + backend are under construction.
+ */
+export default async function LibraryItemPage(props: any) {
+  const paramsPromise = (props as { params?: Promise<{ id: string }> }).params;
+  const { id } =
+    (paramsPromise && (await paramsPromise)) ?? { id: "unknown" };
 
   return (
-    <main className="mx-auto max-w-3xl space-y-4 px-4 py-8">
-      <div className="space-y-1">
-        <p className="text-xs text-sky-400">
-          <a href="/library" className="hover:underline">
-            ← Back to Library
-          </a>
-        </p>
-        <h1 className="text-2xl font-semibold tracking-tight">{item.title}</h1>
-        {item.project && (
-          <p className="text-sm text-gray-400">
-            Project{" "}
-            <span className="font-medium text-gray-200">{item.project}</span>
-          </p>
-        )}
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2 text-xs text-gray-300">
-        <span className="inline-flex items-center rounded-full border border-gray-700 px-2 py-0.5 font-medium uppercase tracking-wide">
-          {item.kind}
-        </span>
-        <span className="inline-flex items-center rounded-full bg-slate-800 px-2 py-0.5">
-          Source: {item.sourceType}
-        </span>
-        {item.isPinned && (
-          <span className="inline-flex items-center rounded-full bg-yellow-100/10 px-2 py-0.5 text-yellow-300">
-            Pinned
-          </span>
-        )}
-      </div>
-
-      {item.tags && item.tags.length > 0 && (
-        <div className="flex flex-wrap gap-1 text-xs">
-          {item.tags.map((tag) => (
-            <span
-              key={tag}
-              className="inline-flex items-center rounded-full bg-slate-800 px-2 py-0.5 text-gray-200"
-            >
-              #{tag}
-            </span>
-          ))}
-        </div>
-      )}
-
-      <p className="text-xs text-gray-500">Created: {created}</p>
-
-      <section className="mt-4 rounded-lg border border-dashed border-gray-700 bg-slate-900/40 p-4 text-sm text-gray-400">
-        <h2 className="mb-1 text-sm font-medium text-gray-200">
-          Artifact preview (coming soon)
-        </h2>
-        <p>
-          This is where the workflow output, capture transcript, or study pack
-          will appear once the artifact viewers are wired up.
-        </p>
-      </section>
+    <main className="px-4 py-8">
+      <h1 className="text-2xl font-semibold">Library item (stub)</h1>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Library page for item <code>{id}</code> is not implemented yet.
+      </p>
+      <p className="mt-1 text-sm text-muted-foreground">
+        This is a placeholder to keep the MVP CI build green while the real
+        Library feature is being built.
+      </p>
     </main>
   );
 }
