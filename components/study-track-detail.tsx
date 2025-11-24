@@ -126,7 +126,7 @@ export function StudyTrackDetail({ track }: Props) {
                 <div className="flex flex-col items-end gap-2 shrink-0">
                   {step.href && (
                     <Link
-                      href={step.href}
+                      href={step.href as any}
                       className="text-xs font-medium text-blue-500 hover:underline"
                     >
                       Open
@@ -148,3 +148,4 @@ export function StudyTrackDetail({ track }: Props) {
     </main>
   );
 }
+
