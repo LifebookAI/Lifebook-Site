@@ -8,3 +8,5 @@ export function getAllStudyTracks(): StudyTrack[] {
 export function getStudyTrackById(id: string): StudyTrack | undefined {
   return STUDY_TRACKS.find((track) => track.id === id);
 }
+export type { StudyTrack } from "./types";
+
