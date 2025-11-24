@@ -133,7 +133,7 @@ export function StudyTrackClient({ track }: StudyTrackClientProps) {
 
                 {step.href && (
                   <Link
-                    href={step.href}
+                    href={step.href as any}
                     className="text-xs font-medium text-blue-400 hover:underline shrink-0"
                   >
                     Open
@@ -147,3 +147,4 @@ export function StudyTrackClient({ track }: StudyTrackClientProps) {
     </main>
   );
 }
+
