@@ -76,7 +76,7 @@ export function StudyTracksIndexClient({ tracks }: StudyTracksIndexClientProps) 
                     </h2>
                     <p className="text-sm text-neutral-300">{track.tagline}</p>
                     <p className="text-xs text-neutral-500">
-                      {track.level} • Approx. {track.estimatedMinutes} min
+                      {track.level} • Approx. {track.estimatedDurationMinutes} min
                     </p>
                     <p className="text-xs text-neutral-500">{total} steps</p>
                   </div>
@@ -109,3 +109,4 @@ export function StudyTracksIndexClient({ tracks }: StudyTracksIndexClientProps) 
     </main>
   );
 }
+
