@@ -28,7 +28,7 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # NOTE: Set repo secret AWS_ORCHESTRATOR_ROLE_ARN to the ARN of your GitHubOIDC_LifebookSite role.
       - name: Configure AWS credentials (OIDC)
