@@ -6,7 +6,7 @@
 
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export function GET() {
   return NextResponse.json(
     {
       ok: false,
@@ -15,3 +15,4 @@ export async function GET() {
     { status: 503 },
   );
 }
+
