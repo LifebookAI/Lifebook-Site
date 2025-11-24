@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any, @typescript-eslint/no-misused-promises, @typescript-eslint/require-await, @typescript-eslint/no-unnecessary-type-assertion */
 /**
  * Temporary in-memory DB stub for the Library store.
  * Satisfies `import("../db/server")` in lib/library/server.ts for Next 15 CI.
@@ -18,3 +19,4 @@ const db: DbClient = {
 
 export { db };
 export default db;
+

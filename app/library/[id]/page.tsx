@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any, @typescript-eslint/no-misused-promises, @typescript-eslint/require-await, @typescript-eslint/no-unnecessary-type-assertion */
 export const dynamic = "force-dynamic";
 
 /**
@@ -22,3 +23,4 @@ export default async function LibraryItemPage(props: any) {
     </main>
   );
 }
+

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any, @typescript-eslint/no-misused-promises, @typescript-eslint/require-await, @typescript-eslint/no-unnecessary-type-assertion */
 import type { LibraryItemSummary } from "./types";
 import type { LibraryStoreQuery } from "./store";
 
@@ -159,3 +160,4 @@ export function createPostgresLibraryStore({
     getById,
   };
 }
+

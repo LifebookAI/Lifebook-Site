@@ -1,4 +1,4 @@
-import type { StudyTrack, StudyTrackId } from './types';
+import type { StudyTrack } from './types';
 
 export const STUDY_TRACKS: StudyTrack[] = [
   {
@@ -114,4 +114,5 @@ export const STUDY_TRACKS: StudyTrack[] = [
     ],
   },
 ];
+
 
