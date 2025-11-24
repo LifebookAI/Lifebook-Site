@@ -114,13 +114,4 @@ export const STUDY_TRACKS: StudyTrack[] = [
     ],
   },
 ];
-/**
- * Temporary exported StudyTrack type to satisfy CI build.
- * Replace with the real shape when the Study Tracks feature is implemented.
- */
-export type StudyTrack = {
-  id: string;
-  title: string;
-  description?: string;
-  slug?: string;
-};
+
