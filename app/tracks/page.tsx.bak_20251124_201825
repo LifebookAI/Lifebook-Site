@@ -1,0 +1,51 @@
+import Link from 'next/link';
+import { getAllTracks } from '@/lib/tracks/registry';
+
+export default async function TracksPage() {
+  const tracks = getAllTracks();
+
+  return (
+    <main className="mx-auto max-w-4xl px-4 py-8 space-y-6">
+      <header className="space-y-2">
+        <h1 className="text-3xl font-semibold tracking-tight">
+          Study Tracks
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Guided, hands-on sequences that pair real AWS labs with Lifebook
+          workflows so you ship artifacts while you learn.
+        </p>
+      </header>
+
+      <section className="grid gap-4 md:grid-cols-2">
+        {tracks.map((track) => (
+          <Link
+            key={track.id}
+            href={`/tracks/${track.id}`}
+            className="group rounded-2xl border bg-card p-4 shadow-sm transition hover:shadow-md"
+          >
+            <div className="flex items-start justify-between gap-2">
+              <div className="space-y-1">
+                <h2 className="text-lg font-medium">{track.title}</h2>
+                {track.subtitle && (
+                  <p className="text-xs text-muted-foreground">
+                    {track.subtitle}
+                  </p>
+                )}
+              </div>
+              <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-secondary-foreground">
+                {track.level}
+              </span>
+            </div>
+            <p className="mt-3 line-clamp-3 text-sm text-muted-foreground">
+              {track.description}
+            </p>
+            <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
+              <span>{track.steps.length} steps</span>
+              <span>~{track.estimatedMinutesTotal} min</span>
+            </div>
+          </Link>
+        ))}
+      </section>
+    </main>
+  );
+}

@@ -1,0 +1,78 @@
+import { NextRequest, NextResponse } from "next/server";
+import { randomUUID } from "node:crypto";
+
+export type JobStatus = "queued" | "running" | "succeeded" | "failed";
+
+export interface Job {
+  id: string;
+  templateId: string;
+  journeyKey?: string;
+  metadata?: Record<string, unknown>;
+  input?: unknown;
+  status: JobStatus;
+  createdAt: string;
+}
+
+export type JobsPostBody = {
+  templateId?: string;
+  workflowTemplateId?: string;
+  journeyKey?: string;
+  metadata?: Record<string, unknown>;
+  input?: unknown;
+};
+
+const inMemoryJobs: Job[] = [];
+
+// Helper so other server code (like /jobs page) can read the jobs
+export function getJobs(): Job[] {
+  return inMemoryJobs;
+}
+
+// Simple GET: return all in-memory jobs (dev / debugging)
+export function GET() {
+  return NextResponse.json({ jobs: inMemoryJobs });
+}
+
+// POST: create a new job from templateId/workflowTemplateId
+export async function POST(req: NextRequest) {
+  let body: JobsPostBody;
+
+  try {
+    body = (await req.json()) as JobsPostBody;
+  } catch {
+    return NextResponse.json(
+      { error: "Invalid JSON body" },
+      { status: 400 },
+    );
+  }
+
+  const templateId = body.templateId ?? body.workflowTemplateId;
+
+  if (!templateId) {
+    return NextResponse.json(
+      { error: "templateId or workflowTemplateId is required" },
+      { status: 400 },
+    );
+  }
+
+  const job: Job = {
+    id: randomUUID(),
+    templateId,
+    journeyKey: body.journeyKey,
+    metadata: body.metadata,
+    input: body.input,
+    status: "queued",
+    createdAt: new Date().toISOString(),
+  };
+
+  inMemoryJobs.push(job);
+
+  return NextResponse.json(
+    {
+      jobId: job.id,
+      status: job.status,
+      job,
+    },
+    { status: 201 },
+  );
+}

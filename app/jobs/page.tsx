@@ -1,81 +1,140 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 import Link from "next/link";
-import { getJobs, type Job } from "../api/jobs/jobs-store";
+import { headers } from "next/headers";
 
-export const dynamic = "force-dynamic";
+type JobStatus = string;
 
-function getMetaString(job: Job, key: string): string | null {
-  const meta = job.metadata;
-  if (!meta) {
+interface Job {
+  id: string;
+  stepTitle: string;
+  templateId: string;
+  trackTitle: string;
+  status: JobStatus;
+  createdAt: string;
+  result?: unknown;
+}
+
+async function fetchJobs(): Promise<Job[]> {
+  const hdrs = await headers();
+  const host =
+    hdrs.get("x-forwarded-host") ?? hdrs.get("host") ?? "localhost:3000";
+  const protocol = hdrs.get("x-forwarded-proto") ?? "http";
+  const baseUrl = `${protocol}://${host}`;
+
+  const res = await fetch(`${baseUrl}/api/jobs`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch jobs: ${res.status}`);
+  }
+
+  return (await res.json()) as Job[];
+}
+
+function getSessionIdFromResult(result: unknown): string | null {
+  if (!result || typeof result !== "object") {
     return null;
   }
 
-  const value = meta[key];
+  const maybeSessionId = (result as { sessionId?: unknown }).sessionId;
+  if (typeof maybeSessionId !== "string") return null;
 
-  return typeof value === "string" ? value : null;
+  const trimmed = maybeSessionId.trim();
+  return trimmed.length > 0 ? trimmed : null;
 }
 
-export default function JobsPage() {
-  const jobs = getJobs();
+export default async function JobsPage() {
+  const jobs = await fetchJobs();
+  const hasJobs = jobs.length > 0;
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
-      <header className="space-y-1">
-        <h1 className="text-2xl font-semibold">Jobs</h1>
-        <p className="text-sm text-muted-foreground">
-          These are jobs you&apos;ve started from Study Tracks in this dev session.
-        </p>
-      </header>
+    <main className="mx-auto max-w-5xl px-4 py-8">
+      <h1 className="text-2xl font-semibold mb-4">Jobs</h1>
+      <p className="mb-4 text-sm">
+        In-memory jobs for Study Tracks. J1 lab jobs can be run to create a lab
+        session entry in your Library.
+      </p>
 
-      {jobs.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          No jobs yet. Start a step from a Study Track to enqueue one.
-        </p>
-      ) : (
-        <section className="space-y-2">
-          <div className="overflow-hidden rounded-lg border divide-y">
-            {jobs.map((job) => {
-              const trackTitle = getMetaString(job, "trackTitle");
-              const stepTitle = getMetaString(job, "stepTitle");
+      <table className="min-w-full border-collapse text-sm">
+        <thead>
+          <tr>
+            <th className="border px-2 py-1 text-left">Step</th>
+            <th className="border px-2 py-1 text-left">Track</th>
+            <th className="border px-2 py-1 text-left">Job ID</th>
+            <th className="border px-2 py-1 text-left">Status</th>
+            <th className="border px-2 py-1 text-left">Created</th>
+            <th className="border px-2 py-1 text-left">Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          {hasJobs ? (
+            jobs.map((job) => {
+              const sessionId = getSessionIdFromResult(job.result);
 
               return (
-                <article
-                  key={job.id}
-                  className="flex flex-col gap-2 p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div className="space-y-1">
-                    <div className="font-medium">
-                      {stepTitle ?? job.templateId}
+                <tr key={job.id}>
+                  <td className="border px-2 py-1 align-top">
+                    <div className="font-medium">{job.stepTitle}</div>
+                    <div className="text-xs text-muted-foreground">
+                      template: {job.templateId}
                     </div>
-                    {trackTitle && (
-                      <div className="text-xs text-muted-foreground">
-                        {trackTitle}
+                  </td>
+                  <td className="border px-2 py-1 align-top">
+                    {job.trackTitle}
+                  </td>
+                  <td className="border px-2 py-1 align-top">
+                    <code className="text-xs">{job.id}</code>
+                  </td>
+                  <td className="border px-2 py-1 align-top">{job.status}</td>
+                  <td className="border px-2 py-1 align-top">
+                    {job.createdAt}
+                  </td>
+                  <td className="border px-2 py-1 align-top">
+                    {sessionId ? (
+                      <div className="flex flex-col gap-1">
+                        <span>Result ready.</span>
+                        <Link
+                          href={`/library/labs/${sessionId}`}
+                          className="underline"
+                        >
+                          View lab session
+                        </Link>
+                      </div>
+                    ) : job.result ? (
+                      <div className="flex flex-col gap-1">
+                        <span>Result ready.</span>
+                        <Link
+                          href={`/jobs/${job.id}`}
+                          className="underline"
+                        >
+                          View raw result
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-1">
+                        <span>No result yet.</span>
+                        <Link
+                          href={`/jobs/${job.id}/run`}
+                          className="underline"
+                        >
+                          Run lab materialization
+                        </Link>
                       </div>
                     )}
-                    <div className="text-xs text-muted-foreground">
-                      Job ID: {job.id}
-                    </div>
-                  </div>
-                  <div className="text-right text-xs text-muted-foreground">
-                    <div className="font-semibold uppercase tracking-wide">
-                      {job.status}
-                    </div>
-                    <div>{new Date(job.createdAt).toLocaleString()}</div>
-                  </div>
-                </article>
+                  </td>
+                </tr>
               );
-            })}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            For now jobs are stored in memory only and reset when the dev server restarts.
-          </p>
-        </section>
-      )}
-
-      <footer className="text-xs">
-        <Link href="/tracks" className="underline">
-          ← Back to Study Tracks
-        </Link>
-      </footer>
+            })
+          ) : (
+            <tr>
+              <td colSpan={6} className="border px-2 py-2 text-sm">
+                No jobs yet. Start a Study Track step to enqueue a lab job.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </main>
   );
 }

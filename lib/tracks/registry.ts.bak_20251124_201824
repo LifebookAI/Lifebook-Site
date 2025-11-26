@@ -1,0 +1,23 @@
+import type { StudyTrack, TrackId } from './types';
+import { AWS_FOUNDATIONS_TRACK } from './aws-foundations';
+
+const TRACKS: StudyTrack[] = [
+  AWS_FOUNDATIONS_TRACK,
+  // Add DevOps Essentials and other tracks here as they are defined.
+];
+
+const TRACKS_BY_ID: Record<TrackId, StudyTrack> = TRACKS.reduce(
+  (acc, track) => {
+    acc[track.id] = track;
+    return acc;
+  },
+  {} as Record<TrackId, StudyTrack>,
+);
+
+export function getAllTracks(): StudyTrack[] {
+  return TRACKS;
+}
+
+export function getTrackById(id: TrackId | string): StudyTrack | undefined {
+  return TRACKS_BY_ID[id as TrackId];
+}

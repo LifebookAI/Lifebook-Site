@@ -1,0 +1,137 @@
+import { NextRequest, NextResponse } from "next/server";
+
+type EnqueueBody = {
+  templateId?: string;
+  workflowTemplateId?: string;
+  journeyKey?: string;
+  metadata?: Record<string, unknown>;
+  input?: unknown;
+};
+
+type ErrorLike = {
+  error?: unknown;
+};
+
+type JobsResponse = {
+  response: Response;
+  body: unknown;
+};
+
+async function postToJobs(
+  url: string,
+  payload: Record<string, unknown>,
+): Promise<JobsResponse> {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(payload),
+    cache: "no-store",
+  });
+
+  const text = await res.text();
+  let parsed: unknown = null;
+
+  if (text) {
+    try {
+      parsed = JSON.parse(text) as unknown;
+    } catch {
+      parsed = text;
+    }
+  }
+
+  return { response: res, body: parsed };
+}
+
+function getErrorMessage(body: unknown): string | null {
+  if (!body || typeof body !== "object") return null;
+
+  const maybe = body as ErrorLike;
+  if (typeof maybe.error === "string") {
+    return maybe.error;
+  }
+
+  return null;
+}
+
+export async function POST(req: NextRequest) {
+  let body: EnqueueBody;
+
+  try {
+    body = (await req.json()) as EnqueueBody;
+  } catch {
+    return NextResponse.json(
+      { error: "Invalid JSON body" },
+      { status: 400 },
+    );
+  }
+
+  const templateId = body.templateId ?? body.workflowTemplateId;
+
+  if (!templateId) {
+    return NextResponse.json(
+      { error: "Missing templateId/workflowTemplateId" },
+      { status: 400 },
+    );
+  }
+
+  const targetUrl = new URL("/api/jobs", req.url).toString();
+
+  // Try a few candidate shapes that the /api/jobs endpoint might expect.
+  const candidates: Record<string, unknown>[] = [
+    {
+      templateId,
+      journeyKey: body.journeyKey,
+      metadata: body.metadata,
+      input: body.input,
+    },
+    {
+      workflowTemplateId: templateId,
+      journeyKey: body.journeyKey,
+      metadata: body.metadata,
+      input: body.input,
+    },
+    {
+      templateId,
+    },
+  ];
+
+  let lastStatus = 500;
+  let lastBody: unknown = null;
+
+  for (const candidate of candidates) {
+    const { response, body: jobsBody } = await postToJobs(targetUrl, candidate);
+    lastStatus = response.status;
+    lastBody = jobsBody;
+
+    if (response.ok) {
+      // Pass through whatever /api/jobs returned on success
+      return NextResponse.json(jobsBody, { status: response.status });
+    }
+
+    const message = getErrorMessage(jobsBody);
+
+    // If the error is *not* a simple 400 Invalid body, bubble it up immediately.
+    if (response.status !== 400 || message !== "Invalid body") {
+      return NextResponse.json(
+        {
+          error: "Jobs API error",
+          status: response.status,
+          body: jobsBody,
+        },
+        { status: response.status },
+      );
+    }
+  }
+
+  // All candidate shapes were rejected with 400 Invalid body; surface the last one.
+  return NextResponse.json(
+    {
+      error: "Failed to enqueue job: all payload shapes were rejected.",
+      status: lastStatus,
+      body: lastBody,
+    },
+    { status: lastStatus },
+  );
+}

@@ -1,0 +1,32 @@
+export type TrackId = "aws-foundations-j1";
+
+export interface StudyTrackStep {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  estimatedMinutes: number;
+  workflowTemplateId?: string;
+  journeyKey?: string;
+
+  // Allow richer step metadata without breaking type-checking
+  [key: string]: unknown;
+}
+
+export interface StudyTrack {
+  id: TrackId;
+  slug: string;
+  title: string;
+  subtitle?: string;
+  description: string;
+  journeyKey: string;
+  steps: StudyTrackStep[];
+
+  // Extra metadata used by some tracks (like aws-foundations.ts)
+  level?: string;
+  estimatedMinutesTotal?: number;
+  tags?: string[];
+
+  // Allow additional track-level metadata without TS errors
+  [key: string]: unknown;
+}
