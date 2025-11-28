@@ -1024,5 +1024,104 @@
         }
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "<STEPID_FOR_ORCHESTRATOR_AWS_HEALTH>",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "2025-11-26: Created infra/orchestrator/check-orchestrator-aws.ps1. From dev shell, script verifies lifebook-orchestrator-jobs + lifebook-orchestrator-run-logs tables and lifebook-orchestrator-queue (DLQ + RedrivePolicy), sends test SQS message, and confirms queue reachable.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      ""
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "patch": {
+          "Next": [
+            ""
+          ],
+          "Decisions": "",
+          "Owner": "Zach",
+          "Target": "",
+          "Evidence": "2025-11-26: Created infra/orchestrator/check-orchestrator-aws.ps1. From dev shell, script verifies lifebook-orchestrator-jobs + lifebook-orchestrator-run-logs tables and lifebook-orchestrator-queue (DLQ + RedrivePolicy), sends test SQS message, and confirms queue reachable.",
+          "StepTitle": null,
+          "Blockers": "",
+          "Phase": null,
+          "StepID": "<STEPID_FOR_ORCHESTRATOR_AWS_HEALTH>",
+          "Status": "✔"
+        },
+        "at": "2025-11-27T18:18:17Z"
+      }
+    ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "<STEPID_FOR_API_JOBS_ENDPOINT>",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "2025-11-26: Implemented Next.js App Router endpoint app/api/jobs/route.ts with POST+GET. POST accepts workflowSlug/clientRequestId/input and returns { ok, message, job{ id, jobId, workflowSlug, clientRequestId, status, input } }. GET supports health check and job lookup with optional includeLogs stub.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      ""
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "patch": {
+          "Next": [
+            ""
+          ],
+          "Decisions": "",
+          "Owner": "Zach",
+          "Target": "",
+          "Evidence": "2025-11-26: Implemented Next.js App Router endpoint app/api/jobs/route.ts with POST+GET. POST accepts workflowSlug/clientRequestId/input and returns { ok, message, job{ id, jobId, workflowSlug, clientRequestId, status, input } }. GET supports health check and job lookup with optional includeLogs stub.",
+          "StepTitle": null,
+          "Blockers": "",
+          "Phase": null,
+          "StepID": "<STEPID_FOR_API_JOBS_ENDPOINT>",
+          "Status": "✔"
+        },
+        "at": "2025-11-27T18:18:17Z"
+      }
+    ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "<STEPID_FOR_ORCHESTRATOR_E2E_SMOKE_GREEN>",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "2025-11-26: Orchestrator wrapper infra/orchestrator/run-orchestrator-smoke.ps1 runs check-orchestrator-aws.ps1 + smoke-orchestrator-e2e.ps1. Final run: /api/jobs smoke creates job, polls status, returns logs; DDB/S3 smoke finds latest sample_hello_world job in lifebook-orchestrator-jobs and confirms workflows/manual/<jobId>/result.md in lifebook.ai. Output: 'E2E orchestrator smoke PASSED: /api/jobs → DynamoDB → S3 (and run logs if present).'",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      ""
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "patch": {
+          "Next": [
+            ""
+          ],
+          "Decisions": "",
+          "Owner": "Zach",
+          "Target": "",
+          "Evidence": "2025-11-26: Orchestrator wrapper infra/orchestrator/run-orchestrator-smoke.ps1 runs check-orchestrator-aws.ps1 + smoke-orchestrator-e2e.ps1. Final run: /api/jobs smoke creates job, polls status, returns logs; DDB/S3 smoke finds latest sample_hello_world job in lifebook-orchestrator-jobs and confirms workflows/manual/<jobId>/result.md in lifebook.ai. Output: 'E2E orchestrator smoke PASSED: /api/jobs → DynamoDB → S3 (and run logs if present).'",
+          "StepTitle": null,
+          "Blockers": "",
+          "Phase": null,
+          "StepID": "<STEPID_FOR_ORCHESTRATOR_E2E_SMOKE_GREEN>",
+          "Status": "✔"
+        },
+        "at": "2025-11-27T18:18:18Z"
+      }
+    ]
   }
 ]
