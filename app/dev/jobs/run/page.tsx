@@ -2,6 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 
+const CDN_BASE =
+  process.env.NEXT_PUBLIC_FILES_BASE_URL || "https://files.uselifebook.ai";
+
+function getResultUrl(jobId: string): string {
+  const base = CDN_BASE.replace(/\/$/, "");
+  return `${base}/workflows/manual/${jobId}/result.md`;
+}
+
 type Job = {
   id?: string;
   jobId: string;
@@ -135,6 +143,8 @@ export default function JobsRunnerPage() {
     }
   }
 
+  const resultUrl = currentJob ? getResultUrl(currentJob.jobId) : null;
+
   return (
     <main className="min-h-screen px-6 py-8 max-w-3xl mx-auto">
       <h1 className="text-2xl font-semibold mb-2">
@@ -220,6 +230,28 @@ export default function JobsRunnerPage() {
               {prettyJson(currentJob.input)}
             </pre>
           </div>
+
+          {resultUrl && (
+            <div className="mt-4">
+              <h3 className="text-sm font-semibold mb-1">
+                Result (CloudFront)
+              </h3>
+              <p className="text-xs text-gray-500 mb-1">
+                For <code>sample_hello_world</code> jobs, the orchestrator
+                writes <code>result.md</code> to S3 under{" "}
+                <code>workflows/manual/&lt;jobId&gt;/result.md</code>. This is
+                the corresponding CloudFront URL.
+              </p>
+              <a
+                href={resultUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="text-xs text-blue-600 underline break-all"
+              >
+                {resultUrl}
+              </a>
+            </div>
+          )}
         </section>
       )}
 
