@@ -3,7 +3,9 @@ param(
     [string]$JobId,
 
     [Parameter(Mandatory = $false)]
-    [string]$BaseUrl
+    [string]$BaseUrl,
+
+    [switch]$IncludeLogs
 )
 
 $ErrorActionPreference = "Stop"
@@ -27,7 +29,12 @@ $BaseUrl = $BaseUrl.TrimEnd('/')
 
 # Build URL for /api/jobs
 $encodedJobId = [System.Uri]::EscapeDataString($JobId)
-$uri = "$BaseUrl/api/jobs?jobId=$encodedJobId&includeLogs=true"
+$queryParts = @("jobId=$encodedJobId")
+if ($IncludeLogs.IsPresent) {
+    $queryParts += "includeLogs=true"
+}
+$query = ($queryParts -join '&')
+$uri   = "$BaseUrl/api/jobs?$query"
 
 Write-Host "Fetching job from $uri" -ForegroundColor Cyan
 
@@ -36,6 +43,7 @@ try {
 }
 catch {
     Write-Host "Request failed: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "Check the dev server console for the /api/jobs stack trace if this keeps happening." -ForegroundColor Yellow
     exit 1
 }
 
