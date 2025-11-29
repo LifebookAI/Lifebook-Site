@@ -1123,5 +1123,38 @@
         "at": "2025-11-27T18:18:18Z"
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "J1",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "2025-11-28: /api/jobs POST+GET wired to lifebook-orchestrator (SQS+DDB+S3); run-orchestrator-smoke.ps1 + GET /api/jobs?jobId=...&includeLogs=true passes locally.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      ""
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "patch": {
+          "Next": [
+            ""
+          ],
+          "Decisions": "",
+          "Owner": "Zach",
+          "Target": "",
+          "Evidence": "2025-11-28: /api/jobs POST+GET wired to lifebook-orchestrator (SQS+DDB+S3); run-orchestrator-smoke.ps1 + GET /api/jobs?jobId=...&includeLogs=true passes locally.",
+          "StepTitle": null,
+          "Blockers": "",
+          "Phase": null,
+          "StepID": "J1",
+          "Status": "✔"
+        },
+        "at": "2025-11-29T00:09:16Z"
+      }
+    ]
   }
 ]
