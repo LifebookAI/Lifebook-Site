@@ -255,3 +255,38 @@ Once the smoke is green (CloudFront `result.md` returns 2xx), you’ve proven:
 - and CloudFront serving of `result.md`
 
 for `sample_hello_world` end-to-end.
+---
+
+## Download helper: `download-result.ps1`
+
+Path:
+
+- `infra/orchestrator/download-result.ps1`
+
+Parameters:
+
+- `-JobId` (string, required)
+- `-OutFile` (string, optional; defaults to `job-<jobId>-result.md`)
+
+Behavior:
+
+1. Derives the CDN base from:
+   - `NEXT_PUBLIC_FILES_BASE_URL` (if set), otherwise
+   - `https://files.uselifebook.ai`
+2. Builds the result URL for the job:
+   - `<CDN_BASE>/workflows/manual/<jobId>/result.md`
+3. Downloads `result.md` to `OutFile`.
+4. Prints the first 20 lines as a quick preview.
+
+Example usage (from repo root, after you have a jobId):
+
+    pwsh -NoProfile -ExecutionPolicy Bypass `
+      -File infra/orchestrator/download-result.ps1 `
+      -JobId 'job-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+
+Optional explicit output file:
+
+    pwsh -NoProfile -ExecutionPolicy Bypass `
+      -File infra/orchestrator/download-result.ps1 `
+      -JobId 'job-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' `
+      -OutFile 'sample-result.md'
