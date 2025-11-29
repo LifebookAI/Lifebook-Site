@@ -32,19 +32,20 @@ if (-not (Test-Path $helperPath)) {
 
 Write-Host "Smoke: running sample_hello_world via $helperPath ..." -ForegroundColor Cyan
 
-# Build args for helper
-$helperArgs = @(
-    "-WorkflowSlug", "sample_hello_world",
-    "-BaseUrl", $BaseUrl
-)
+# 2) Run helper with explicit named parameters
 if ($IncludeLogs) {
-    $helperArgs += "-IncludeLogs"
+    $runOutput = & $helperPath -WorkflowSlug "sample_hello_world" -BaseUrl $BaseUrl -IncludeLogs 2>&1
+}
+else {
+    $runOutput = & $helperPath -WorkflowSlug "sample_hello_world" -BaseUrl $BaseUrl 2>&1
 }
 
-# Run helper and capture output lines
-$runOutput = & $helperPath @helperArgs 2>&1
+# Optional: if helper fails hard, show its output and bail
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "run-job-and-wait.ps1 exited with code $LASTEXITCODE" -ForegroundColor Yellow
+}
 
-# Find jobId line from final summary
+# 3) Find jobId line from final summary
 $jobLine = $runOutput | Select-String -Pattern '^jobId\s+(?<id>\S+)' | Select-Object -First 1
 if (-not $jobLine) {
     Write-Host "Could not find jobId line in helper output:" -ForegroundColor Red
@@ -55,7 +56,7 @@ if (-not $jobLine) {
 $jobId = $jobLine.Matches[0].Groups['id'].Value
 Write-Host "Extracted jobId: $jobId" -ForegroundColor Green
 
-# Build CloudFront URL for result.md
+# 4) Build CloudFront URL for result.md
 $resultUrl = "$cdnBase/workflows/manual/$jobId/result.md"
 Write-Host "Checking CloudFront result URL:" -ForegroundColor Yellow
 Write-Host "  $resultUrl" -ForegroundColor Yellow
