@@ -92,3 +92,9 @@ state/build-checkpoints.json.bak_*
 
 # Orchestrator run artifacts
 logs/orchestrator/
+
+
+# Lifebook orchestrator dev artifacts
+logs/orchestrator-*.txt
+job-*-result.md
+sample-result.md
