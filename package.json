@@ -42,6 +42,8 @@
     "ci:verify": "npm run lint -- --max-warnings=0 && npm run typecheck",
     "worker:dev": "node scripts/worker.mjs",
     "build": "next build",
-    "lint": "next lint"
+    "lint": "next lint",
+    "orchestrator:smoke": "pwsh -NoProfile -ExecutionPolicy Bypass -File infra/orchestrator/smoke-hello-world.ps1 -IncludeLogs",
+    "orchestrator:download": "pwsh -NoProfile -ExecutionPolicy Bypass -File infra/orchestrator/download-result.ps1"
   }
 }
