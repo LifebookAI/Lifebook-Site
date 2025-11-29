@@ -4,26 +4,51 @@ import { randomUUID } from "crypto";
 import { putNewJob } from "../../../services/orchestrator/job-store";
 import type { JobRecord } from "../../../services/orchestrator/job-contract";
 import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import {
+  DynamoDBDocumentClient,
+  GetCommand,
+  QueryCommand,
+} from "@aws-sdk/lib-dynamodb";
 
 // Ensure Node.js runtime (AWS SDKs, crypto, etc.)
 export const runtime = "nodejs";
 
 const ORCH_QUEUE_ENV_KEYS = ["LFLBK_ORCH_QUEUE_URL", "ORCHESTRATOR_QUEUE_URL"];
+const JOBS_TABLE_ENV_KEYS = ["LFLBK_ORCH_JOBS_TABLE", "JOBS_TABLE_NAME"];
+const RUN_LOGS_TABLE_ENV_KEYS = [
+  "LFLBK_ORCH_RUN_LOGS_TABLE",
+  "RUN_LOGS_TABLE_NAME",
+];
 
-// Lazily-created SQS client (Node runtime)
+// Lazily-created clients (Node runtime)
 const sqsClient = new SQSClient({});
+const ddbDocClient = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
-function getQueueUrl(): string {
-  for (const key of ORCH_QUEUE_ENV_KEYS) {
+function getEnvValueFromKeys(keys: string[], friendlyName: string): string {
+  for (const key of keys) {
     const value = process.env[key];
     if (value && value.trim().length > 0) {
       return value;
     }
   }
   throw new Error(
-    `No orchestrator queue URL env var set (${ORCH_QUEUE_ENV_KEYS.join(
-      ", "
-    )}).`
+    `Missing ${friendlyName} env var. Tried: ${keys.join(", ")}`
+  );
+}
+
+function getQueueUrl(): string {
+  return getEnvValueFromKeys(ORCH_QUEUE_ENV_KEYS, "orchestrator queue URL");
+}
+
+function getJobsTableName(): string {
+  return getEnvValueFromKeys(JOBS_TABLE_ENV_KEYS, "jobs table name");
+}
+
+function getRunLogsTableName(): string {
+  return getEnvValueFromKeys(
+    RUN_LOGS_TABLE_ENV_KEYS,
+    "run-logs table name"
   );
 }
 
@@ -67,11 +92,72 @@ function buildApiJob(args: {
   };
 }
 
+async function getJobRow(jobId: string): Promise<JobRecord | null> {
+  const tableName = getJobsTableName();
+
+  // Try multiple key shapes for backwards compatibility
+  const shapes: Array<{ key: Record<string, unknown> }> = [
+    { key: { pk: jobId, sk: "job" } },
+    { key: { jobId } },
+    { key: { job_id: jobId } },
+  ];
+
+  for (const shape of shapes) {
+    const res = await ddbDocClient.send(
+      new GetCommand({
+        TableName: tableName,
+        Key: shape.key,
+      })
+    );
+
+    if (res.Item) {
+      return res.Item as JobRecord;
+    }
+  }
+
+  return null;
+}
+
+type RunLogRecord = {
+  jobId: string;
+  createdAt: string;
+  level?: string;
+  message?: string;
+  [key: string]: unknown;
+};
+
+async function getRunLogsForJob(
+  jobId: string,
+  limit = 50
+): Promise<RunLogRecord[]> {
+  const tableName = getRunLogsTableName();
+
+  const res = await ddbDocClient.send(
+    new QueryCommand({
+      TableName: tableName,
+      KeyConditionExpression: "jobId = :jobId",
+      ExpressionAttributeValues: {
+        ":jobId": jobId,
+      },
+      ScanIndexForward: true, // oldest first
+      Limit: limit,
+    })
+  );
+
+  return (res.Items ?? []) as RunLogRecord[];
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const body = (await req.json().catch(() => null)) as CreateJobPayload | null;
+    const body = (await req.json().catch(() => null)) as
+      | CreateJobPayload
+      | null;
 
-    if (!body || typeof body.workflowSlug !== "string" || !body.workflowSlug.trim()) {
+    if (
+      !body ||
+      typeof body.workflowSlug !== "string" ||
+      !body.workflowSlug.trim()
+    ) {
       return NextResponse.json(
         { error: "workflowSlug (string) is required" },
         { status: 400 }
@@ -148,21 +234,22 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error("POST /api/jobs error", err);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { ok: false, error: "Internal server error" },
       { status: 500 }
     );
   }
 }
 
-// GET remains a lightweight stub for now; we will tighten this to read real job
-// status + logs later, but existing smokes can keep using the current shape.
+// GET: health check + real job lookup
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
 
   const jobId = searchParams.get("jobId");
   const includeLogs = searchParams.get("includeLogs") === "true";
-  const workflowSlug = searchParams.get("workflowSlug") ?? "sample_hello_world";
-  const clientRequestId = searchParams.get("clientRequestId");
+  const workflowSlugFromQuery =
+    searchParams.get("workflowSlug") ?? undefined;
+  const clientRequestIdFromQuery =
+    searchParams.get("clientRequestId") ?? undefined;
 
   if (!jobId) {
     // Simple health check for /api/jobs without query params
@@ -175,23 +262,51 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const job = buildApiJob({
-    jobId,
-    workflowSlug,
-    clientRequestId: clientRequestId ?? null,
-    input: null,
-  });
+  try {
+    const jobRecord = await getJobRow(jobId);
 
-  if (includeLogs) {
-    const logs = [
-      {
-        id: randomUUID(),
-        jobId,
-        level: "info",
-        message: "stub log for orchestrator smoke",
-        createdAt: new Date().toISOString(),
-      },
-    ];
+    if (!jobRecord) {
+      return NextResponse.json(
+        { ok: false, error: `Job ${jobId} not found` },
+        { status: 404 }
+      );
+    }
+
+    const payload: any = (jobRecord as any).payload ?? {};
+
+    const workflowSlug =
+      workflowSlugFromQuery ??
+      (typeof payload.workflowSlug === "string"
+        ? payload.workflowSlug
+        : "sample_hello_world");
+
+    const clientRequestId =
+      clientRequestIdFromQuery ??
+      (typeof payload.clientRequestId === "string"
+        ? payload.clientRequestId
+        : null);
+
+    const input = "input" in payload ? (payload as any).input : null;
+
+    const job = buildApiJob({
+      jobId,
+      workflowSlug,
+      clientRequestId,
+      status: jobRecord.status,
+      input,
+    });
+
+    if (!includeLogs) {
+      return NextResponse.json(
+        {
+          ok: true,
+          job,
+        },
+        { status: 200 }
+      );
+    }
+
+    const logs = await getRunLogsForJob(jobId);
 
     return NextResponse.json(
       {
@@ -201,13 +316,12 @@ export async function GET(req: NextRequest) {
       },
       { status: 200 }
     );
+  } catch (err) {
+    console.error("GET /api/jobs error", err);
+    return NextResponse.json(
+      { ok: false, error: "Internal server error" },
+      { status: 500 }
+    );
   }
-
-  return NextResponse.json(
-    {
-      ok: true,
-      job,
-    },
-    { status: 200 }
-  );
 }
+
