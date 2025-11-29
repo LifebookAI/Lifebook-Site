@@ -290,3 +290,38 @@ Optional explicit output file:
       -File infra/orchestrator/download-result.ps1 `
       -JobId 'job-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' `
       -OutFile 'sample-result.md'
+---
+
+## Get-job helper: `get-job.ps1`
+
+Path:
+
+- `infra/orchestrator/get-job.ps1`
+
+Parameters:
+
+- `-JobId` (string, required)
+- `-BaseUrl` (string, optional; defaults to `LFLBK_API_BASE_URL` or `http://localhost:3000`)
+- `-IncludeLogs` (switch, optional; adds `includeLogs=true` to the query string)
+
+Behavior:
+
+1. Derives the API base URL from:
+   - `LFLBK_API_BASE_URL` (if set), otherwise
+   - `http://localhost:3000`
+2. Builds the job URL:
+   - `<BASE_URL>/api/jobs?jobId=<jobId>[&includeLogs=true]`
+3. Calls `GET /api/jobs` and prints the raw job payload as pretty JSON.
+
+Example usage (from repo root, dev server running):
+
+    pwsh -NoProfile -ExecutionPolicy Bypass `
+      -File infra/orchestrator/get-job.ps1 `
+      -JobId 'job-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+
+With logs included (once the logs path is solid):
+
+    pwsh -NoProfile -ExecutionPolicy Bypass `
+      -File infra/orchestrator/get-job.ps1 `
+      -JobId 'job-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' `
+      -IncludeLogs
