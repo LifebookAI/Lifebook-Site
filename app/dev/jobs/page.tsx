@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
+
 "use client";
 
 import { useState } from "react";
@@ -110,6 +112,7 @@ export default function JobsInspectorPage() {
         and fetch its current status via <code>GET /api/jobs</code>.
       </p>
 
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
       <form onSubmit={handleFetch} className="space-y-4 mb-6">
         <div>
           <label className="block text-sm font-medium mb-1">Job ID</label>

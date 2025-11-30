@@ -58,6 +58,12 @@ type CreateJobPayload = {
   input?: unknown;
 };
 
+function isCreateJobPayload(value: unknown): value is CreateJobPayload {
+  if (!value || typeof value !== "object") return false;
+  const maybe = value as { workflowSlug?: unknown };
+  return typeof maybe.workflowSlug === "string" && maybe.workflowSlug.length > 0;
+}
+
 type ApiJob = {
   id: string;
   jobId: string;
@@ -272,28 +278,55 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const payload: any = (jobRecord as any).payload ?? {};
+    // Typed GET payload extraction for /api/jobs (no `any`)
+    //
+    // This replaces the older block that used:
+    //   const payload: any = (jobRecord as any).payload ?? {};
+    //   ...
+    //   const input = "input" in payload ? (payload as any).input : null;
+    //
+    // Assumes you have in this file:
+    //
+    //   type CreateJobPayload = {
+    //     workflowSlug: string;
+    //     clientRequestId?: string;
+    //     input?: unknown;
+    //   };
+    //
+    // and a guard:
+    //
+    //   function isCreateJobPayload(value: unknown): value is CreateJobPayload {
+    //     if (!value || typeof value !== "object") return false;
+    //     const maybe = value as { workflowSlug?: unknown };
+    //     return typeof maybe.workflowSlug === "string" && maybe.workflowSlug.length > 0;
+    //   }
+
+    const rawPayload: unknown = (jobRecord as { payload?: unknown }).payload;
+
+    const payload: CreateJobPayload | null = isCreateJobPayload(rawPayload)
+    ? rawPayload
+    : null;
 
     const workflowSlug =
-      workflowSlugFromQuery ??
-      (typeof payload.workflowSlug === "string"
-        ? payload.workflowSlug
-        : "sample_hello_world");
+    workflowSlugFromQuery ??
+    (payload?.workflowSlug && payload.workflowSlug.trim().length > 0
+    ? payload.workflowSlug
+    : "sample_hello_world");
 
     const clientRequestId =
-      clientRequestIdFromQuery ??
-      (typeof payload.clientRequestId === "string"
-        ? payload.clientRequestId
-        : null);
+    clientRequestIdFromQuery ??
+    (payload?.clientRequestId && payload.clientRequestId.length > 0
+    ? payload.clientRequestId
+    : null);
 
-    const input = "input" in payload ? (payload as any).input : null;
+    const input = payload?.input ?? null;
 
     const job = buildApiJob({
-      jobId,
-      workflowSlug,
-      clientRequestId,
-      status: jobRecord.status,
-      input,
+    jobId,
+    workflowSlug,
+    clientRequestId,
+    status: jobRecord.status,
+    input,
     });
 
     if (!includeLogs) {
@@ -324,4 +357,5 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
 

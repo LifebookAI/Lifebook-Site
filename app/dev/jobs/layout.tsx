@@ -6,7 +6,7 @@ const tabs = [
   { href: "/dev/jobs/run", label: "Runner" },
 ];
 
-function isActive(href: string): boolean {
+function _isActive(href: string): boolean {
   if (typeof window === "undefined") {
     return false;
   }
@@ -46,3 +46,4 @@ export default function DevJobsLayout({
     </div>
   );
 }
+

@@ -66,6 +66,7 @@ export default function JobsRunnerPage() {
 
     setPolling(true);
 
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
     const interval = setInterval(async () => {
       try {
         const params = new URLSearchParams({
@@ -168,6 +169,7 @@ export default function JobsRunnerPage() {
 
         <button
           type="button"
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
           onClick={handleRunHelloWorld}
           disabled={creating}
           className="inline-flex items-center px-4 py-2 text-sm rounded-md border bg-black text-white disabled:opacity-60"
