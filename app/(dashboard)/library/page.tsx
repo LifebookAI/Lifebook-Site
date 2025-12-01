@@ -85,7 +85,7 @@ function formatDate(iso: string | null | undefined): string {
 
 export default async function LibraryPage(
   props: LibraryPageProps,
-): Promise<JSX.Element> {
+) {
   const searchParams = props.searchParams;
   const items = await fetchLibraryItems(searchParams);
 
@@ -271,3 +271,4 @@ export default async function LibraryPage(
     </div>
   );
 }
+
