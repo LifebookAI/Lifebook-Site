@@ -48,7 +48,7 @@ export default async function JobRunPage({ params }: JobRunPageProps) {
 
       <div className="mt-4 flex flex-col gap-2 text-sm">
         <Link
-          href={`/library/labs/${session.id}`}
+          href={{ pathname: "/library/labs/[id]", query: { id: session.id } }}
           className="underline"
         >
           View lab session details
