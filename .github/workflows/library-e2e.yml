@@ -1,0 +1,58 @@
+name: library-e2e
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  LIFEBOOK_S3_BUCKET: lifebook.ai
+  LIFEBOOK_WORKFLOW_RESULTS_PREFIX: workflows/manual/
+
+jobs:
+  library-e2e:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::354630286254:role/GitHubOIDC_LifebookSite
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build app
+        run: npm run build
+
+      - name: Start Next.js server
+        shell: bash
+        run: |
+          nohup npm run start -- --port 3000 > .next/server.log 2>&1 &
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:3000/ > /dev/null; then
+              echo "Server is up";
+              break;
+            fi
+            echo "Waiting for server (attempt $i)..."
+            sleep 2
+          done
+
+      - name: Run Library verifier
+        run: pwsh -File infra/ops/library/verify-library.local.ps1 -BaseUrl 'http://127.0.0.1:3000'
