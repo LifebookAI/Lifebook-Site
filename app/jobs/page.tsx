@@ -94,7 +94,7 @@ export default async function JobsPage() {
                       <div className="flex flex-col gap-1">
                         <span>Result ready.</span>
                         <Link
-                          href={`/library/labs/${sessionId}`}
+                          href={{ pathname: "/library/labs/[id]", query: { id: sessionId } }}
                           className="underline"
                         >
                           View lab session
@@ -137,3 +137,4 @@ export default async function JobsPage() {
     </main>
   );
 }
+
