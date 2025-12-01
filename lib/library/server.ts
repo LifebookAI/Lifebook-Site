@@ -140,6 +140,30 @@ async function streamToString(body: unknown): Promise<string> {
   });
 }
 
+function extractMetadataFromMarkdown(
+  runId: string,
+  bodyText: string | null,
+): { title: string; summary: string | null } {
+  const fallbackTitle = `Workflow run · ${runId}`;
+
+  if (!bodyText || !bodyText.trim()) {
+    return { title: fallbackTitle, summary: null };
+  }
+
+  const firstNonEmptyLine =
+    bodyText
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .find((line) => line.length > 0) ?? '';
+
+  const title = firstNonEmptyLine.replace(/^#+\s*/, '') || fallbackTitle;
+
+  const summary =
+    bodyText.length > 280 ? `${bodyText.slice(0, 277)}…` : bodyText;
+
+  return { title, summary };
+}
+
 async function listWorkflowResultsFromS3(): Promise<LibraryItem[]> {
   const command = new ListObjectsV2Command({
     Bucket: BUCKET,
@@ -154,24 +178,42 @@ async function listWorkflowResultsFromS3(): Promise<LibraryItem[]> {
 
   for (const obj of contents) {
     const parsed = parseWorkflowKey(obj.Key);
-    if (!parsed) continue;
+    if (!parsed || !obj.Key) continue;
+
+    const runId = parsed.id;
 
     const createdAt = obj.LastModified?.toISOString();
     const updatedAt = createdAt;
 
+    let bodyText: string | null = null;
+    try {
+      const getOutput = await s3Client.send(
+        new GetObjectCommand({
+          Bucket: BUCKET,
+          Key: obj.Key,
+        }),
+      );
+      const text = await streamToString(getOutput.Body);
+      bodyText = text || null;
+    } catch {
+      // Per-object failures shouldn't break the whole list; ignore and keep a minimal item.
+    }
+
+    const { title, summary } = extractMetadataFromMarkdown(runId, bodyText);
+
     items.push({
-      id: parsed.id,
-      title: `Workflow run · ${parsed.id}`,
+      id: runId,
+      title,
       type: 'workflow',
       tags: ['workflow'],
       createdAt,
       updatedAt,
-      summary: 'Markdown result artifact for a workflow run.',
+      summary,
       project: null,
       pinned: false,
       bodyHtml: null,
-      bodyMarkdown: null,
-      rawText: null,
+      bodyMarkdown: bodyText,
+      rawText: bodyText,
     });
   }
 
@@ -209,22 +251,13 @@ export async function getLibraryItemById(id: string): Promise<LibraryItem | null
       }),
     );
 
-    const bodyText = await streamToString(getOutput.Body);
+    const text = await streamToString(getOutput.Body);
+    const bodyText = text || null;
+
     const updatedAt = headOutput.LastModified?.toISOString();
     const createdAt = updatedAt;
 
-    const firstNonEmptyLine =
-      bodyText
-        .split(/\r?\n/)
-        .map((line) => line.trim())
-        .find((line) => line.length > 0) ?? '';
-
-    const title =
-      firstNonEmptyLine.replace(/^#+\s*/, '') ||
-      `Workflow run · ${runId}`;
-
-    const summary =
-      bodyText.length > 280 ? `${bodyText.slice(0, 277)}…` : bodyText || null;
+    const { title, summary } = extractMetadataFromMarkdown(runId, bodyText);
 
     const item: LibraryItem = {
       id: runId,
@@ -238,8 +271,8 @@ export async function getLibraryItemById(id: string): Promise<LibraryItem | null
       project: null,
       pinned: false,
       bodyHtml: null,
-      bodyMarkdown: bodyText || null,
-      rawText: bodyText || null,
+      bodyMarkdown: bodyText,
+      rawText: bodyText,
     };
 
     return item;
