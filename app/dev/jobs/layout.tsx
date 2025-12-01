@@ -33,7 +33,7 @@ export default function DevJobsLayout({
           {tabs.map((tab) => (
             <Link
               key={tab.href}
-              href={tab.href}
+              href={tab.href as any}
               className="px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-100 font-medium"
             >
               {tab.label}
@@ -46,4 +46,5 @@ export default function DevJobsLayout({
     </div>
   );
 }
+
 
