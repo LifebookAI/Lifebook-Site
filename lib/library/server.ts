@@ -1,183 +1,255 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/require-await, @typescript-eslint/no-misused-promises, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+import { S3Client, ListObjectsV2Command, HeadObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 
-import type {
-  LibraryItemSummary,
-  LibrarySearchFilters,
-} from "./types";
-import type { LibraryStoreQuery } from "./store";
-import { createPostgresLibraryStore } from "./store-postgres";
+export type LibrarySort = 'recent' | 'oldest';
 
-export type LibraryStore = {
-  list(query: LibraryStoreQuery): Promise<LibraryItemSummary[]>;
-  getById(
-    workspaceId: string,
-    id: string,
-  ): Promise<LibraryItemSummary | null>;
-};
+export type LibraryItemType =
+  | 'workflow'
+  | 'capture'
+  | 'note'
+  | 'study-pack'
+  | 'other';
 
-function matchesFilters(
-  item: LibraryItemSummary,
-  filters: LibrarySearchFilters,
-): boolean {
-  if (filters.pinnedOnly && !item.isPinned) {
-    return false;
-  }
+export interface LibraryItem {
+  id: string;
+  title: string;
+  type: LibraryItemType;
+  tags?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+  lastViewedAt?: string | null;
+  summary?: string | null;
+  project?: string | null;
+  pinned?: boolean;
+  bodyHtml?: string | null;
+  bodyMarkdown?: string | null;
+  rawText?: string | null;
+}
 
-  if (filters.project && item.project !== filters.project) {
-    return false;
-  }
+export interface ListParams {
+  q?: string;
+  type?: string;
+  tag?: string;
+  sort?: LibrarySort;
+  limit?: number;
+  offset?: number;
+}
 
-  if (filters.tags && filters.tags.length > 0) {
-    const hasOverlap = item.tags.some((tag) =>
-      filters.tags!.includes(tag),
-    );
-    if (!hasOverlap) {
-      return false;
-    }
-  }
+const BUCKET = process.env.LIFEBOOK_S3_BUCKET ?? 'lifebook.ai';
+const WORKFLOW_PREFIX =
+  process.env.LIFEBOOK_WORKFLOW_RESULTS_PREFIX ?? 'workflows/manual/';
+const REGION = process.env.AWS_REGION ?? 'us-east-1';
 
-  if (filters.kind) {
-    const kinds = Array.isArray(filters.kind) ? filters.kind : [filters.kind];
-    if (!kinds.includes(item.kind)) {
-      return false;
-    }
-  }
+// S3 client uses the default credential chain (profile in dev, role in prod)
+const s3Client = new S3Client({ region: REGION });
 
-  if (filters.sourceType) {
-    const sourceTypes = Array.isArray(filters.sourceType)
-      ? filters.sourceType
-      : [filters.sourceType];
-    if (!sourceTypes.includes(item.sourceType)) {
-      return false;
-    }
-  }
+const DEFAULT_LIMIT = 50;
+const MAX_LIMIT = 100;
 
-  if (filters.query) {
-    const needle = filters.query.toLowerCase();
-    const haystack = [
+function normalizeSort(sort: LibrarySort | undefined): LibrarySort {
+  return sort === 'oldest' || sort === 'recent' ? sort : 'recent';
+}
+
+function parseWorkflowKey(key: string | undefined): { id: string } | null {
+  if (!key) return null;
+  // Example key: workflows/manual/job-4ff96f37-cd09-4cc1-8416-794d9b44beaf/result.md
+  const match = key.match(/^workflows\/manual\/([^/]+)\/result\.md$/);
+  if (!match) return null;
+  const runId = match[1]; // e.g., "job-4ff96f37-..."
+  return { id: runId };
+}
+
+function filterBySearch(items: LibraryItem[], q: string | undefined): LibraryItem[] {
+  if (!q) return items;
+  const needle = q.toLowerCase();
+
+  return items.filter((item) => {
+    const parts: string[] = [
+      item.id,
       item.title,
-      item.project ?? "",
-      item.tags.join(" "),
-    ]
-      .join(" ")
-      .toLowerCase();
+      item.summary ?? '',
+      item.project ?? '',
+      ...(item.tags ?? []),
+    ];
+    return parts.join(' ').toLowerCase().includes(needle);
+  });
+}
 
-    if (!haystack.includes(needle)) {
-      return false;
+function filterByType(items: LibraryItem[], type: string | undefined): LibraryItem[] {
+  if (!type) return items;
+  // For now only "workflow" is backed by S3.
+  if (type !== 'workflow') {
+    return [];
+  }
+  return items.filter((item) => item.type === 'workflow');
+}
+
+function filterByTag(items: LibraryItem[], tag: string | undefined): LibraryItem[] {
+  if (!tag) return items;
+  return items.filter((item) => item.tags?.includes(tag) ?? false);
+}
+
+function sortItems(items: LibraryItem[], sort: LibrarySort | undefined): LibraryItem[] {
+  const normalized = normalizeSort(sort);
+  const copy = [...items];
+
+  copy.sort((a, b) => {
+    const aDate = a.updatedAt ?? a.createdAt ?? '';
+    const bDate = b.updatedAt ?? b.createdAt ?? '';
+    if (!aDate && !bDate) return 0;
+    if (!aDate) return 1;
+    if (!bDate) return -1;
+
+    const aTime = Date.parse(aDate);
+    const bTime = Date.parse(bDate);
+    if (Number.isNaN(aTime) || Number.isNaN(bTime)) return 0;
+
+    return normalized === 'recent' ? bTime - aTime : aTime - bTime;
+  });
+
+  return copy;
+}
+
+function paginateItems(
+  items: LibraryItem[],
+  limit: number | undefined,
+  offset: number | undefined,
+): LibraryItem[] {
+  const safeLimit = Math.min(limit ?? DEFAULT_LIMIT, MAX_LIMIT);
+  const safeOffset = Math.max(offset ?? 0, 0);
+  const start = safeOffset;
+  const end = safeOffset + safeLimit;
+  return items.slice(start, end);
+}
+
+async function streamToString(body: unknown): Promise<string> {
+  if (!body || typeof (body as { on?: unknown }).on !== 'function') {
+    return '';
+  }
+
+  const readable = body as NodeJS.ReadableStream;
+  const chunks: Buffer[] = [];
+
+  return new Promise<string>((resolve, reject) => {
+    readable.on('data', (chunk: Buffer | string) => {
+      chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
+    });
+    readable.on('error', reject);
+    readable.on('end', () => {
+      resolve(Buffer.concat(chunks).toString('utf-8'));
+    });
+  });
+}
+
+async function listWorkflowResultsFromS3(): Promise<LibraryItem[]> {
+  const command = new ListObjectsV2Command({
+    Bucket: BUCKET,
+    Prefix: WORKFLOW_PREFIX,
+    MaxKeys: 200,
+  });
+
+  const output = await s3Client.send(command);
+  const contents = output.Contents ?? [];
+
+  const items: LibraryItem[] = [];
+
+  for (const obj of contents) {
+    const parsed = parseWorkflowKey(obj.Key);
+    if (!parsed) continue;
+
+    const createdAt = obj.LastModified?.toISOString();
+    const updatedAt = createdAt;
+
+    items.push({
+      id: parsed.id,
+      title: `Workflow run · ${parsed.id}`,
+      type: 'workflow',
+      tags: ['workflow'],
+      createdAt,
+      updatedAt,
+      summary: 'Markdown result artifact for a workflow run.',
+      project: null,
+      pinned: false,
+      bodyHtml: null,
+      bodyMarkdown: null,
+      rawText: null,
+    });
+  }
+
+  return items;
+}
+
+export async function listLibraryItems(params: ListParams): Promise<LibraryItem[]> {
+  const all = await listWorkflowResultsFromS3();
+
+  let items = all;
+  items = filterByType(items, params.type);
+  items = filterByTag(items, params.tag);
+  items = filterBySearch(items, params.q);
+  items = sortItems(items, params.sort);
+
+  return paginateItems(items, params.limit, params.offset);
+}
+
+export async function getLibraryItemById(id: string): Promise<LibraryItem | null> {
+  const runId = id.startsWith('job-') ? id : `job-${id}`;
+  const key = `${WORKFLOW_PREFIX}${runId}/result.md`;
+
+  try {
+    const headOutput = await s3Client.send(
+      new HeadObjectCommand({
+        Bucket: BUCKET,
+        Key: key,
+      }),
+    );
+
+    const getOutput = await s3Client.send(
+      new GetObjectCommand({
+        Bucket: BUCKET,
+        Key: key,
+      }),
+    );
+
+    const bodyText = await streamToString(getOutput.Body);
+    const updatedAt = headOutput.LastModified?.toISOString();
+    const createdAt = updatedAt;
+
+    const firstNonEmptyLine =
+      bodyText
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .find((line) => line.length > 0) ?? '';
+
+    const title =
+      firstNonEmptyLine.replace(/^#+\s*/, '') ||
+      `Workflow run · ${runId}`;
+
+    const summary =
+      bodyText.length > 280 ? `${bodyText.slice(0, 277)}…` : bodyText || null;
+
+    const item: LibraryItem = {
+      id: runId,
+      title,
+      type: 'workflow',
+      tags: ['workflow'],
+      createdAt,
+      updatedAt,
+      lastViewedAt: null,
+      summary,
+      project: null,
+      pinned: false,
+      bodyHtml: null,
+      bodyMarkdown: bodyText || null,
+      rawText: bodyText || null,
+    };
+
+    return item;
+  } catch (error) {
+    // 404 -> treat as missing; other errors bubble so the API route can fall back to dev seed.
+    const maybeError = error as { $metadata?: { httpStatusCode?: number } };
+    if (maybeError.$metadata?.httpStatusCode === 404) {
+      return null;
     }
+
+    throw error;
   }
-
-  return true;
 }
-
-/**
- * Simple in-memory LibraryStore used when Postgres is not yet wired.
- * Mirrors the behavior of the earlier /api/library stub.
- */
-function createInMemoryStore(): LibraryStore {
-  const nowIso = new Date().toISOString();
-
-  const items: LibraryItemSummary[] = [
-    {
-      id: "example-1",
-      title: "Sample workflow run output",
-      kind: "workflow_output",
-      sourceType: "workflow",
-      project: "demo",
-      tags: ["sample", "hello-world"],
-      isPinned: true,
-      createdAt: nowIso,
-      lastViewedAt: null,
-    },
-    {
-      id: "example-2",
-      title: "Capture: S3 lab notes",
-      kind: "capture",
-      sourceType: "capture",
-      project: "aws-foundations",
-      tags: ["aws", "study-track"],
-      isPinned: false,
-      createdAt: nowIso,
-      lastViewedAt: null,
-    },
-  ];
-
-  return {
-    async list(query) {
-      const filters = query.filters ?? {};
-      if (!Object.keys(filters).length) {
-        return items;
-      }
-      return items.filter((item) => matchesFilters(item, filters));
-    },
-
-    async getById(_workspaceId, id) {
-      return items.find((i) => i.id === id) ?? null;
-    },
-  };
-}
-
-let storePromise: Promise<LibraryStore> | null = null;
-
-/**
- * Resolve a LibraryStore:
- * - Prefer Postgres-backed store (db.query)
- * - Fall back to in-memory stub if db is missing/misconfigured
- */
-export async function getLibraryStore(): Promise<LibraryStore> {
-  if (!storePromise) {
-    storePromise = (async () => {
-      try {
-        const dbModule: any = await import("../db/server");
-        const db = dbModule?.db ?? dbModule?.default ?? dbModule;
-
-        if (!db || typeof db.query !== "function") {
-          throw new Error("db client missing or has no query method");
-        }
-
-        return createPostgresLibraryStore({ db });
-      } catch (err) {
-        console.warn(
-          "[library] Falling back to in-memory LibraryStore:",
-          err,
-        );
-        return createInMemoryStore();
-      }
-    })();
-  }
-
-  return storePromise;
-}
-
-/**
- * Helper used by /api/library to list items for a workspace with filters.
- */
-export async function listLibraryItemsForWorkspace(
-  workspaceId: string,
-  filters: LibrarySearchFilters = {},
-): Promise<{ workspaceId: string; items: LibraryItemSummary[] }> {
-  const store = await getLibraryStore();
-
-  const query: LibraryStoreQuery = {
-    workspaceId,
-    filters,
-    limit: 100,
-    offset: 0,
-    orderBy: "created_at_desc",
-  };
-
-  const items = await store.list(query);
-  return { workspaceId, items };
-}
-
-/**
- * Helper used by /library/[id] and future routes to load a single item by id.
- */
-export async function getLibraryItemForWorkspace(
-  workspaceId: string,
-  id: string,
-): Promise<LibraryItemSummary | null> {
-  const store = await getLibraryStore();
-  return store.getById(workspaceId, id);
-}
-
