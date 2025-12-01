@@ -1,7 +1,8 @@
 import React from "react";
 import Link from "next/link";
+import type { Route } from "next";
 
-const tabs = [
+const tabs: { href: Route; label: string }[] = [
   { href: "/dev/jobs", label: "Inspector" },
   { href: "/dev/jobs/run", label: "Runner" },
 ];
@@ -33,7 +34,7 @@ export default function DevJobsLayout({
           {tabs.map((tab) => (
             <Link
               key={tab.href}
-              href={tab.href as any}
+              href={tab.href}
               className="px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-100 font-medium"
             >
               {tab.label}
@@ -46,5 +47,6 @@ export default function DevJobsLayout({
     </div>
   );
 }
+
 
 
