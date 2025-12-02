@@ -15,6 +15,7 @@ env:
   AWS_REGION: us-east-1
   LIFEBOOK_S3_BUCKET: lifebook.ai
   LIFEBOOK_WORKFLOW_RESULTS_PREFIX: workflows/manual/
+  DATABASE_URL: postgres://lifebook-j1-ci:lifebook-j1-ci@localhost:5432/lifebook_j1_ci
 
 jobs:
   library-e2e:
