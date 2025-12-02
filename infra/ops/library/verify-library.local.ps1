@@ -1,43 +1,83 @@
+[CmdletBinding()]
 param(
-    [string]$BaseUrl = 'http://localhost:3000'
+    # Base URL for the dev server
+    [string]$BaseUrl = "http://localhost:3000",
+
+    # Minimum number of Library items we expect from the catalog
+    [int]$ExpectedMinItems = 3
 )
 
-$ErrorActionPreference = 'Stop'
+$ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
-Write-Host "Verifying Library against $BaseUrl ..." -ForegroundColor Cyan
+$uri = "$BaseUrl/api/library"
+Write-Host "[STEP] GET $uri" -ForegroundColor Yellow
 
-# Hit /api/library and parse JSON
 try {
-    $resp = Invoke-RestMethod -Uri "$BaseUrl/api/library" -Method Get -TimeoutSec 10
-} catch {
-    Write-Host "[FAIL] Request to $BaseUrl/api/library failed: $($_.Exception.Message)" -ForegroundColor Red
+    $resp = Invoke-WebRequest -Uri $uri -UseBasicParsing -TimeoutSec 10
+}
+catch {
+    Write-Host "[FAIL] Request to $uri failed: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "       Is 'npm run dev' running on $BaseUrl ?" -ForegroundColor Red
     exit 1
 }
 
-# Normalize to an array of items
-if ($null -eq $resp) {
-    $items = @()
-} elseif ($resp.PSObject.Properties.Name -contains 'items' -and $resp.items -ne $null) {
-    $items = $resp.items
-} elseif ($resp -is [System.Array]) {
-    $items = $resp
-} else {
-    # Fallback: treat the single object as one item
-    $items = @($resp)
+if ($resp.StatusCode -ne 200) {
+    Write-Host "[FAIL] /api/library returned HTTP $($resp.StatusCode) (expected 200)." -ForegroundColor Red
+    exit 1
 }
 
-$count = ($items | Measure-Object).Count
+if (-not $resp.Content -or -not $resp.Content.Trim()) {
+    Write-Host "[FAIL] /api/library returned an empty body." -ForegroundColor Red
+    exit 1
+}
 
-if ($count -eq 0) {
-    if ($env:CI -eq 'true') {
-        Write-Host "[WARN] /api/library returned 0 items in CI; treating as empty-state allowed." -ForegroundColor DarkYellow
-    } else {
-        Write-Host "[FAIL] /api/library returned 0 items (expected at least one workflow run)." -ForegroundColor Red
-        exit 1
+try {
+    $json = $resp.Content | ConvertFrom-Json
+}
+catch {
+    Write-Host "[FAIL] Failed to parse JSON from /api/library: $($_.Exception.Message)" -ForegroundColor Red
+    exit 1
+}
+
+# Normalize to array
+$items = @($json)
+$count = $items.Count
+
+if ($count -lt $ExpectedMinItems) {
+    Write-Host "[FAIL] /api/library returned only $count item(s), expected at least $ExpectedMinItems." -ForegroundColor Red
+    exit 1
+}
+
+Write-Host "[OK] /api/library returned $count item(s)." -ForegroundColor Green
+
+# Check for the three seed IDs from catalog.v1.json
+$requiredIds = @(
+    "workflow.hello-library",
+    "track.aws-foundations",
+    "track.devops-essentials"
+)
+
+$missing = @()
+
+foreach ($id in $requiredIds) {
+    if (-not ($items.id -contains $id)) {
+        $missing += $id
     }
-} else {
-    Write-Host "[OK] /api/library returned $count item(s)." -ForegroundColor Green
 }
 
-exit 0
+if ($missing.Count -gt 0) {
+    Write-Host "[FAIL] Missing required catalog id(s): $($missing -join ', ')" -ForegroundColor Red
+    exit 1
+}
+
+Write-Host "[OK] Found required catalog IDs: $($requiredIds -join ', ')" -ForegroundColor Green
+
+# Optional: small table for eyeballing the response
+$items |
+    Select-Object `
+        @{ Name = "Id";     Expression = { $_.id } },
+        @{ Name = "Kind";   Expression = { $_.kind } },
+        @{ Name = "Title";  Expression = { $_.title } },
+        @{ Name = "Status"; Expression = { $_.status } } |
+    Format-Table -AutoSize

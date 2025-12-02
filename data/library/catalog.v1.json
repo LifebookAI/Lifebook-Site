@@ -1,0 +1,51 @@
+{
+  "items": [
+    {
+      "title": "Hello Library Workflow",
+      "version": "0.1.0",
+      "slug": "hello-library",
+      "kind": "workflow-template",
+      "id": "workflow.hello-library",
+      "status": "draft",
+      "description": "Minimal workflow that runs once, writes a small artifact, and saves it into your Library so you can see WEA/AW in action.",
+      "tags": [
+        "workflow",
+        "template",
+        "onboarding",
+        "developer-os"
+      ]
+    },
+    {
+      "title": "AWS Foundations (SAA Week 1–2)",
+      "version": "0.1.0",
+      "slug": "aws-foundations",
+      "kind": "study-track",
+      "id": "track.aws-foundations",
+      "status": "draft",
+      "description": "Guided AWS SAA Foundations track: IAM, S3, networking basics, and a daily workflow/capture loop that produces real artifacts.",
+      "tags": [
+        "study-track",
+        "aws",
+        "saa-c03",
+        "foundations"
+      ]
+    },
+    {
+      "title": "DevOps Essentials (Pipelines & Observability)",
+      "version": "0.1.0",
+      "slug": "devops-essentials",
+      "kind": "study-track",
+      "id": "track.devops-essentials",
+      "status": "draft",
+      "description": "DevOps Essentials Study Track: CI/CD basics, environment separation, and observability workflows that ship tangible artifacts.",
+      "tags": [
+        "study-track",
+        "devops",
+        "pipelines",
+        "observability"
+      ]
+    }
+  ],
+  "generatedAt": "2025-12-02T13:41:53.4318686-05:00",
+  "specVersion": "library.v1"
+}
