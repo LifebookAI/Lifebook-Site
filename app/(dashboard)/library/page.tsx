@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getLibraryItems, type LibraryItem, type LibraryStatus } from "@/lib/library/catalog";
 
 /**
@@ -53,62 +54,71 @@ export default async function LibraryPage() {
 
       <section className="grid gap-4 md:grid-cols-2">
         {items.map((item) => (
-          <article
+          <Link
             key={item.id}
-            className="group flex flex-col justify-between rounded-2xl border border-slate-200 bg-white/70 p-4 shadow-sm shadow-slate-900/5 transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md hover:shadow-slate-900/10"
+            href={`/library/${item.slug}`}
+            className="group"
           >
-            <div className="space-y-3">
-              <div className="flex items-start justify-between gap-3">
-                <div className="space-y-1">
-                  <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-slate-500">
-                    {kindLabel(item.kind)}
-                  </p>
-                  <h2 className="text-base font-semibold tracking-tight text-slate-900 group-hover:text-slate-950">
-                    {item.title}
-                  </h2>
-                </div>
-                <span
-                  className={[
-                    "inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium",
-                    statusStyles[item.status],
-                  ].join(" ")}
-                >
-                  {item.status}
-                </span>
-              </div>
-
-              <p className="text-sm text-slate-600">
-                {item.description}
-              </p>
-            </div>
-
-            <div className="mt-4 flex items-center justify-between gap-3 text-xs text-slate-500">
-              <div className="flex flex-wrap gap-1.5">
-                {item.tags?.map((tag) => (
+            <article className="flex h-full flex-col justify-between rounded-2xl border border-slate-200 bg-white/70 p-4 shadow-sm shadow-slate-900/5 transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md hover:shadow-slate-900/10">
+              <div className="space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-1">
+                    <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-slate-500">
+                      {kindLabel(item.kind)}
+                    </p>
+                    <h2 className="text-base font-semibold tracking-tight text-slate-900 group-hover:text-slate-950">
+                      {item.title}
+                    </h2>
+                  </div>
                   <span
-                    key={tag}
-                    className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600"
+                    className={[
+                      "inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium",
+                      statusStyles[item.status],
+                    ].join(" ")}
                   >
-                    {tag}
+                    {item.status}
                   </span>
-                ))}
+                </div>
+
+                <p className="text-sm text-slate-600">
+                  {item.description}
+                </p>
               </div>
-              <code className="rounded-md bg-slate-900/90 px-2 py-0.5 text-[10px] font-mono text-slate-100">
-                {item.id}
-              </code>
-            </div>
-          </article>
+
+              <div className="mt-4 flex items-center justify-between gap-3 text-xs text-slate-500">
+                <div className="flex flex-wrap gap-1.5">
+                  {item.tags?.map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <code className="rounded-md bg-slate-900/90 px-2 py-0.5 text-[10px] font-mono text-slate-100">
+                  {item.id}
+                </code>
+              </div>
+            </article>
+          </Link>
         ))}
       </section>
 
       <footer className="border-t border-dashed border-slate-200 pt-4 text-xs text-slate-500">
         <p>
-          Backed by <code className="rounded bg-slate-900/90 px-1.5 py-0.5 font-mono text-[10px] text-slate-100">data/library/catalog.v1.json</code>
-          {" "}via <code className="rounded bg-slate-900/90 px-1.5 py-0.5 font-mono text-[10px] text-slate-100">lib/library/catalog.ts</code>. Add new
-          workflows and tracks by editing the catalog and re-running your tests.
+          Backed by{" "}
+          <code className="rounded bg-slate-900/90 px-1.5 py-0.5 font-mono text-[10px] text-slate-100">
+            data/library/catalog.v1.json
+          </code>{" "}
+          via{" "}
+          <code className="rounded bg-slate-900/90 px-1.5 py-0.5 font-mono text-[10px] text-slate-100">
+            lib/library/catalog.ts
+          </code>
+          . Add new workflows and tracks by editing the catalog and
+          re-running your tests.
         </p>
       </footer>
     </main>
   );
 }
-
