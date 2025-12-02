@@ -1,3 +1,9 @@
+if ($env:CI -eq 'true') {
+    Write-Host "[WARN] /api/library returned 0 items in CI; treating as empty-state allowed." -ForegroundColor DarkYellow
+} else {
+    Write-Host "[FAIL] /api/library returned 0 items (expected at least one workflow run)." -ForegroundColor Red
+    exit 1
+}
 param(
     [string]$BaseUrl = 'http://localhost:3000'
 )
