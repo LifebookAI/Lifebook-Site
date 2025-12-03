@@ -104,12 +104,27 @@ foreach ($id in $expectedIds) {
 # 1) Library index — just look for a stable fragment of the heading
 Test-Page -Path "/library" -Description "Library index" -ExpectContains "Saved workflows"
 
-# 2) Detail pages for the three seed items, using their actual slugs
+# 2) Detail pages for the three seed items, using their actual slugs + asserting CTA
 foreach ($item in $seedItems) {
     $path = "/library/$($item.slug)"
     $desc = "$($item.title) detail"
+
     # Use the item.id as a stable substring (inside the <code> block)
     Test-Page -Path $path -Description $desc -ExpectContains $item.id
+
+    # Assert CTA text based on the kind
+    $cta =
+        if ($item.kind -eq "workflow-template") {
+            "Use this workflow"
+        }
+        elseif ($item.kind -eq "study-track") {
+            "Start this track"
+        }
+        else {
+            "Activate"
+        }
+
+    Test-Page -Path $path -Description "$desc CTA" -ExpectContains $cta
 }
 
 # 3) Search filter sanity checks
