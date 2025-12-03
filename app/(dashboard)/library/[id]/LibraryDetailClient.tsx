@@ -6,12 +6,14 @@ type LibraryDetailClientProps = {
   slug: string;
   primaryCtaLabel: string;
   primaryCtaHint: string;
+  isRunnable: boolean;
 };
 
 export function LibraryDetailClient({
   slug,
   primaryCtaLabel,
   primaryCtaHint,
+  isRunnable,
 }: LibraryDetailClientProps) {
   const [status, setStatus] = useState<"idle" | "running" | "ok" | "error">(
     "idle",
@@ -19,6 +21,14 @@ export function LibraryDetailClient({
   const [message, setMessage] = useState<string | null>(null);
 
   async function handleClick() {
+    if (!isRunnable) {
+      setStatus("idle");
+      setMessage(
+        "Track enrollment isn't wired up yet in this MVP. For now, use this page as a reference for what the track covers.",
+      );
+      return;
+    }
+
     setStatus("running");
     setMessage("Starting run from this Library item...");
 
@@ -53,12 +63,13 @@ export function LibraryDetailClient({
       );
     } catch {
       setStatus("error");
-      setMessage("Network error starting run. Check your connection and try again.");
+      setMessage(
+        "Network error starting run. Check your connection and try again.",
+      );
     }
   }
 
-  const buttonLabel =
-    status === "running" ? "Starting..." : primaryCtaLabel;
+  const buttonLabel = status === "running" ? "Starting..." : primaryCtaLabel;
 
   return (
     <section className="space-y-4">

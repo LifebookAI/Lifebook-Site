@@ -54,6 +54,7 @@ export default async function LibraryDetailPage({
 
   const isWorkflow = item.kind === "workflow-template";
   const isTrack = item.kind === "study-track";
+  const isRunnable = isWorkflow;
 
   const primaryCtaLabel = isTrack
     ? "Start this track"
@@ -62,7 +63,7 @@ export default async function LibraryDetailPage({
     : "Activate";
 
   const primaryCtaHint = isTrack
-    ? "In the MVP, this will enroll you in the track, create a workspace row, and queue the next lesson."
+    ? "Track enrollment isn't wired up yet in this MVP. For now, use this page as a reference for what the track covers."
     : isWorkflow
     ? "In the MVP, this will create a run with your inputs, send it to the orchestrator queue, and save the output into your Library."
     : "In the MVP, this will attach this Library item to a workspace so you can track automations.";
@@ -100,6 +101,7 @@ export default async function LibraryDetailPage({
         slug={item.slug}
         primaryCtaLabel={primaryCtaLabel}
         primaryCtaHint={primaryCtaHint}
+        isRunnable={isRunnable}
       />
 
       <section className="border-t border-dashed border-slate-200 pt-4 text-xs text-slate-500 space-y-2">
