@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getLibraryItems } from "@/lib/library/catalog";
 
 /**
- * POST /api/library/[slug]/run
+ * POST /api/library/[id]/run
  *
  * Minimal MVP endpoint to start a run from a Library item.
  * For now, we:
- * - Look up the Library item by slug.
+ * - Look up the Library item by slug (from the [id] segment).
  * - Allow only workflow-template items to be "runnable".
  * - Return a stub runId so the client can confirm the flow.
  *
@@ -16,9 +16,9 @@ import { getLibraryItems } from "@/lib/library/catalog";
 
 export async function POST(
   _req: NextRequest,
-  context: { params: { slug: string } },
+  context: { params: { id: string } },
 ) {
-  const slug = context.params.slug;
+  const slug = context.params.id;
 
   const item = getLibraryItems().find((entry) => entry.slug === slug);
 
@@ -58,7 +58,7 @@ export async function GET() {
   return NextResponse.json(
     {
       ok: false,
-      error: "Use POST /api/library/[slug]/run to start a run from a Library item.",
+      error: "Use POST /api/library/[id]/run to start a run from a Library item.",
     },
     { status: 405 },
   );
