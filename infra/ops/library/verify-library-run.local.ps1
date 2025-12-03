@@ -43,7 +43,7 @@ if (-not $json.ok) {
     exit 1
 }
 
-if (-not $json.runId -or -not $json.runId.Trim()) {
+if (-not $json.runId -or -not $json.runId.ToString().Trim()) {
     Write-Host "[FAIL] Run response missing runId." -ForegroundColor Red
     exit 1
 }
@@ -53,7 +53,7 @@ if ($json.libraryItemId -ne "workflow.hello-library") {
     exit 1
 }
 
-if (-not $json.status -or -not $json.status.Trim()) {
+if (-not $json.status -or -not $json.status.ToString().Trim()) {
     Write-Host "[FAIL] Run response missing status." -ForegroundColor Red
     exit 1
 }
@@ -63,18 +63,28 @@ if ($json.status -ne "pending") {
     exit 1
 }
 
-if (-not $json.createdAt -or -not $json.createdAt.Trim()) {
+$createdAt = $json.createdAt
+
+if (-not $createdAt) {
     Write-Host "[FAIL] Run response missing createdAt." -ForegroundColor Red
     exit 1
 }
 
+# Convert to string safely even if it's already a [datetime]
+$createdAtStr = $createdAt.ToString()
+
+if (-not $createdAtStr.Trim()) {
+    Write-Host "[FAIL] createdAt is empty after ToString()." -ForegroundColor Red
+    exit 1
+}
+
 try {
-    [void][datetime]::Parse($json.createdAt)
+    [void][datetime]::Parse($createdAtStr)
 }
 catch {
-    Write-Host "[FAIL] createdAt '$($json.createdAt)' is not a valid datetime." -ForegroundColor Red
+    Write-Host "[FAIL] createdAt '$createdAtStr' is not a valid datetime." -ForegroundColor Red
     exit 1
 }
 
 Write-Host ("[OK] Run endpoint returned ok=true with runId '{0}', libraryItemId '{1}', status '{2}', createdAt '{3}'." -f `
-    $json.runId, $json.libraryItemId, $json.status, $json.createdAt) -ForegroundColor Green
+    $json.runId, $json.libraryItemId, $json.status, $createdAtStr) -ForegroundColor Green
