@@ -114,9 +114,10 @@ foreach ($item in $seedItems) {
 
 # 3) Search filter sanity checks
 $searchChecks = @(
-    @{ Path = "/library?q=aws";      Description = "Library search for 'aws'";      ExpectContains = "track.aws-foundations" },
-    @{ Path = "/library?q=workflow"; Description = "Library search for 'workflow'"; ExpectContains = "workflow.hello-library" },
-    @{ Path = "/library?q=devops";   Description = "Library search for 'devops'";   ExpectContains = "track.devops-essentials" }
+    @{ Path = "/library?q=aws";               Description = "Library search for 'aws'";               ExpectContains = "track.aws-foundations" },
+    @{ Path = "/library?q=workflow";          Description = "Library search for 'workflow'";          ExpectContains = "workflow.hello-library" },
+    @{ Path = "/library?q=devops";            Description = "Library search for 'devops'";            ExpectContains = "track.devops-essentials" },
+    @{ Path = "/library?q=no-match-expected"; Description = "Library search with no matches";         ExpectContains = "No Library items match your search." }
 )
 
 foreach ($check in $searchChecks) {

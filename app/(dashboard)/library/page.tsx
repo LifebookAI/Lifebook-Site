@@ -73,7 +73,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
             Library
           </p>
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-            Saved workflows & study tracks
+            Saved workflows &amp; study tracks
           </h1>
           <p className="max-w-2xl text-sm text-slate-600">
             This is the seed catalog for your Lifebook Library. Each card
@@ -113,58 +113,80 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
         )}
       </header>
 
-      <section className="grid gap-4 md:grid-cols-2">
-        {items.map((item) => (
-          <Link
-            key={item.id}
-            href={`/library/${item.slug}`}
-            className="group no-underline"
-          >
-            <article className="flex h-full flex-col justify-between rounded-2xl border border-slate-200 bg-white/70 p-4 shadow-sm shadow-slate-900/5 transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md hover:shadow-slate-900/10">
-              <div className="space-y-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-slate-500">
-                      {kindLabel(item.kind)}
-                    </p>
-                    <h2 className="text-base font-semibold tracking-tight text-slate-900 group-hover:text-slate-950">
-                      {item.title}
-                    </h2>
-                  </div>
-                  <span
-                    className={[
-                      "inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium",
-                      statusStyles[item.status],
-                    ].join(" ")}
-                  >
-                    {item.status}
-                  </span>
-                </div>
-
-                <p className="text-sm text-slate-600">
-                  {item.description}
-                </p>
-              </div>
-
-              <div className="mt-4 flex items-center justify-between gap-3 text-xs text-slate-500">
-                <div className="flex flex-wrap gap-1.5">
-                  {item.tags?.map((tag) => (
+      {items.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/80 p-6 text-sm text-slate-600">
+          <p className="font-medium text-slate-700">
+            No Library items match your search.
+          </p>
+          {rawQuery && (
+            <p className="mt-1">
+              We couldn&apos;t find anything for{" "}
+              <span className="font-mono text-slate-900">"{rawQuery}"</span>. Try a
+              different keyword or{" "}
+              <Link
+                href="/library"
+                className="font-medium text-slate-700 underline-offset-2 hover:underline"
+              >
+                clearing the filter
+              </Link>
+              .
+            </p>
+          )}
+        </div>
+      ) : (
+        <section className="grid gap-4 md:grid-cols-2">
+          {items.map((item) => (
+            <Link
+              key={item.id}
+              href={`/library/${item.slug}`}
+              className="group no-underline"
+            >
+              <article className="flex h-full flex-col justify-between rounded-2xl border border-slate-200 bg-white/70 p-4 shadow-sm shadow-slate-900/5 transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md hover:shadow-slate-900/10">
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="space-y-1">
+                      <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-slate-500">
+                        {kindLabel(item.kind)}
+                      </p>
+                      <h2 className="text-base font-semibold tracking-tight text-slate-900 group-hover:text-slate-950">
+                        {item.title}
+                      </h2>
+                    </div>
                     <span
-                      key={tag}
-                      className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600"
+                      className={[
+                        "inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium",
+                        statusStyles[item.status],
+                      ].join(" ")}
                     >
-                      {tag}
+                      {item.status}
                     </span>
-                  ))}
+                  </div>
+
+                  <p className="text-sm text-slate-600">
+                    {item.description}
+                  </p>
                 </div>
-                <code className="rounded-md bg-slate-900/90 px-2 py-0.5 text-[10px] font-mono text-slate-100">
-                  {item.id}
-                </code>
-              </div>
-            </article>
-          </Link>
-        ))}
-      </section>
+
+                <div className="mt-4 flex items-center justify-between gap-3 text-xs text-slate-500">
+                  <div className="flex flex-wrap gap-1.5">
+                    {item.tags?.map((tag) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <code className="rounded-md bg-slate-900/90 px-2 py-0.5 text-[10px] font-mono text-slate-100">
+                    {item.id}
+                  </code>
+                </div>
+              </article>
+            </Link>
+          ))}
+        </section>
+      )}
 
       <footer className="border-t border-dashed border-slate-200 pt-4 text-xs text-slate-500">
         <p>
@@ -183,4 +205,3 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
     </main>
   );
 }
-
