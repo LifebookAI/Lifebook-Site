@@ -5,6 +5,7 @@ import {
   type LibraryItem,
   type LibraryStatus,
 } from "@/lib/library/catalog";
+import { LibraryDetailClient } from "./LibraryDetailClient";
 
 /**
  * /library/[id]
@@ -95,15 +96,11 @@ export default async function LibraryDetailPage({
         </div>
       </header>
 
-      <section className="space-y-4">
-        <button
-          type="button"
-          className="inline-flex items-center justify-center rounded-xl border border-slate-900 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-50 shadow-sm shadow-slate-900/20 transition hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-md hover:shadow-slate-900/30 active:translate-y-0"
-        >
-          {primaryCtaLabel}
-        </button>
-        <p className="max-w-xl text-xs text-slate-500">{primaryCtaHint}</p>
-      </section>
+      <LibraryDetailClient
+        slug={item.slug}
+        primaryCtaLabel={primaryCtaLabel}
+        primaryCtaHint={primaryCtaHint}
+      />
 
       <section className="border-t border-dashed border-slate-200 pt-4 text-xs text-slate-500 space-y-2">
         {item.tags && item.tags.length > 0 && (
