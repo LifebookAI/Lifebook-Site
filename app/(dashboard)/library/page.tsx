@@ -32,24 +32,85 @@ export const metadata = {
   title: "Library | Lifebook",
 };
 
-export default async function LibraryPage() {
-  const items = getLibraryItems().sort((a, b) => a.slug.localeCompare(b.slug));
+type LibraryPageProps = {
+  searchParams?: {
+    q?: string;
+  };
+};
+
+export default async function LibraryPage({ searchParams }: LibraryPageProps) {
+  const rawQuery = (searchParams?.q ?? "").trim();
+  const query = rawQuery.toLowerCase();
+
+  const allItems = getLibraryItems().sort((a, b) =>
+    a.slug.localeCompare(b.slug)
+  );
+
+  const items =
+    query.length === 0
+      ? allItems
+      : allItems.filter((item) => {
+          const haystack = [
+            item.title,
+            item.description,
+            item.slug,
+            item.id,
+            item.kind,
+            ...(item.tags ?? []),
+          ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
+
+          return haystack.includes(query);
+        });
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
-      <header className="space-y-3">
-        <p className="text-xs font-mono uppercase tracking-[0.2em] text-slate-500">
-          Library
-        </p>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-          Saved workflows & study tracks
-        </h1>
-        <p className="max-w-2xl text-sm text-slate-600">
-          This is the seed catalog for your Lifebook Library. Each card
-          represents a workflow template or study track that can be activated,
-          pinned, and tracked for Weekly Executed Automations per Workspace
-          (WEA/AW).
-        </p>
+      <header className="space-y-4">
+        <div className="space-y-3">
+          <p className="text-xs font-mono uppercase tracking-[0.2em] text-slate-500">
+            Library
+          </p>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+            Saved workflows & study tracks
+          </h1>
+          <p className="max-w-2xl text-sm text-slate-600">
+            This is the seed catalog for your Lifebook Library. Each card
+            represents a workflow template or study track that can be activated,
+            pinned, and tracked for Weekly Executed Automations per Workspace
+            (WEA/AW).
+          </p>
+        </div>
+
+        <form
+          action="/library"
+          method="GET"
+          className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white/80 px-3 py-2 shadow-sm shadow-slate-900/5"
+        >
+          <input
+            type="text"
+            name="q"
+            defaultValue={rawQuery}
+            placeholder="Filter by title, tags, or kind (e.g. 'workflow', 'SAA')"
+            className="h-8 w-full border-none bg-transparent text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-0"
+          />
+          {rawQuery && (
+            <Link
+              href="/library"
+              className="text-xs font-medium text-slate-500 hover:text-slate-700"
+            >
+              Clear
+            </Link>
+          )}
+        </form>
+
+        {rawQuery && (
+          <p className="text-xs text-slate-500">
+            Showing {items.length} of {allItems.length} items for{" "}
+            <span className="font-mono text-slate-700">"{rawQuery}"</span>.
+          </p>
+        )}
       </header>
 
       <section className="grid gap-4 md:grid-cols-2">
