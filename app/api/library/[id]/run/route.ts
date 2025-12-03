@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getLibraryItems } from "@/lib/library/catalog";
 import { startLibraryRunFromItem } from "@/lib/library/runs";
+import { enqueueLibraryRun } from "@/lib/orchestrator/library-runs";
 
 /**
  * POST /api/library/[id]/run
@@ -31,6 +32,8 @@ export async function POST(
 
   try {
     const run = await startLibraryRunFromItem(item);
+
+    await enqueueLibraryRun(run);
 
     return NextResponse.json(
       {
