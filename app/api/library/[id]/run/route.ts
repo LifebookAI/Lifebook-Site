@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getLibraryItems } from "@/lib/library/catalog";
+import { startLibraryRunFromItem } from "@/lib/library/runs";
 
 /**
  * POST /api/library/[id]/run
@@ -7,8 +8,7 @@ import { getLibraryItems } from "@/lib/library/catalog";
  * Minimal MVP endpoint to start a run from a Library item.
  * For now, we:
  * - Look up the Library item by slug (from the [id] segment).
- * - Allow only workflow-template items to be "runnable".
- * - Return a stub runId so the client can confirm the flow.
+ * - Delegate to startLibraryRunFromItem for workflow-template items.
  *
  * In a later step, this will call the real orchestrator pipeline and
  * persist runs in the database.
@@ -29,29 +29,32 @@ export async function POST(
     );
   }
 
-  if (item.kind !== "workflow-template") {
+  try {
+    const run = await startLibraryRunFromItem(item);
+
+    return NextResponse.json(
+      {
+        ok: true,
+        runId: run.runId,
+        libraryItemId: run.libraryItemId,
+        slug: run.slug,
+      },
+      { status: 200 },
+    );
+  } catch (error) {
+    const message =
+      error instanceof Error && error.message
+        ? error.message
+        : "Failed to start run from this Library item.";
+
     return NextResponse.json(
       {
         ok: false,
-        error:
-          "Only workflow-template items are runnable in this MVP. Choose a workflow template.",
+        error: message,
       },
       { status: 400 },
     );
   }
-
-  // Stubbed run identifier for now. This will be replaced by a real orchestrator call.
-  const runId = `run_${slug}_${Date.now()}`;
-
-  return NextResponse.json(
-    {
-      ok: true,
-      runId,
-      libraryItemId: item.id,
-      slug,
-    },
-    { status: 200 },
-  );
 }
 
 export async function GET() {
