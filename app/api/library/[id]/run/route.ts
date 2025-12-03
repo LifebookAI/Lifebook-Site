@@ -38,6 +38,8 @@ export async function POST(
         runId: run.runId,
         libraryItemId: run.libraryItemId,
         slug: run.slug,
+        status: run.status,
+        createdAt: run.createdAt,
       },
       { status: 200 },
     );

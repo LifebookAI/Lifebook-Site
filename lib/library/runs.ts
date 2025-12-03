@@ -1,9 +1,13 @@
 import { type LibraryItem } from "./catalog";
 
+export type LibraryRunStatus = "pending" | "running" | "succeeded" | "failed";
+
 export type LibraryRun = {
   runId: string;
   libraryItemId: string;
   slug: string;
+  status: LibraryRunStatus;
+  createdAt: string;
 };
 
 /**
@@ -13,6 +17,7 @@ export type LibraryRun = {
  * For the MVP, this just:
  * - Ensures the item is a workflow template.
  * - Creates a stubbed runId.
+ * - Marks the run as "pending" with a createdAt timestamp.
  *
  * Later, this becomes the seam where we:
  * - Create a persistent run record in the database.
@@ -29,10 +34,13 @@ export async function startLibraryRunFromItem(
   }
 
   const runId = `run_${item.slug}_${Date.now()}`;
+  const createdAt = new Date().toISOString();
 
   return {
     runId,
     libraryItemId: item.id,
     slug: item.slug,
+    status: "pending",
+    createdAt,
   };
 }

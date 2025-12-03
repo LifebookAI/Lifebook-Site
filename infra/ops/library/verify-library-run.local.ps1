@@ -53,4 +53,28 @@ if ($json.libraryItemId -ne "workflow.hello-library") {
     exit 1
 }
 
-Write-Host "[OK] Run endpoint returned ok=true with runId '$($json.runId)' and libraryItemId '$($json.libraryItemId)'." -ForegroundColor Green
+if (-not $json.status -or -not $json.status.Trim()) {
+    Write-Host "[FAIL] Run response missing status." -ForegroundColor Red
+    exit 1
+}
+
+if ($json.status -ne "pending") {
+    Write-Host "[FAIL] status was '$($json.status)', expected 'pending' for a freshly-started run." -ForegroundColor Red
+    exit 1
+}
+
+if (-not $json.createdAt -or -not $json.createdAt.Trim()) {
+    Write-Host "[FAIL] Run response missing createdAt." -ForegroundColor Red
+    exit 1
+}
+
+try {
+    [void][datetime]::Parse($json.createdAt)
+}
+catch {
+    Write-Host "[FAIL] createdAt '$($json.createdAt)' is not a valid datetime." -ForegroundColor Red
+    exit 1
+}
+
+Write-Host ("[OK] Run endpoint returned ok=true with runId '{0}', libraryItemId '{1}', status '{2}', createdAt '{3}'." -f `
+    $json.runId, $json.libraryItemId, $json.status, $json.createdAt) -ForegroundColor Green
