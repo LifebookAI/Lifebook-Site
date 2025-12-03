@@ -118,7 +118,7 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
           <Link
             key={item.id}
             href={`/library/${item.slug}`}
-            className="group"
+            className="group no-underline"
           >
             <article className="flex h-full flex-col justify-between rounded-2xl border border-slate-200 bg-white/70 p-4 shadow-sm shadow-slate-900/5 transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md hover:shadow-slate-900/10">
               <div className="space-y-3">
@@ -183,3 +183,4 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
     </main>
   );
 }
+
