@@ -108,8 +108,19 @@ Test-Page -Path "/library" -Description "Library index" -ExpectContains "Saved w
 foreach ($item in $seedItems) {
     $path = "/library/$($item.slug)"
     $desc = "$($item.title) detail"
-    # We use the item.id as a stable substring to look for in the HTML (inside the <code> block)
+    # Use the item.id as a stable substring (inside the <code> block)
     Test-Page -Path $path -Description $desc -ExpectContains $item.id
+}
+
+# 3) Search filter sanity checks
+$searchChecks = @(
+    @{ Path = "/library?q=aws";      Description = "Library search for 'aws'";      ExpectContains = "track.aws-foundations" },
+    @{ Path = "/library?q=workflow"; Description = "Library search for 'workflow'"; ExpectContains = "workflow.hello-library" },
+    @{ Path = "/library?q=devops";   Description = "Library search for 'devops'";   ExpectContains = "track.devops-essentials" }
+)
+
+foreach ($check in $searchChecks) {
+    Test-Page -Path $check.Path -Description $check.Description -ExpectContains $check.ExpectContains
 }
 
 Write-Host "[OK] Library UI verifier completed successfully." -ForegroundColor Green
