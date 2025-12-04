@@ -72,7 +72,12 @@ export default function LibraryActivityPage() {
                         {createdDisplay}
                       </td>
                       <td className="px-3 py-2 align-top font-mono text-[11px] text-slate-700">
-                        {run.runId}
+                        <Link
+                          href={`/library/runs/${encodeURIComponent(run.runId)}`}
+                          className="hover:underline"
+                        >
+                          {run.runId}
+                        </Link>
                       </td>
                     </tr>
                   );
@@ -91,7 +96,7 @@ export default function LibraryActivityPage() {
 
       <p className="text-xs text-slate-400">
         Tip: Use the Library page to start a run, then refresh this view to see
-        it appear here.
+        it appear here. Click a Run ID to inspect that run.
       </p>
     </main>
   );
