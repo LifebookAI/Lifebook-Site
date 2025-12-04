@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { parseLibraryRunId } from "@/lib/orchestrator/run-id";
 
 type RunDetailPageProps = {
   params: {
@@ -6,56 +7,8 @@ type RunDetailPageProps = {
   };
 };
 
-type ParsedRun = {
-  runId: string;
-  slug: string;
-  libraryItemId: string;
-  status: "pending";
-  createdAt: Date | null;
-};
-
-function parseRunId(rawRunId: string): ParsedRun | null {
-  let decoded = rawRunId;
-
-  try {
-    decoded = decodeURIComponent(rawRunId);
-  } catch {
-    // Fall back to the raw value if decodeURIComponent fails.
-  }
-
-  if (!decoded.startsWith("run_")) {
-    return null;
-  }
-
-  const withoutPrefix = decoded.slice("run_".length);
-  const lastUnderscore = withoutPrefix.lastIndexOf("_");
-
-  if (lastUnderscore === -1) {
-    return null;
-  }
-
-  const slug = withoutPrefix.slice(0, lastUnderscore);
-  const timestampPart = withoutPrefix.slice(lastUnderscore + 1);
-
-  const timestampMs = Number(timestampPart);
-  const createdAt =
-    Number.isFinite(timestampMs) && timestampMs > 0
-      ? new Date(timestampMs)
-      : null;
-
-  const libraryItemId = `workflow.${slug}`;
-
-  return {
-    runId: decoded,
-    slug,
-    libraryItemId,
-    status: "pending",
-    createdAt,
-  };
-}
-
 export default function LibraryRunDetailPage({ params }: RunDetailPageProps) {
-  const parsed = parseRunId(params.runId);
+  const parsed = parseLibraryRunId(params.runId);
 
   if (!parsed) {
     let decodedRunId = params.runId;
@@ -89,9 +42,7 @@ export default function LibraryRunDetailPage({ params }: RunDetailPageProps) {
   }
 
   const createdDisplay =
-    parsed.createdAt === null
-      ? "Unknown"
-      : parsed.createdAt.toLocaleString();
+    parsed.createdAt === null ? "Unknown" : parsed.createdAt.toLocaleString();
 
   return (
     <main className="space-y-6">
