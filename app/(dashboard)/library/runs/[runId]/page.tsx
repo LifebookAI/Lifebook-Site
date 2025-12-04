@@ -1,121 +1,130 @@
-import Link from "next/link";
-import { parseLibraryRunId } from "@/lib/orchestrator/run-id";
+import { notFound } from "next/navigation";
+import { pgQuery } from "../../../../../lib/j1-db";
 
-type RunDetailPageProps = {
-  params: {
-    runId: string;
-  };
+type LibraryRunPageProps = {
+  params: { runId: string };
 };
 
-export default function LibraryRunDetailPage({ params }: RunDetailPageProps) {
-  const parsed = parseLibraryRunId(params.runId);
+type JobRow = {
+  run_id: string;
+  library_item_id: string | null;
+  status: string;
+  kind: string | null;
+  created_at: string;
+  queued_at: string;
+  started_at: string | null;
+  completed_at: string | null;
+  error_message: string | null;
+};
 
-  if (!parsed) {
-    let decodedRunId = params.runId;
-    try {
-      decodedRunId = decodeURIComponent(params.runId);
-    } catch {
-      // ignore
-    }
+function formatDate(value: string | null | undefined) {
+  if (!value) return "–";
+  try {
+    return new Date(value).toLocaleString();
+  } catch {
+    return value;
+  }
+}
 
-    return (
-      <main className="space-y-4">
-        <header className="space-y-1">
-          <h1 className="text-lg font-semibold tracking-tight text-slate-900">
-            Run not found
-          </h1>
-          <p className="max-w-xl text-sm text-slate-500">
-            We could not interpret the Library run ID{" "}
-            <span className="font-mono text-xs">{decodedRunId}</span>.
-          </p>
-        </header>
-        <p className="text-sm">
-          <Link
-            href="/library/activity"
-            className="text-sky-600 hover:underline"
-          >
-            Back to Library activity
-          </Link>
-        </p>
-      </main>
-    );
+export default async function LibraryRunPage({ params }: LibraryRunPageProps) {
+  const { runId } = params;
+
+  const result = await pgQuery<JobRow>(
+    `
+      SELECT
+        run_id,
+        library_item_id,
+        status,
+        kind,
+        created_at,
+        queued_at,
+        started_at,
+        completed_at,
+        error_message
+      FROM jobs
+      WHERE run_id = $1
+      LIMIT 1;
+    `,
+    [runId],
+  );
+
+  const row = result.rows[0];
+
+  if (!row) {
+    notFound();
   }
 
-  const createdDisplay =
-    parsed.createdAt === null ? "Unknown" : parsed.createdAt.toLocaleString();
+  const statusLabel = row.status ?? "unknown";
 
   return (
-    <main className="space-y-6">
+    <main className="max-w-2xl mx-auto px-4 py-8 space-y-6">
       <header className="space-y-1">
-        <h1 className="text-lg font-semibold tracking-tight text-slate-900">
-          Run details
+        <p className="text-xs uppercase tracking-wide text-muted-foreground">
+          Library run
+        </p>
+        <h1 className="text-2xl font-semibold break-all">
+          {row.run_id}
         </h1>
-        <p className="max-w-xl text-sm text-slate-500">
-          Inspect the payload for a single Library run. For this MVP, details
-          are reconstructed from the run ID. In the full orchestrator, this page
-          will load runs from the jobs database and show live status updates and
-          logs.
+        <p className="text-sm text-muted-foreground">
+          This page shows the current status for a run created from a Library workflow template.
         </p>
       </header>
 
-      <section className="space-y-4">
-        <div className="max-w-xl rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800">
-          <dl className="space-y-3">
-            <div>
-              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                Run ID
-              </dt>
-              <dd className="font-mono text-[11px] text-slate-800">
-                {parsed.runId}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                Workflow
-              </dt>
-              <dd className="text-sm text-slate-900">
-                <Link
-                  href={`/library/${parsed.slug}`}
-                  className="font-medium text-sky-700 hover:underline"
-                >
-                  {parsed.slug}
-                </Link>
-                <p className="text-[11px] text-slate-500">
-                  {parsed.libraryItemId}
-                </p>
-              </dd>
-            </div>
-            <div>
-              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                Status
-              </dt>
-              <dd className="text-sm text-slate-800">{parsed.status}</dd>
-            </div>
-            <div>
-              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                Created at
-              </dt>
-              <dd className="text-sm text-slate-800">{createdDisplay}</dd>
-            </div>
-          </dl>
+      <section className="border rounded-lg p-4 space-y-3">
+        <div className="flex justify-between gap-4">
+          <span className="font-medium">Status</span>
+          <span className="font-mono px-2 py-0.5 rounded-full border text-xs">
+            {statusLabel}
+          </span>
+        </div>
+        <div className="flex justify-between gap-4 text-sm">
+          <span className="font-medium">Kind</span>
+          <span className="font-mono">{row.kind ?? "–"}</span>
+        </div>
+        <div className="flex justify-between gap-4 text-sm">
+          <span className="font-medium">Library item</span>
+          <span className="font-mono">
+            {row.library_item_id ?? "–"}
+          </span>
         </div>
       </section>
 
-      <section className="space-y-2 text-xs text-slate-500">
-        <p>
-          Note: This view does not yet reflect live job execution. In the
-          production orchestrator, runs will be stored durably and enriched with
-          status transitions and logs.
-        </p>
-        <p>
-          <Link
-            href="/library/activity"
-            className="font-medium text-sky-600 hover:underline"
-          >
-            Back to Library activity
-          </Link>
-        </p>
+      <section className="border rounded-lg p-4 space-y-2 text-sm">
+        <h2 className="font-semibold text-sm">Timeline</h2>
+        <dl className="space-y-1">
+          <div className="flex justify-between gap-4">
+            <dt className="text-muted-foreground">Created</dt>
+            <dd className="font-mono">{formatDate(row.created_at)}</dd>
+          </div>
+          <div className="flex justify-between gap-4">
+            <dt className="text-muted-foreground">Queued</dt>
+            <dd className="font-mono">{formatDate(row.queued_at)}</dd>
+          </div>
+          <div className="flex justify-between gap-4">
+            <dt className="text-muted-foreground">Started</dt>
+            <dd className="font-mono">{formatDate(row.started_at)}</dd>
+          </div>
+          <div className="flex justify-between gap-4">
+            <dt className="text-muted-foreground">Completed</dt>
+            <dd className="font-mono">{formatDate(row.completed_at)}</dd>
+          </div>
+        </dl>
       </section>
+
+      {row.error_message && (
+        <section className="border rounded-lg p-4 space-y-2 text-sm">
+          <h2 className="font-semibold text-red-600">Error</h2>
+          <pre className="whitespace-pre-wrap break-words text-xs bg-red-950/40 border border-red-900 rounded-md p-2">
+            {row.error_message}
+          </pre>
+        </section>
+      )}
+
+      <p className="text-xs text-muted-foreground">
+        For the MVP, Library runs will initially remain in the <code>queued</code> state
+        until the orchestrator worker begins updating job status. You can link to this page
+        from the Library UI using <code>/library/runs/&lt;runId&gt;</code>.
+      </p>
     </main>
   );
 }
