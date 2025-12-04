@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { getRecentLibraryRuns } from "@/lib/orchestrator/library-runs";
 
 type RunDetailPageProps = {
   params: {
@@ -7,12 +6,65 @@ type RunDetailPageProps = {
   };
 };
 
-export default function LibraryRunDetailPage({ params }: RunDetailPageProps) {
-  const decodedRunId = decodeURIComponent(params.runId);
-  const runs = getRecentLibraryRuns(100);
-  const run = runs.find((r) => r.runId === decodedRunId);
+type ParsedRun = {
+  runId: string;
+  slug: string;
+  libraryItemId: string;
+  status: "pending";
+  createdAt: Date | null;
+};
 
-  if (!run) {
+function parseRunId(rawRunId: string): ParsedRun | null {
+  let decoded = rawRunId;
+
+  try {
+    decoded = decodeURIComponent(rawRunId);
+  } catch {
+    // Fall back to the raw value if decodeURIComponent fails.
+  }
+
+  if (!decoded.startsWith("run_")) {
+    return null;
+  }
+
+  const withoutPrefix = decoded.slice("run_".length);
+  const lastUnderscore = withoutPrefix.lastIndexOf("_");
+
+  if (lastUnderscore === -1) {
+    return null;
+  }
+
+  const slug = withoutPrefix.slice(0, lastUnderscore);
+  const timestampPart = withoutPrefix.slice(lastUnderscore + 1);
+
+  const timestampMs = Number(timestampPart);
+  const createdAt =
+    Number.isFinite(timestampMs) && timestampMs > 0
+      ? new Date(timestampMs)
+      : null;
+
+  const libraryItemId = `workflow.${slug}`;
+
+  return {
+    runId: decoded,
+    slug,
+    libraryItemId,
+    status: "pending",
+    createdAt,
+  };
+}
+
+export default function LibraryRunDetailPage({ params }: RunDetailPageProps) {
+  const parsed = parseRunId(params.runId);
+
+  if (!parsed) {
+    let decodedRunId = params.runId;
+    try {
+      decodedRunId = decodeURIComponent(params.runId);
+    } catch {
+      // ignore
+    }
+
     return (
       <main className="space-y-4">
         <header className="space-y-1">
@@ -20,7 +72,7 @@ export default function LibraryRunDetailPage({ params }: RunDetailPageProps) {
             Run not found
           </h1>
           <p className="max-w-xl text-sm text-slate-500">
-            We could not find a Library run with ID{" "}
+            We could not interpret the Library run ID{" "}
             <span className="font-mono text-xs">{decodedRunId}</span>.
           </p>
         </header>
@@ -36,10 +88,10 @@ export default function LibraryRunDetailPage({ params }: RunDetailPageProps) {
     );
   }
 
-  const created = new Date(run.createdAt as any);
-  const createdDisplay = Number.isNaN(created.getTime())
-    ? String(run.createdAt)
-    : created.toLocaleString();
+  const createdDisplay =
+    parsed.createdAt === null
+      ? "Unknown"
+      : parsed.createdAt.toLocaleString();
 
   return (
     <main className="space-y-6">
@@ -48,8 +100,10 @@ export default function LibraryRunDetailPage({ params }: RunDetailPageProps) {
           Run details
         </h1>
         <p className="max-w-xl text-sm text-slate-500">
-          Inspect the payload for a single Library run. In the full orchestrator,
-          this page will show live status updates and logs.
+          Inspect the payload for a single Library run. For this MVP, details
+          are reconstructed from the run ID. In the full orchestrator, this page
+          will load runs from the jobs database and show live status updates and
+          logs.
         </p>
       </header>
 
@@ -61,7 +115,7 @@ export default function LibraryRunDetailPage({ params }: RunDetailPageProps) {
                 Run ID
               </dt>
               <dd className="font-mono text-[11px] text-slate-800">
-                {run.runId}
+                {parsed.runId}
               </dd>
             </div>
             <div>
@@ -70,13 +124,13 @@ export default function LibraryRunDetailPage({ params }: RunDetailPageProps) {
               </dt>
               <dd className="text-sm text-slate-900">
                 <Link
-                  href={`/library/${run.slug}`}
+                  href={`/library/${parsed.slug}`}
                   className="font-medium text-sky-700 hover:underline"
                 >
-                  {run.slug}
+                  {parsed.slug}
                 </Link>
                 <p className="text-[11px] text-slate-500">
-                  {run.libraryItemId}
+                  {parsed.libraryItemId}
                 </p>
               </dd>
             </div>
@@ -84,7 +138,7 @@ export default function LibraryRunDetailPage({ params }: RunDetailPageProps) {
               <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
                 Status
               </dt>
-              <dd className="text-sm text-slate-800">{run.status}</dd>
+              <dd className="text-sm text-slate-800">{parsed.status}</dd>
             </div>
             <div>
               <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
@@ -98,8 +152,9 @@ export default function LibraryRunDetailPage({ params }: RunDetailPageProps) {
 
       <section className="space-y-2 text-xs text-slate-500">
         <p>
-          Note: This run is stored in an in-memory buffer for local development
-          only. It will disappear on server restart or deploy.
+          Note: This view does not yet reflect live job execution. In the
+          production orchestrator, runs will be stored durably and enriched with
+          status transitions and logs.
         </p>
         <p>
           <Link
