@@ -1,0 +1,51 @@
+name: Library Phase 4 smoke suite
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify-library-phase4:
+    runs-on: ubuntu-latest
+
+    env:
+      # Must be set in GitHub repository or environment secrets
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          npm ci || npm install
+
+      - name: Start Next dev server
+        run: |
+          npm run dev -- --port 3000 &
+          echo "Waiting for dev server on http://localhost:3000/library ..."
+          success=0
+          for i in {1..60}; do
+            if curl -sSf http://localhost:3000/library > /dev/null; then
+              echo "Dev server is up."
+              success=1
+              break
+            fi
+            echo "Still waiting for dev server ($i/60)..."
+            sleep 5
+          done
+          if [ $success -ne 1 ]; then
+            echo "Dev server did not start in time."
+            exit 1
+          fi
+
+      - name: Run Library Phase 4 smoke suite
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Set-Location $Env:GITHUB_WORKSPACE
+          pwsh infra/ops/library/verify-library-phase4.local.ps1 -BaseUrl 'http://localhost:3000'
