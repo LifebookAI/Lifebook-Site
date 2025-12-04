@@ -47,7 +47,7 @@ export async function startLibraryRunFromItem(
         INSERT INTO jobs (run_id, library_item_id, status, created_at)
         VALUES ($1, $2, $3, NOW());
       `,
-      [runId, item.id, "pending"],
+      [runId, item.id, "queued"],
     );
   } catch (error) {
     // eslint-disable-next-line no-console
