@@ -21,7 +21,7 @@ export default function LibraryActivityPage() {
       <div className="space-y-3">
         {!hasRuns && (
           <p className="text-sm text-slate-500">
-            No Library runs yet. Use “Use this workflow” on a Library item to
+            No Library runs yet. Use ΓÇ£Use this workflowΓÇ¥ on a Library item to
             start a run.
           </p>
         )}
@@ -98,8 +98,6 @@ export default function LibraryActivityPage() {
         Tip: Use the Library page to start a run, then refresh this view to see
         it appear here. Click a Run ID to inspect that run.
       </p>
-    </main>
-
       <p className="text-xs text-slate-400">
         Dev tip: You can also inspect any run ID directly at{" "}
         <code className="rounded bg-slate-100 px-1 py-0.5 text-[11px]">
