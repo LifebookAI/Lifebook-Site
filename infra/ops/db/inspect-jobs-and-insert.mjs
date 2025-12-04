@@ -18,7 +18,7 @@ function getDatabaseUrl(repoRoot) {
   }
 
   const envText = fs.readFileSync(envLocalPath, "utf8");
-  const match = envText.match(/^\\s*DATABASE_URL\\s*=\\s*(.+)\\s*$/m);
+  const match = envText.match(/^\s*DATABASE_URL\s*=\s*(.+)\s*$/m);
   if (!match) {
     throw new Error("DATABASE_URL not found in .env.local");
   }
@@ -65,15 +65,15 @@ async function main() {
       );
     }
 
-    console.log("\\n[STEP] Attempting Library-style INSERT into jobs...");
+    console.log("\n[STEP] Attempting Library-style INSERT into jobs...");
     const runId = `run_debug_${Date.now()}`;
     const libraryItemId = "workflow.hello-library";
 
     try {
       await client.query(
         `
-          INSERT INTO jobs (run_id, library_item_id, status, created_at)
-          VALUES ($1, $2, $3, NOW());
+          INSERT INTO jobs (run_id, library_item_id, status, kind)
+          VALUES ($1, $2, $3, 'workflow');
         `,
         [runId, libraryItemId, "queued"],
       );
@@ -82,7 +82,7 @@ async function main() {
       console.error("[ERROR] INSERT failed for test run:", err);
     }
 
-    console.log("\\n[STEP] Selecting last 5 jobs (run_id, library_item_id, status, created_at)...");
+    console.log("\n[STEP] Selecting last 5 jobs (run_id, library_item_id, status, created_at)...");
     const selectRes = await client.query(
       "SELECT run_id, library_item_id, status, created_at FROM jobs ORDER BY created_at DESC LIMIT 5;",
     );
@@ -101,11 +101,10 @@ async function main() {
     await client.end();
   }
 
-  console.log("\\n[OK] jobs inspection + test insert completed.");
+  console.log("\n[OK] jobs inspection + test insert completed.");
 }
 
 main().catch((err) => {
   console.error("[FATAL] inspect-jobs-and-insert failed:", err);
   process.exit(1);
 });
-

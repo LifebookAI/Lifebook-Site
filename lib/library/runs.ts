@@ -44,8 +44,8 @@ export async function startLibraryRunFromItem(
 
     await pgQuery(
       `
-        INSERT INTO jobs (run_id, library_item_id, status, created_at)
-        VALUES ($1, $2, $3, NOW());
+        INSERT INTO jobs (run_id, library_item_id, status, kind)
+        VALUES ($1, $2, $3, 'workflow');
       `,
       [runId, item.id, "queued"],
     );
