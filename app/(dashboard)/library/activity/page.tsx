@@ -99,5 +99,15 @@ export default function LibraryActivityPage() {
         it appear here. Click a Run ID to inspect that run.
       </p>
     </main>
+
+      <p className="text-xs text-slate-400">
+        Dev tip: You can also inspect any run ID directly at{" "}
+        <code className="rounded bg-slate-100 px-1 py-0.5 text-[11px]">
+          /dev/library/run-inspector
+        </code>
+        .
+      </p>
+    </main>
   );
 }
+
