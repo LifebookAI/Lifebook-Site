@@ -45,8 +45,7 @@ export async function startLibraryRunFromItem(
     await pgQuery(
       `
         INSERT INTO jobs (run_id, library_item_id, status, created_at)
-        VALUES ($1, $2, $3, NOW())
-        ON CONFLICT (run_id) DO NOTHING
+        VALUES ($1, $2, $3, NOW());
       `,
       [runId, item.id, "pending"],
     );
