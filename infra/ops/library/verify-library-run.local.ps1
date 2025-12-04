@@ -96,24 +96,10 @@ Write-Host ("[OK] hello-library: ok=true with runId '{0}', libraryItemId '{1}', 
 # 2) Negative path: non-runnable track (aws-foundations)
 # -------------------------
 $trackUri = "$BaseUrl/api/library/aws-foundations/run"
-Write-Host "[STEP] POST $trackUri (aws-foundations run — expect 400)" -ForegroundColor Yellow
+Write-Host "[STEP] POST $trackUri (aws-foundations run - expect 400)" -ForegroundColor Yellow
 
 try {
-    $trackResp = Invoke-WebRequest -Uri $trackUri -UseBasicParsing -TimeoutSec 15 -Method Post -ContentType "application/json" -Body "{}" -ErrorAction Stop
-}
-catch [System.Net.WebException] {
-    # Invoke-WebRequest throws for non-2xx; grab the response if present
-    $resp = $_.Exception.Response
-    if ($resp -and $resp.StatusCode) {
-        $trackResp = New-Object psobject -Property @{
-            StatusCode = [int]$resp.StatusCode
-            Content    = (New-Object System.IO.StreamReader($resp.GetResponseStream())).ReadToEnd()
-        }
-    }
-    else {
-        Write-Host "[FAIL] Request to $trackUri failed without an HTTP response: $($_.Exception.Message)" -ForegroundColor Red
-        exit 1
-    }
+    $trackResp = Invoke-WebRequest -Uri $trackUri -UseBasicParsing -TimeoutSec 15 -Method Post -ContentType "application/json" -Body "{}" -SkipHttpErrorCheck
 }
 catch {
     Write-Host "[FAIL] Request to $trackUri failed: $($_.Exception.Message)" -ForegroundColor Red
@@ -154,23 +140,10 @@ Write-Host ("[OK] aws-foundations: correctly rejected with HTTP 400, ok=false, e
 # 3) Negative path: missing item
 # -------------------------
 $missingUri = "$BaseUrl/api/library/no-such-item/run"
-Write-Host "[STEP] POST $missingUri (missing item — expect 404)" -ForegroundColor Yellow
+Write-Host "[STEP] POST $missingUri (missing item - expect 404)" -ForegroundColor Yellow
 
 try {
-    $missingResp = Invoke-WebRequest -Uri $missingUri -UseBasicParsing -TimeoutSec 15 -Method Post -ContentType "application/json" -Body "{}" -ErrorAction Stop
-}
-catch [System.Net.WebException] {
-    $resp = $_.Exception.Response
-    if ($resp -and $resp.StatusCode) {
-        $missingResp = New-Object psobject -Property @{
-            StatusCode = [int]$resp.StatusCode
-            Content    = (New-Object System.IO.StreamReader($resp.GetResponseStream())).ReadToEnd()
-        }
-    }
-    else {
-        Write-Host "[FAIL] Request to $missingUri failed without an HTTP response: $($_.Exception.Message)" -ForegroundColor Red
-        exit 1
-    }
+    $missingResp = Invoke-WebRequest -Uri $missingUri -UseBasicParsing -TimeoutSec 15 -Method Post -ContentType "application/json" -Body "{}" -SkipHttpErrorCheck
 }
 catch {
     Write-Host "[FAIL] Request to $missingUri failed: $($_.Exception.Message)" -ForegroundColor Red
