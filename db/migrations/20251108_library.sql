@@ -44,4 +44,28 @@ CREATE INDEX IF NOT EXISTS idx_library_items_tags
 CREATE INDEX IF NOT EXISTS idx_library_items_search_vector
     ON library_items USING GIN (search_vector);
 
+-- Jobs table (v3.0 spec - minimal MVP)
+-- Tracks workflow runs (jobs) keyed by run_id used across Library/Orchestrator.
+-- This is intentionally small; run_logs/artifacts/audit_log follow later.
+
+CREATE TABLE IF NOT EXISTS jobs (
+    -- Primary identifier for the job, aligned with public runId
+    -- e.g. 'run_hello-library_1764811216425'
+    run_id           text PRIMARY KEY,
+    -- Library item that initiated this job, e.g. 'workflow.hello-library'
+    library_item_id  text NOT NULL,
+    -- Current status of the job: 'pending', 'running', 'completed', 'failed', etc.
+    status           text NOT NULL,
+    -- Creation timestamp (server time)
+    created_at       timestamptz NOT NULL DEFAULT now()
+);
+
+-- Helpful indexes for querying by item + recency and by status.
+CREATE INDEX IF NOT EXISTS idx_jobs_library_item_id_created_at
+    ON jobs (library_item_id, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_jobs_status_created_at
+    ON jobs (status, created_at DESC);
+
 COMMIT;
+
