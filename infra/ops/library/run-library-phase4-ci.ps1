@@ -14,40 +14,30 @@ if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
 $Repo         = "LifebookAI/Lifebook-Site"
 $WorkflowFile = "library-phase4.yml"
 
-# Remember when we triggered, so we can ignore older runs
-$startTime = Get-Date
-
 Write-Host "[STEP] gh workflow run $WorkflowFile --ref $Ref --repo $Repo" -ForegroundColor Yellow
 gh workflow run $WorkflowFile --ref $Ref --repo $Repo
 if ($LASTEXITCODE -ne 0) {
     throw "gh workflow run failed with exit code $LASTEXITCODE."
 }
 
-Write-Host "[INFO] Waiting for latest '$WorkflowFile' run (branch '$Ref') created after $startTime ..." -ForegroundColor Cyan
+Write-Host "[INFO] Waiting for a run of '$WorkflowFile' on branch '$Ref'..." -ForegroundColor Cyan
 
 $run = $null
 
 for ($i = 1; $i -le 60; $i++) {
-    # Always include disabled workflows just in case
     $json = gh run list `
         --workflow $WorkflowFile `
-        --branch $Ref `
         --repo $Repo `
-        --all `
-        --limit 20 `
-        --json databaseId,status,conclusion,displayTitle,createdAt,updatedAt,htmlUrl,headBranch 2>$null
+        --limit 10 `
+        --json databaseId,workflowName,headBranch,status,conclusion,createdAt,url 2>$null
 
     if ($LASTEXITCODE -eq 0 -and $json -and $json.Trim()) {
         try {
             $runs = $json | ConvertFrom-Json
             if ($runs) {
-                # Pick the newest run on this branch created after we triggered (with a small 30s cushion)
-                $cutoff = $startTime.AddSeconds(-30)
+                # Newest run for this workflow on this branch
                 $run = $runs |
-                    Where-Object {
-                        $_.headBranch -eq $Ref -and
-                        ([datetime]$_.createdAt) -ge $cutoff
-                    } |
+                    Where-Object { $_.headBranch -eq $Ref } |
                     Sort-Object { [datetime]$_.createdAt } -Descending |
                     Select-Object -First 1
             }
@@ -69,10 +59,10 @@ if (-not $run) {
 }
 
 $runId = $run.databaseId
-Write-Host "[INFO] Watching run $runId ($($run.displayTitle)) at $($run.htmlUrl)" -ForegroundColor Cyan
+Write-Host "[INFO] Watching run $runId ($($run.workflowName)) at $($run.url)" -ForegroundColor Cyan
 
 while ($true) {
-    $json = gh run view $runId --repo $Repo --json status,conclusion,updatedAt,htmlUrl 2>$null
+    $json = gh run view $runId --repo $Repo --json status,conclusion,updatedAt,url 2>$null
     if ($LASTEXITCODE -ne 0 -or -not $json) {
         Write-Warning "gh run view failed (exit $LASTEXITCODE); retrying in 5s..."
         Start-Sleep -Seconds 5
@@ -100,9 +90,9 @@ while ($true) {
 }
 
 if ($conclusion -ne "success") {
-    Write-Error "Library Phase 4 CI workflow FAILED with conclusion '$conclusion'. See $($state.htmlUrl)"
+    Write-Error "Library Phase 4 CI workflow FAILED with conclusion '$conclusion'. See $($state.url)"
     exit 1
 }
 
-Write-Host "[OK] Library Phase 4 CI workflow SUCCEEDED. See $($state.htmlUrl)" -ForegroundColor Green
+Write-Host "[OK] Library Phase 4 CI workflow SUCCEEDED. See $($state.url)" -ForegroundColor Green
 exit 0
