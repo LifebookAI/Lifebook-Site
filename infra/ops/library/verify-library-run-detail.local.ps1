@@ -24,17 +24,17 @@ try {
 }
 
 if (-not $response.Content) {
-    throw "Empty response content from $apiUrl."
+    throw ("Empty response content from {0}." -f $apiUrl)
 }
 
 try {
     $payload = $response.Content | ConvertFrom-Json
 } catch {
-    throw "Failed to parse JSON from $apiUrl: $($response.Content)"
+    throw ("Failed to parse JSON from {0}: {1}" -f $apiUrl, $response.Content)
 }
 
 if (-not $payload.ok) {
-    throw "Expected ok=true from $apiUrl but got ok=$($payload.ok). Raw: $($response.Content)"
+    throw ("Expected ok=true from {0} but got ok={1}. Raw: {2}" -f $apiUrl, $payload.ok, $response.Content)
 }
 
 $runId         = $payload.runId
@@ -45,7 +45,7 @@ $createdAt     = $payload.createdAt
 Write-Host ("[OK] Got runId: {0} (status={1}, item={2})" -f $runId, $status, $libraryItemId) -ForegroundColor Green
 
 if (-not $runId -or -not $runId.Trim()) {
-    throw "RunId was empty in response from $apiUrl."
+    throw ("RunId was empty in response from {0}." -f $apiUrl)
 }
 
 # 2) Fetch the run detail page
@@ -66,14 +66,14 @@ try {
 }
 
 if ($pageResponse.StatusCode -ne 200) {
-    throw "Expected HTTP 200 from $runUrl but got HTTP $($pageResponse.StatusCode)."
+    throw ("Expected HTTP 200 from {0} but got HTTP {1}." -f $runUrl, $pageResponse.StatusCode)
 }
 
 # Best-effort check that the runId appears somewhere in the HTML
 if ($pageResponse.Content -and $pageResponse.Content -match [regex]::Escape($runId)) {
     Write-Host "[OK] Run detail page responded with 200 and includes the runId." -ForegroundColor Green
 } else {
-    Write-Warning "Run detail page HTML did not contain runId '$runId'; page content may be missing key details."
+    Write-Warning ("Run detail page HTML did not contain runId '{0}'; page content may be missing key details." -f $runId)
 }
 
 Write-Host "[OK] Library run detail verifier completed successfully." -ForegroundColor Green
