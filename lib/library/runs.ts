@@ -1,68 +1,58 @@
-import { type LibraryItem } from "./catalog";
+﻿export type LibraryArtifactType =
+  | "transcript"
+  | "summary"
+  | "export"
+  | "other";
 
-export type LibraryRunStatus = "pending" | "running" | "succeeded" | "failed";
-
-export type LibraryRun = {
-  runId: string;
-  libraryItemId: string;
-  slug: string;
-  status: LibraryRunStatus;
+export type LibraryArtifact = {
+  id: string;
+  label: string;
+  type: LibraryArtifactType;
   createdAt: string;
 };
 
-/**
- * startLibraryRunFromItem
- *
- * Thin domain helper used by the Library run API route.
- * For the MVP, this just:
- * - Ensures the item is a workflow template.
- * - Creates a runId.
- * - Marks the run as "pending" with a createdAt timestamp.
- * - Best-effort persists a run row into the jobs table.
- *
- * Later, this becomes the seam where we:
- * - Create a persistent run record in the database.
- * - Enqueue work for the orchestrator.
- * - Emit observability events.
- */
-export async function startLibraryRunFromItem(
-  item: LibraryItem,
-): Promise<LibraryRun> {
-  if (item.kind !== "workflow-template") {
-    throw new Error(
-      "Only workflow-template items are runnable in this MVP. Choose a workflow template.",
-    );
-  }
+export type LibraryRunStatus = "success" | "failed" | "running";
 
-  const runId = `run_${item.slug}_${Date.now()}`;
-  const createdAt = new Date().toISOString();
+export type LibraryRun = {
+  id: string;
+  label: string;
+  status: LibraryRunStatus;
+  startedAt: string;
+  completedAt?: string;
+  artifacts: LibraryArtifact[];
+};
 
-  // Best-effort persistence into jobs table. If the DB is unavailable or misconfigured,
-  // we log and continue so the Library run endpoint still behaves for MVP.
-  try {
-    const { pgQuery } = await import("../j1-db");
+const STUB_BASE_TIME = "2025-01-01T00:00:00.000Z";
 
-    await pgQuery(
-      `
-        INSERT INTO jobs (run_id, library_item_id, status, kind)
-        VALUES ($1, $2, $3, 'workflow');
-      `,
-      [runId, item.id, "queued"],
-    );
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("Failed to persist Library job to jobs table", {
-      runId,
-      libraryItemId: item.id,
-      error,
-    });
-  }
-
+// NOTE: This is stub data only. In a follow-up Phase 4 step we will
+// replace this with real runs + artifacts from the Library/orchestrator store.
+export function buildStubRun(runId: string): LibraryRun {
   return {
-    runId,
-    libraryItemId: item.id,
-    slug: item.slug,
-    status: "pending",
-    createdAt,
+    id: runId,
+    label: `Example run for ${runId}`,
+    status: "success",
+    startedAt: STUB_BASE_TIME,
+    completedAt: STUB_BASE_TIME,
+    artifacts: [
+      {
+        id: `${runId}-art-1`,
+        label: "Transcript (stub)",
+        type: "transcript",
+        createdAt: STUB_BASE_TIME,
+      },
+      {
+        id: `${runId}-art-2`,
+        label: "Summary (stub)",
+        type: "summary",
+        createdAt: STUB_BASE_TIME,
+      },
+    ],
   };
+}
+
+export function getStubRuns(): LibraryRun[] {
+  // For now, return a single example run. Later, this will be replaced or
+  // wrapped by a real "get library runs" implementation that talks to the
+  // database and respects workspace/entitlements.
+  return [buildStubRun("example-run-1")];
 }
