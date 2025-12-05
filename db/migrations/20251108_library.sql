@@ -1,71 +1,46 @@
--- 20251108_library.sql
--- Lifebook OS Personal Library schema (MVP)
--- Tables: library_items
--- Note: keep extension requirements minimal; IDs are app-generated UUIDs for now.
+﻿-- 20251108_library.sql
+-- Library runs & artifacts schema (Phase 4 / 19B Personal Library)
+-- NOTE: This is deliberately minimal and future-proof:
+--   - IDs/workspace_id are TEXT so callers can use UUIDs or other opaque IDs.
+--   - No FK to orchestrator/jobs yet; add once FD-9 schema is finalized.
 
 BEGIN;
 
-CREATE TABLE IF NOT EXISTS library_items (
-    id             uuid PRIMARY KEY,          -- app-generated id
-    workspace_id   uuid        NOT NULL,      -- owning workspace
-    user_id        uuid,                      -- optional: creator / last editor
-    artifact_id    uuid,                      -- optional: link to artifacts table
-
-    title          text        NOT NULL,      -- human title
-    kind           text        NOT NULL,      -- e.g. 'workflow_output' | 'capture' | 'note' | 'other'
-    source_type    text        NOT NULL,      -- e.g. 'workflow' | 'capture' | 'manual' | 'import'
-    source_id      text,                      -- workflow_run_id, capture_id, etc.
-    project        text,                      -- optional project / collection name
-
-    tags           text[]      NOT NULL DEFAULT '{}',  -- simple tag array
-
-    is_pinned      boolean     NOT NULL DEFAULT false,
-    pinned_at      timestamptz,
-    last_viewed_at timestamptz,
-
-    created_at     timestamptz NOT NULL DEFAULT now(),
-    updated_at     timestamptz NOT NULL DEFAULT now(),
-
-    -- For search & recall
-    search_text    text,                     -- denormalized body/summary text
-    search_vector  tsvector                  -- populated via app or a later trigger
+CREATE TABLE IF NOT EXISTS library_runs (
+  id           text PRIMARY KEY,
+  workspace_id text NOT NULL,
+  label        text NOT NULL,
+  status       text NOT NULL, -- e.g. "success", "failed", "running"
+  started_at   timestamptz NOT NULL,
+  completed_at timestamptz,
+  created_at   timestamptz NOT NULL DEFAULT now(),
+  updated_at   timestamptz NOT NULL DEFAULT now(),
+  source_job_id text,         -- optional: orchestration job ID (text/uuid, no FK yet)
+  source_kind   text NOT NULL DEFAULT 'workflow' -- e.g. "workflow", "capture", "import"
 );
 
--- Indexes for common access paths
-CREATE INDEX IF NOT EXISTS idx_library_items_workspace_created
-    ON library_items (workspace_id, created_at DESC);
+COMMENT ON TABLE library_runs IS
+  'High-level runs whose outputs are stored in the Personal Library (Phase 4 / 19B).';
 
-CREATE INDEX IF NOT EXISTS idx_library_items_workspace_pinned
-    ON library_items (workspace_id, is_pinned, pinned_at DESC);
+CREATE INDEX IF NOT EXISTS idx_library_runs_workspace_started_at
+  ON library_runs (workspace_id, started_at DESC);
 
-CREATE INDEX IF NOT EXISTS idx_library_items_tags
-    ON library_items USING GIN (tags);
-
-CREATE INDEX IF NOT EXISTS idx_library_items_search_vector
-    ON library_items USING GIN (search_vector);
-
--- Jobs table (v3.0 spec - minimal MVP)
--- Tracks workflow runs (jobs) keyed by run_id used across Library/Orchestrator.
--- This is intentionally small; run_logs/artifacts/audit_log follow later.
-
-CREATE TABLE IF NOT EXISTS jobs (
-    -- Primary identifier for the job, aligned with public runId
-    -- e.g. 'run_hello-library_1764811216425'
-    run_id           text PRIMARY KEY,
-    -- Library item that initiated this job, e.g. 'workflow.hello-library'
-    library_item_id  text NOT NULL,
-    -- Current status of the job: 'pending', 'running', 'completed', 'failed', etc.
-    status           text NOT NULL,
-    -- Creation timestamp (server time)
-    created_at       timestamptz NOT NULL DEFAULT now()
+-- Artifacts created by a Library run (transcripts, summaries, exports, etc.)
+CREATE TABLE IF NOT EXISTS library_artifacts (
+  id           text PRIMARY KEY,
+  run_id       text NOT NULL REFERENCES library_runs(id) ON DELETE CASCADE,
+  label        text NOT NULL,
+  type         text NOT NULL,  -- "transcript" | "summary" | "export" | "other"
+  storage_uri  text,           -- pointer to S3 key / external location
+  metadata     jsonb NOT NULL DEFAULT '{}'::jsonb,
+  created_at   timestamptz NOT NULL DEFAULT now(),
+  updated_at   timestamptz NOT NULL DEFAULT now()
 );
 
--- Helpful indexes for querying by item + recency and by status.
-CREATE INDEX IF NOT EXISTS idx_jobs_library_item_id_created_at
-    ON jobs (library_item_id, created_at DESC);
+COMMENT ON TABLE library_artifacts IS
+  'Artifacts produced by a Library run (Phase 4 / 19B).';
 
-CREATE INDEX IF NOT EXISTS idx_jobs_status_created_at
-    ON jobs (status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_library_artifacts_run_id
+  ON library_artifacts (run_id);
 
 COMMIT;
-

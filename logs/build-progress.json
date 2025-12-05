@@ -1317,5 +1317,71 @@
         }
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "LIB-Phase4-LibraryRunsLoader",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "lib/library/runs.ts async loaders getLibraryRuns/getLibraryRun with DATABASE_URL-aware gating; Library runs index/detail now call loaders; stub fallback preserved",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      "Design DB schema for Library runs/artifacts (db/migrations/20251108_library.sql) so loaders can return real data per workspace"
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "at": "2025-12-05T19:16:50Z",
+        "patch": {
+          "Target": "",
+          "StepTitle": null,
+          "Decisions": "",
+          "Phase": null,
+          "Next": [
+            "Design DB schema for Library runs/artifacts (db/migrations/20251108_library.sql) so loaders can return real data per workspace"
+          ],
+          "Evidence": "lib/library/runs.ts async loaders getLibraryRuns/getLibraryRun with DATABASE_URL-aware gating; Library runs index/detail now call loaders; stub fallback preserved",
+          "StepID": "LIB-Phase4-LibraryRunsLoader",
+          "Blockers": "",
+          "Status": "✔",
+          "Owner": "Zach"
+        }
+      }
+    ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "LIB-Phase4-LibraryRunsSchema",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "db/migrations/20251108_library.sql defines library_runs + library_artifacts tables (workspace-scoped, stub-friendly); ready for orchestrator-backed loaders",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      "Wire Library loaders to real DB queries (respect workspace/entitlements) and migrate off stub data when DATABASE_URL is present"
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "at": "2025-12-05T19:22:19Z",
+        "patch": {
+          "Target": "",
+          "StepTitle": null,
+          "Decisions": "",
+          "Phase": null,
+          "Next": [
+            "Wire Library loaders to real DB queries (respect workspace/entitlements) and migrate off stub data when DATABASE_URL is present"
+          ],
+          "Evidence": "db/migrations/20251108_library.sql defines library_runs + library_artifacts tables (workspace-scoped, stub-friendly); ready for orchestrator-backed loaders",
+          "StepID": "LIB-Phase4-LibraryRunsSchema",
+          "Blockers": "",
+          "Status": "✔",
+          "Owner": "Zach"
+        }
+      }
+    ]
   }
 ]
