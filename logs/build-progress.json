@@ -1284,5 +1284,38 @@
         }
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "LIB-Phase4-LibraryRunsStub",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "lib/library/runs.ts + Library runs index/detail stub pages; lint & typecheck green",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      "Introduce DATABASE_URL-aware loaders to return real Library runs/artifacts instead of stubs"
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "at": "2025-12-05T19:11:32Z",
+        "patch": {
+          "Target": "",
+          "StepTitle": null,
+          "Decisions": "",
+          "Phase": null,
+          "Next": [
+            "Introduce DATABASE_URL-aware loaders to return real Library runs/artifacts instead of stubs"
+          ],
+          "Evidence": "lib/library/runs.ts + Library runs index/detail stub pages; lint & typecheck green",
+          "StepID": "LIB-Phase4-LibraryRunsStub",
+          "Blockers": "",
+          "Status": "✔",
+          "Owner": "Zach"
+        }
+      }
+    ]
   }
 ]

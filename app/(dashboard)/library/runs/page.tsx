@@ -1,8 +1,8 @@
 ﻿import Link from "next/link";
-import { getStubRuns } from "@/lib/library/runs";
+import { getLibraryRuns } from "@/lib/library/runs";
 
-export default function LibraryRunsPage() {
-  const runs = getStubRuns();
+export default async function LibraryRunsPage() {
+  const runs = await getLibraryRuns();
 
   if (runs.length === 0) {
     return (

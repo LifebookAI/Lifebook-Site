@@ -1,13 +1,13 @@
 ﻿import Link from "next/link";
-import { buildStubRun } from "@/lib/library/runs";
+import { getLibraryRun } from "@/lib/library/runs";
 
-export default function LibraryRunDetailPage({
+export default async function LibraryRunDetailPage({
   params,
 }: {
   params: { runId: string };
 }) {
   const { runId } = params;
-  const run = buildStubRun(runId);
+  const run = await getLibraryRun(runId);
 
   return (
     <main className="space-y-6">
