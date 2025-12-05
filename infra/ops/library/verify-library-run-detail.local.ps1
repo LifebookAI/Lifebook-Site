@@ -20,7 +20,7 @@ Write-Host "[STEP] POST $apiUrl" -ForegroundColor Yellow
 try {
     $response = Invoke-WebRequest -Uri $apiUrl -Method Post -ErrorAction Stop
 } catch {
-    throw "Failed to POST $apiUrl: $($_.Exception.Message)"
+    throw ("Failed to POST {0}: {1}" -f $apiUrl, $_.Exception.Message)
 }
 
 if (-not $response.Content) {
@@ -62,7 +62,7 @@ try {
         $body = $_.ToString()
     }
 
-    throw "Failed to GET $runUrl. Exception: $($_.Exception.Message). Body: $body"
+    throw ("Failed to GET {0}. Exception: {1}. Body: {2}" -f $runUrl, $_.Exception.Message, $body)
 }
 
 if ($pageResponse.StatusCode -ne 200) {
