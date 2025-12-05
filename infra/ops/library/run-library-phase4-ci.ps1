@@ -14,13 +14,16 @@ if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
 $Repo         = "LifebookAI/Lifebook-Site"
 $WorkflowFile = "library-phase4.yml"
 
+# Capture start time so we can ignore older runs
+$startTime = Get-Date
+
 Write-Host "[STEP] gh workflow run $WorkflowFile --ref $Ref --repo $Repo" -ForegroundColor Yellow
 gh workflow run $WorkflowFile --ref $Ref --repo $Repo
 if ($LASTEXITCODE -ne 0) {
     throw "gh workflow run failed with exit code $LASTEXITCODE."
 }
 
-Write-Host "[INFO] Waiting for a run of '$WorkflowFile' on branch '$Ref'..." -ForegroundColor Cyan
+Write-Host ("[INFO] Waiting for a NEW run of '{0}' on branch '{1}' (created after {2})..." -f $WorkflowFile, $Ref, $startTime) -ForegroundColor Cyan
 
 $run = $null
 
@@ -35,9 +38,13 @@ for ($i = 1; $i -le 60; $i++) {
         try {
             $runs = $json | ConvertFrom-Json
             if ($runs) {
-                # Newest run for this workflow on this branch
+                # Only consider runs on this branch created after our start time (with small skew tolerance)
+                $cutoff = $startTime.AddSeconds(-30)
                 $run = $runs |
-                    Where-Object { $_.headBranch -eq $Ref } |
+                    Where-Object {
+                        $_.headBranch -eq $Ref -and
+                        ([datetime]$_.createdAt) -ge $cutoff
+                    } |
                     Sort-Object { [datetime]$_.createdAt } -Descending |
                     Select-Object -First 1
             }
@@ -50,12 +57,12 @@ for ($i = 1; $i -le 60; $i++) {
         break
     }
 
-    Write-Host "[INFO] No matching run found yet (attempt $i/60); sleeping 5s..." -ForegroundColor DarkYellow
+    Write-Host "[INFO] No matching NEW run found yet (attempt $i/60); sleeping 5s..." -ForegroundColor DarkYellow
     Start-Sleep -Seconds 5
 }
 
 if (-not $run) {
-    throw "Timed out waiting for a workflow run to appear for '$WorkflowFile' on branch '$Ref'."
+    throw "Timed out waiting for a NEW workflow run to appear for '$WorkflowFile' on branch '$Ref'."
 }
 
 $runId = $run.databaseId
