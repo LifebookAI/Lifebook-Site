@@ -1251,5 +1251,38 @@
         }
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "LIB-Phase4-RunDetail",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "Library Phase 4 CI green on main (library-phase4.yml run 19953329232); Minimal run detail route added at app/(dashboard)/library/runs/[runId]/page.tsx; Run verifier passes in CI and shows runId in the page HTML",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      ""
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "at": "2025-12-05T18:16:58Z",
+        "patch": {
+          "Target": "",
+          "StepTitle": null,
+          "Decisions": "",
+          "Phase": null,
+          "Next": [
+            ""
+          ],
+          "Evidence": "Library Phase 4 CI green on main (library-phase4.yml run 19953329232); Minimal run detail route added at app/(dashboard)/library/runs/[runId]/page.tsx; Run verifier passes in CI and shows runId in the page HTML",
+          "StepID": "LIB-Phase4-RunDetail",
+          "Blockers": "",
+          "Status": "✔",
+          "Owner": "Zach"
+        }
+      }
+    ]
   }
 ]
