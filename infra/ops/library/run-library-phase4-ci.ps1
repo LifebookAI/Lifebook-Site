@@ -11,32 +11,61 @@ if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
     throw "GitHub CLI 'gh' not found on PATH. Install from https://cli.github.com/ and authenticate with 'gh auth login'."
 }
 
-$Repo = "LifebookAI/Lifebook-Site"
+$Repo         = "LifebookAI/Lifebook-Site"
+$WorkflowFile = "library-phase4.yml"
 
-Write-Host "[STEP] gh workflow run library-phase4.yml --ref $Ref --repo $Repo" -ForegroundColor Yellow
-gh workflow run library-phase4.yml --ref $Ref --repo $Repo
+# Remember when we triggered, so we can ignore older runs
+$startTime = Get-Date
+
+Write-Host "[STEP] gh workflow run $WorkflowFile --ref $Ref --repo $Repo" -ForegroundColor Yellow
+gh workflow run $WorkflowFile --ref $Ref --repo $Repo
 if ($LASTEXITCODE -ne 0) {
     throw "gh workflow run failed with exit code $LASTEXITCODE."
 }
 
-Write-Host "[INFO] Waiting for latest library-phase4.yml run to appear..." -ForegroundColor Cyan
+Write-Host "[INFO] Waiting for latest '$WorkflowFile' run (branch '$Ref') created after $startTime ..." -ForegroundColor Cyan
 
 $run = $null
-for ($i = 1; $i -le 30; $i++) {
-    $json = gh run list --workflow "library-phase4.yml" --repo $Repo --limit 1 --json databaseId,status,conclusion,displayTitle,createdAt,updatedAt,htmlUrl 2>$null
+
+for ($i = 1; $i -le 60; $i++) {
+    # Always include disabled workflows just in case
+    $json = gh run list `
+        --workflow $WorkflowFile `
+        --branch $Ref `
+        --repo $Repo `
+        --all `
+        --limit 20 `
+        --json databaseId,status,conclusion,displayTitle,createdAt,updatedAt,htmlUrl,headBranch 2>$null
+
     if ($LASTEXITCODE -eq 0 -and $json -and $json.Trim()) {
-        $runs = $json | ConvertFrom-Json
-        if ($runs) {
-            $run = $runs | Select-Object -First 1
-            break
+        try {
+            $runs = $json | ConvertFrom-Json
+            if ($runs) {
+                # Pick the newest run on this branch created after we triggered (with a small 30s cushion)
+                $cutoff = $startTime.AddSeconds(-30)
+                $run = $runs |
+                    Where-Object {
+                        $_.headBranch -eq $Ref -and
+                        ([datetime]$_.createdAt) -ge $cutoff
+                    } |
+                    Sort-Object { [datetime]$_.createdAt } -Descending |
+                    Select-Object -First 1
+            }
+        } catch {
+            Write-Warning ("Failed to parse gh run list JSON on attempt {0}: {1}" -f $i, $_)
         }
     }
-    Write-Host "[INFO] No run found yet (attempt $i/30); sleeping 4s..." -ForegroundColor DarkYellow
-    Start-Sleep -Seconds 4
+
+    if ($run) {
+        break
+    }
+
+    Write-Host "[INFO] No matching run found yet (attempt $i/60); sleeping 5s..." -ForegroundColor DarkYellow
+    Start-Sleep -Seconds 5
 }
 
 if (-not $run) {
-    throw "Timed out waiting for a workflow run to appear for library-phase4.yml."
+    throw "Timed out waiting for a workflow run to appear for '$WorkflowFile' on branch '$Ref'."
 }
 
 $runId = $run.databaseId
@@ -50,7 +79,14 @@ while ($true) {
         continue
     }
 
-    $state      = $json | ConvertFrom-Json
+    try {
+        $state = $json | ConvertFrom-Json
+    } catch {
+        Write-Warning ("Failed to parse gh run view JSON; retrying in 5s... {0}" -f $_)
+        Start-Sleep -Seconds 5
+        continue
+    }
+
     $status     = $state.status
     $conclusion = $state.conclusion
 
