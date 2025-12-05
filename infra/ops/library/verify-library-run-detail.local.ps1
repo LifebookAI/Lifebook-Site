@@ -7,6 +7,12 @@ Set-StrictMode -Version Latest
 
 Write-Host "[INFO] Verifying Library run detail page against $BaseUrl" -ForegroundColor Cyan
 
+# In CI, if J1 DATABASE_URL is not configured, skip this verifier.
+if ($Env:GITHUB_ACTIONS -eq "true" -and (-not $Env:DATABASE_URL -or -not $Env:DATABASE_URL.Trim())) {
+    Write-Warning "[SKIP] Library run detail page requires DATABASE_URL for J1; skipping verification in CI because DB is not configured."
+    exit 0
+}
+
 # 1) Trigger a hello-library run via API
 $apiUrl = "$BaseUrl/api/library/hello-library/run"
 Write-Host "[STEP] POST $apiUrl" -ForegroundColor Yellow
@@ -49,7 +55,6 @@ Write-Host "[STEP] GET $runUrl" -ForegroundColor Yellow
 try {
     $pageResponse = Invoke-WebRequest -Uri $runUrl -Method Get -ErrorAction Stop
 } catch {
-    # Try to extract body/error details
     $body = $null
     if ($_.ErrorDetails -and $_.ErrorDetails.Message) {
         $body = $_.ErrorDetails.Message
@@ -57,13 +62,7 @@ try {
         $body = $_.ToString()
     }
 
-    # In CI, missing DATABASE_URL for J1 should cause a SKIP, not a hard fail.
-    if ($Env:GITHUB_ACTIONS -eq "true" -and $body -match 'DATABASE_URL is not set for Postgres \(J1\)') {
-        Write-Warning "[SKIP] Library run detail page requires DATABASE_URL for J1; skipping verification in CI because DB is not configured."
-        exit 0
-    }
-
-    throw
+    throw "Failed to GET $runUrl. Exception: $($_.Exception.Message). Body: $body"
 }
 
 if ($pageResponse.StatusCode -ne 200) {
