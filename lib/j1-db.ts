@@ -1,4 +1,4 @@
-import { Pool } from "pg";
+﻿import { Pool } from "pg";
 
 export type PgRow = Record<string, unknown>;
 export type PgQueryResult<T extends PgRow> = { rows: T[] };
@@ -16,28 +16,44 @@ type PgPool = {
   connect(): Promise<PgClient>;
 };
 
-const connectionString = process.env.DATABASE_URL;
+/**
+ * Lazily-initialized Postgres pool.
+ *
+ * This avoids throwing at module load time in environments where DATABASE_URL
+ * is not set (e.g. some build steps or non-DB serverless functions). Callers
+ * should still gate usage behind their own DATABASE_URL / feature checks.
+ */
+let pool: PgPool | null = null;
 
-if (!connectionString) {
-  throw new Error("DATABASE_URL is not set for Postgres (J1).");
+function getPgPool(): PgPool {
+  const connectionString = process.env.DATABASE_URL;
+
+  if (!connectionString) {
+    throw new Error("DATABASE_URL is not set for Postgres (J1).");
+  }
+
+  if (!pool) {
+    // We treat `pg` as an implementation detail and narrow it once into our PgPool interface.
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    pool = new Pool({
+      connectionString,
+    }) as unknown as PgPool;
+  }
+
+  return pool;
 }
-
-// We treat `pg` as an implementation detail and narrow it once into our PgPool interface.
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-const pool: PgPool = new Pool({
-  connectionString,
-}) as unknown as PgPool;
 
 /**
  * Simple pooled query helper for J1-related Postgres access.
  *
  * Callers provide the expected row shape via the generic parameter.
+ * This is intended for server-side usage only.
  */
 export async function pgQuery<T extends PgRow>(
   text: string,
   params?: PgQueryParams,
 ): Promise<PgQueryResult<T>> {
-  const client = await pool.connect();
+  const client = await getPgPool().connect();
 
   try {
     const result = await client.query<T>(text, params ?? []);
