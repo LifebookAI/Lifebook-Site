@@ -1482,5 +1482,38 @@
         }
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "LIB-Phase4-LibraryRunWriteHelper",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "Added lib/library/write-run.ts with upsertLibraryRunWithArtifacts helper for library_runs/library_artifacts, ready for orchestrator job completion wiring.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      "Call upsertLibraryRunWithArtifacts from the orchestrator when a workflow run completes to persist real Library runs/artifacts."
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "at": "2025-12-07T01:39:48Z",
+        "patch": {
+          "Target": "",
+          "StepTitle": null,
+          "Decisions": "",
+          "Phase": null,
+          "Next": [
+            "Call upsertLibraryRunWithArtifacts from the orchestrator when a workflow run completes to persist real Library runs/artifacts."
+          ],
+          "Evidence": "Added lib/library/write-run.ts with upsertLibraryRunWithArtifacts helper for library_runs/library_artifacts, ready for orchestrator job completion wiring.",
+          "StepID": "LIB-Phase4-LibraryRunWriteHelper",
+          "Blockers": "",
+          "Status": "✔",
+          "Owner": "Zach"
+        }
+      }
+    ]
   }
 ]
