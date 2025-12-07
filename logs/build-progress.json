@@ -1581,5 +1581,38 @@
         }
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "LIB-Phase4-LibraryRunLogs",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "Library run detail page now calls listRunLogs(run.id) (best-effort) and renders a Run history section with step/status/message per log entry.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      "Thread Library artifacts through real workflow outputs and consider linking each Library run back to its orchestrator job view for deeper debugging."
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "at": "2025-12-07T03:11:57Z",
+        "patch": {
+          "Target": "",
+          "StepTitle": null,
+          "Decisions": "",
+          "Phase": null,
+          "Next": [
+            "Thread Library artifacts through real workflow outputs and consider linking each Library run back to its orchestrator job view for deeper debugging."
+          ],
+          "Evidence": "Library run detail page now calls listRunLogs(run.id) (best-effort) and renders a Run history section with step/status/message per log entry.",
+          "StepID": "LIB-Phase4-LibraryRunLogs",
+          "Blockers": "",
+          "Status": "✔",
+          "Owner": "Zach"
+        }
+      }
+    ]
   }
 ]
