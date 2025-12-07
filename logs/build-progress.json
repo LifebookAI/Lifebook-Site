@@ -1614,5 +1614,38 @@
         }
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "LIB-Phase4-LibraryRunJobLink",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "Library run detail page now exposes a dev-only 'View orchestrator job' link to /dev/jobs/run?jobId=<run.id>, keeping Library runs stitched to the orchestrator debugger.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      "Once real workflows are wired up, verify that completed jobs show up as Library runs with run logs populated via DynamoDB."
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "at": "2025-12-07T03:45:21Z",
+        "patch": {
+          "Target": "",
+          "StepTitle": null,
+          "Decisions": "",
+          "Phase": null,
+          "Next": [
+            "Once real workflows are wired up, verify that completed jobs show up as Library runs with run logs populated via DynamoDB."
+          ],
+          "Evidence": "Library run detail page now exposes a dev-only 'View orchestrator job' link to /dev/jobs/run?jobId=<run.id>, keeping Library runs stitched to the orchestrator debugger.",
+          "StepID": "LIB-Phase4-LibraryRunJobLink",
+          "Blockers": "",
+          "Status": "✔",
+          "Owner": "Zach"
+        }
+      }
+    ]
   }
 ]
