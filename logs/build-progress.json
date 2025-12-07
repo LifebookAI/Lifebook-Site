@@ -1449,5 +1449,38 @@
         }
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "LIB-Phase4-LibraryRunsSearchSort",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "Library runs index now supports ?q= search and ?sort=newest|oldest mapped through lib/library/runs.ts to Postgres/stub data.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      "Hook real orchestrator pipeline so completed jobs write into library_runs/library_artifacts instead of only seed/debug data."
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "at": "2025-12-07T01:26:25Z",
+        "patch": {
+          "Target": "",
+          "StepTitle": null,
+          "Decisions": "",
+          "Phase": null,
+          "Next": [
+            "Hook real orchestrator pipeline so completed jobs write into library_runs/library_artifacts instead of only seed/debug data."
+          ],
+          "Evidence": "Library runs index now supports ?q= search and ?sort=newest|oldest mapped through lib/library/runs.ts to Postgres/stub data.",
+          "StepID": "LIB-Phase4-LibraryRunsSearchSort",
+          "Blockers": "",
+          "Status": "✔",
+          "Owner": "Zach"
+        }
+      }
+    ]
   }
 ]
