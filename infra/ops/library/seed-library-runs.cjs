@@ -59,6 +59,14 @@ async function main() {
       console.warn("[library seed] Error:", err.message);
     }
 
+    // Strip UTF-8 BOM if present, so Postgres doesn't see it as an invalid token.
+    if (migrationSql && migrationSql.charCodeAt(0) === 0xfeff) {
+      console.log(
+        "[library seed] Stripping UTF-8 BOM from migration SQL before execution...",
+      );
+      migrationSql = migrationSql.slice(1);
+    }
+
     if (migrationSql) {
       console.log(
         `[library seed] Applying migration from ${migrationPath} (or confirming current state)...`,
