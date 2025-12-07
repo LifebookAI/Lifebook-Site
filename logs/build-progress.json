@@ -1647,5 +1647,38 @@
         }
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "LIB-Phase4-DebugOrchestratorJobEnqueuer",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "Added infra/ops/orchestrator/enqueue-debug-job.cjs to insert a debug_hello_world job into the Dynamo jobs table and push an SQS message to the orchestrator queue so the worker stub can write Library runs + run logs.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      "Run the debug enqueuer, capture the jobId it prints, and verify that /library/runs and /library/runs/<jobId> show a new workflow run with orchestrator run history populated."
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "at": "2025-12-07T04:02:14Z",
+        "patch": {
+          "Target": "",
+          "StepTitle": null,
+          "Decisions": "",
+          "Phase": null,
+          "Next": [
+            "Run the debug enqueuer, capture the jobId it prints, and verify that /library/runs and /library/runs/<jobId> show a new workflow run with orchestrator run history populated."
+          ],
+          "Evidence": "Added infra/ops/orchestrator/enqueue-debug-job.cjs to insert a debug_hello_world job into the Dynamo jobs table and push an SQS message to the orchestrator queue so the worker stub can write Library runs + run logs.",
+          "StepID": "LIB-Phase4-DebugOrchestratorJobEnqueuer",
+          "Blockers": "",
+          "Status": "✔",
+          "Owner": "Zach"
+        }
+      }
+    ]
   }
 ]
