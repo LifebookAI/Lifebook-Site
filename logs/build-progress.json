@@ -1515,5 +1515,38 @@
         }
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "LIB-Phase4-OrchestratorLibraryWrite",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "Orchestrator worker now calls upsertLibraryRunWithArtifacts on job success using LIBRARY_DEBUG_WORKSPACE_ID; Library runs index reads from Postgres/stub and stays in sync with completed jobs.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      "Add real artifacts once workflows emit outputs, then surface basic run details/logs alongside Library runs in the UI."
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "at": "2025-12-07T02:51:23Z",
+        "patch": {
+          "Target": "",
+          "StepTitle": null,
+          "Decisions": "",
+          "Phase": null,
+          "Next": [
+            "Add real artifacts once workflows emit outputs, then surface basic run details/logs alongside Library runs in the UI."
+          ],
+          "Evidence": "Orchestrator worker now calls upsertLibraryRunWithArtifacts on job success using LIBRARY_DEBUG_WORKSPACE_ID; Library runs index reads from Postgres/stub and stays in sync with completed jobs.",
+          "StepID": "LIB-Phase4-OrchestratorLibraryWrite",
+          "Blockers": "",
+          "Status": "✔",
+          "Owner": "Zach"
+        }
+      }
+    ]
   }
 ]
