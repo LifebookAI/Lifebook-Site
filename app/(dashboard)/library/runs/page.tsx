@@ -10,25 +10,83 @@ function formatTimestamp(value?: string) {
   }
 }
 
-export default async function LibraryRunsPage() {
-  const runs = await getLibraryRuns();
+type LibraryRunsPageProps = {
+  searchParams?: {
+    q?: string;
+  };
+};
+
+export default async function LibraryRunsPage({
+  searchParams,
+}: LibraryRunsPageProps) {
+  const rawQuery =
+    typeof searchParams?.q === "string" ? searchParams.q : "";
+  const searchQuery = rawQuery.trim();
+  const hasSearch = searchQuery.length > 0;
+
+  const runs = await getLibraryRuns({
+    search: hasSearch ? searchQuery : undefined,
+  });
 
   if (runs.length === 0) {
     return (
       <main className="space-y-6">
-        <header className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Personal Library runs
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Recent workflow runs stored in your Personal Library. When your
-            workflows or captures run, their outputs will show up here.
-          </p>
+        <header className="space-y-4">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Personal Library runs
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Recent workflow runs stored in your Personal Library. When your
+              workflows or captures run, their outputs will show up here.
+            </p>
+          </div>
+
+          <form
+            className="flex flex-col gap-3 sm:flex-row sm:items-center"
+            method="GET"
+          >
+            <input
+              type="search"
+              name="q"
+              defaultValue={searchQuery}
+              placeholder="Search runs by label…"
+              className="w-full rounded-md border bg-background px-2 py-1 text-sm shadow-sm"
+            />
+            <div className="flex items-center gap-2">
+              <button
+                type="submit"
+                className="rounded-md border px-3 py-1 text-xs font-medium"
+              >
+                Search
+              </button>
+              {hasSearch ? (
+                <Link
+                  href="/library/runs"
+                  className="text-xs text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
+                >
+                  Clear
+                </Link>
+              ) : null}
+            </div>
+          </form>
         </header>
 
         <p className="text-sm text-muted-foreground">
-          No runs yet. Start by running a workflow or capture to create your
-          first Library artifact.
+          {hasSearch ? (
+            <>
+              No runs match "{searchQuery}". Try a different search or{" "}
+              <Link
+                href="/library/runs"
+                className="underline underline-offset-2"
+              >
+                clear the filter
+              </Link>
+              .
+            </>
+          ) : (
+            "No runs yet. Start by running a workflow or capture to create your first Library artifact."
+          )}
         </p>
       </main>
     );
@@ -36,15 +94,46 @@ export default async function LibraryRunsPage() {
 
   return (
     <main className="space-y-6">
-      <header className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Personal Library runs
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Recent workflow runs stored in your Personal Library. When configured
-          with a database, this view shows real runs for your workspace and
-          falls back to stub data in development.
-        </p>
+      <header className="space-y-4">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Personal Library runs
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Recent workflow runs stored in your Personal Library. When configured
+            with a database, this view shows real runs for your workspace and
+            falls back to stub data in development.
+          </p>
+        </div>
+
+        <form
+          className="flex flex-col gap-3 sm:flex-row sm:items-center"
+          method="GET"
+        >
+          <input
+            type="search"
+            name="q"
+            defaultValue={searchQuery}
+            placeholder="Search runs by label…"
+            className="w-full rounded-md border bg-background px-2 py-1 text-sm shadow-sm"
+          />
+          <div className="flex items-center gap-2">
+            <button
+              type="submit"
+              className="rounded-md border px-3 py-1 text-xs font-medium"
+            >
+              Search
+            </button>
+            {hasSearch ? (
+              <Link
+                href="/library/runs"
+                className="text-xs text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
+              >
+                Clear
+              </Link>
+            ) : null}
+          </div>
+        </form>
       </header>
 
       <section className="rounded-xl border bg-card text-card-foreground shadow-sm">

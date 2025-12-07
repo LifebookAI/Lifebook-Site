@@ -70,6 +70,10 @@ type LibraryArtifactRow = {
   updated_at: string | Date;
 };
 
+type LibraryRunSearchOptions = {
+  search?: string;
+};
+
 /**
  * Map a DB row into the LibraryRun domain model.
  * Artifacts are passed in separately so callers can join/fetch them however
@@ -139,11 +143,22 @@ export function buildStubRun(runId: string): LibraryRun {
   };
 }
 
-export function getStubRuns(): LibraryRun[] {
+export function getStubRuns(
+  options?: LibraryRunSearchOptions,
+): LibraryRun[] {
   // For now, return a single example run. Later, this will be replaced or
   // wrapped by a real "get library runs" implementation that talks to the
   // database and respects workspace/entitlements.
-  return [buildStubRun("example-run-1")];
+  const runs = [buildStubRun("example-run-1")];
+
+  const query = options?.search?.trim().toLowerCase();
+  if (!query) {
+    return runs;
+  }
+
+  return runs.filter((run) =>
+    run.label.toLowerCase().includes(query),
+  );
 }
 
 const LIBRARY_DEBUG_WORKSPACE_ENV_KEY = "LIBRARY_DEBUG_WORKSPACE_ID";
@@ -196,17 +211,29 @@ function getWorkspaceIdForDb(): string | null {
  * and LIBRARY_DEBUG_WORKSPACE_ID are set, but always fall back to stub
  * data on misconfiguration or runtime errors.
  */
-export async function getLibraryRuns(): Promise<LibraryRun[]> {
+export async function getLibraryRuns(
+  options?: LibraryRunSearchOptions,
+): Promise<LibraryRun[]> {
   if (!canUseDatabase()) {
-    return getStubRuns();
+    return getStubRuns(options);
   }
 
   const workspaceId = getWorkspaceIdForDb();
   if (!workspaceId) {
-    return getStubRuns();
+    return getStubRuns(options);
   }
 
+  const search = options?.search?.trim();
+
   try {
+    const params: unknown[] = [workspaceId];
+    let whereClause = "WHERE workspace_id = $1";
+
+    if (search) {
+      params.push(`%${search}%`);
+      whereClause += ` AND label ILIKE $${params.length}`;
+    }
+
     const { rows: runRows } = await pgQuery<LibraryRunRow>(
       `
         SELECT
@@ -221,11 +248,11 @@ export async function getLibraryRuns(): Promise<LibraryRun[]> {
           source_job_id,
           source_kind
         FROM library_runs
-        WHERE workspace_id = $1
+        ${whereClause}
         ORDER BY started_at DESC
         LIMIT 50
       `,
-      [workspaceId],
+      params,
     );
 
     if (runRows.length === 0) {
@@ -265,10 +292,13 @@ export async function getLibraryRuns(): Promise<LibraryRun[]> {
   } catch (error) {
     if (process.env.NODE_ENV === "development") {
       if (typeof console !== "undefined") {
-        console.error("[library] Error loading Library runs; falling back to stub data.", error);
+        console.error(
+          "[library] Error loading Library runs; falling back to stub data.",
+          error,
+        );
       }
     }
-    return getStubRuns();
+    return getStubRuns(options);
   }
 }
 
