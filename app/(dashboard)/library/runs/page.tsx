@@ -1,6 +1,15 @@
 ﻿import Link from "next/link";
 import { getLibraryRuns } from "@/lib/library/runs";
 
+function formatTimestamp(value?: string) {
+  if (!value) return "—";
+  try {
+    return new Date(value).toLocaleString();
+  } catch {
+    return value;
+  }
+}
+
 export default async function LibraryRunsPage() {
   const runs = await getLibraryRuns();
 
@@ -12,8 +21,8 @@ export default async function LibraryRunsPage() {
             Personal Library runs
           </h1>
           <p className="text-sm text-muted-foreground">
-            When your workflows run, their outputs will show up here in your
-            Personal Library.
+            Recent workflow runs stored in your Personal Library. When your
+            workflows or captures run, their outputs will show up here.
           </p>
         </header>
 
@@ -32,9 +41,9 @@ export default async function LibraryRunsPage() {
           Personal Library runs
         </h1>
         <p className="text-sm text-muted-foreground">
-          Recent workflow runs stored in your Personal Library. This view
-          currently uses stub data; a follow-up Phase 4 step will wire this to
-          real runs and search.
+          Recent workflow runs stored in your Personal Library. When configured
+          with a database, this view shows real runs for your workspace and
+          falls back to stub data in development.
         </p>
       </header>
 
@@ -46,21 +55,25 @@ export default async function LibraryRunsPage() {
         </div>
 
         <div>
-          {runs.map((run) => (
-            <Link
-              key={run.id}
-              href={`/library/runs/${run.id}`}
-              className="grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] items-center gap-3 px-4 py-3 text-sm hover:bg-accent hover:text-accent-foreground"
-            >
-              <div className="truncate">{run.label}</div>
-              <div className="uppercase text-xs tracking-wide">
-                {run.status}
-              </div>
-              <div className="text-xs text-muted-foreground font-mono">
-                {run.completedAt ?? run.startedAt}
-              </div>
-            </Link>
-          ))}
+          {runs.map((run) => {
+            const lastUpdated = run.completedAt ?? run.startedAt;
+
+            return (
+              <Link
+                key={run.id}
+                href={`/library/runs/${run.id}`}
+                className="grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] items-center gap-3 px-4 py-3 text-sm hover:bg-accent hover:text-accent-foreground"
+              >
+                <div className="truncate">{run.label}</div>
+                <div className="uppercase text-xs tracking-wide">
+                  {run.status}
+                </div>
+                <div className="text-xs text-muted-foreground font-mono">
+                  {lastUpdated ? formatTimestamp(lastUpdated) : "—"}
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
     </main>

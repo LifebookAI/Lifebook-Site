@@ -1,6 +1,15 @@
 ﻿import Link from "next/link";
 import { getLibraryRun } from "@/lib/library/runs";
 
+function formatTimestamp(value?: string) {
+  if (!value) return "—";
+  try {
+    return new Date(value).toLocaleString();
+  } catch {
+    return value;
+  }
+}
+
 export default async function LibraryRunDetailPage({
   params,
 }: {
@@ -18,8 +27,8 @@ export default async function LibraryRunDetailPage({
           </h1>
           <p className="text-sm text-muted-foreground">
             This view shows a single workflow run from your Personal Library.
-            It is currently powered by stub data; a follow-up Phase 4 step will
-            connect this to real jobs and artifacts.
+            When configured with a database, it pulls real jobs and artifacts
+            for your workspace and falls back to stub data in development.
           </p>
         </div>
 
@@ -57,7 +66,7 @@ export default async function LibraryRunDetailPage({
               Started at
             </dt>
             <dd className="text-xs">
-              {run.startedAt}
+              {formatTimestamp(run.startedAt)}
             </dd>
           </div>
           <div className="space-y-0.5">
@@ -65,7 +74,7 @@ export default async function LibraryRunDetailPage({
               Completed at
             </dt>
             <dd className="text-xs">
-              {run.completedAt ?? "—"}
+              {formatTimestamp(run.completedAt)}
             </dd>
           </div>
         </dl>
@@ -94,7 +103,7 @@ export default async function LibraryRunDetailPage({
                 <div className="space-y-0.5">
                   <div className="font-medium">{artifact.label}</div>
                   <div className="text-xs text-muted-foreground">
-                    {artifact.type} • {artifact.createdAt}
+                    {artifact.type} • {formatTimestamp(artifact.createdAt)}
                   </div>
                 </div>
                 <button
