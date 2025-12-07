@@ -1416,5 +1416,38 @@
         }
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "LIB-Phase4-LibraryRunsPolish",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "Library runs index/detail now render DB-backed timestamps via formatTimestamp, fixing Date runtime error; copy updated to describe DB+stub behavior.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      "Add basic search/sort controls to Library runs index and thread through to lib/library/runs.ts query."
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "at": "2025-12-07T00:43:04Z",
+        "patch": {
+          "Target": "",
+          "StepTitle": null,
+          "Decisions": "",
+          "Phase": null,
+          "Next": [
+            "Add basic search/sort controls to Library runs index and thread through to lib/library/runs.ts query."
+          ],
+          "Evidence": "Library runs index/detail now render DB-backed timestamps via formatTimestamp, fixing Date runtime error; copy updated to describe DB+stub behavior.",
+          "StepID": "LIB-Phase4-LibraryRunsPolish",
+          "Blockers": "",
+          "Status": "✔",
+          "Owner": "Zach"
+        }
+      }
+    ]
   }
 ]

@@ -27,6 +27,20 @@ export type LibraryRun = {
 const STUB_BASE_TIME = "2025-01-01T00:00:00.000Z";
 
 /**
+ * Coerce a Postgres value (string | Date | unknown) into a string suitable
+ * for rendering in React.
+ */
+function toIsoString(value: unknown): string {
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+  if (typeof value === "string") {
+    return value;
+  }
+  return String(value);
+}
+
+/**
  * DB row shapes for library_runs and library_artifacts.
  * These mirror db/migrations/20251108_library.sql so that
  * getLibraryRuns/getLibraryRun can map rows into the LibraryRun domain type
@@ -37,10 +51,10 @@ type LibraryRunRow = {
   workspace_id: string;
   label: string;
   status: string;
-  started_at: string;
-  completed_at: string | null;
-  created_at: string;
-  updated_at: string;
+  started_at: string | Date;
+  completed_at: string | Date | null;
+  created_at: string | Date;
+  updated_at: string | Date;
   source_job_id: string | null;
   source_kind: string;
 };
@@ -52,8 +66,8 @@ type LibraryArtifactRow = {
   type: string;
   storage_uri: string | null;
   metadata: unknown;
-  created_at: string;
-  updated_at: string;
+  created_at: string | Date;
+  updated_at: string | Date;
 };
 
 /**
@@ -74,7 +88,7 @@ function mapArtifactRow(row: LibraryArtifactRow): LibraryArtifact {
     id: row.id,
     label: row.label,
     type,
-    createdAt: row.created_at,
+    createdAt: toIsoString(row.created_at),
   };
 }
 
@@ -93,8 +107,8 @@ function mapRunRow(
     id: row.id,
     label: row.label,
     status,
-    startedAt: row.started_at,
-    completedAt: row.completed_at ?? undefined,
+    startedAt: toIsoString(row.started_at),
+    completedAt: row.completed_at ? toIsoString(row.completed_at) : undefined,
     artifacts: artifacts.map(mapArtifactRow),
   };
 }
