@@ -1383,5 +1383,38 @@
         }
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "LIB-Phase4-LibraryRunsDbQueries",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "lib/library/runs.ts now uses pgQuery + DB row mappers to read library_runs/library_artifacts (workspace-scoped via LIBRARY_DEBUG_WORKSPACE_ID); stub fallback preserved on missing DB/ID/errors",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      "Replace LIBRARY_DEBUG_WORKSPACE_ID with real workspace-aware helper from auth/session and ensure Library loaders honor retention + entitlements"
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "at": "2025-12-07T00:00:32Z",
+        "patch": {
+          "Target": "",
+          "StepTitle": null,
+          "Decisions": "",
+          "Phase": null,
+          "Next": [
+            "Replace LIBRARY_DEBUG_WORKSPACE_ID with real workspace-aware helper from auth/session and ensure Library loaders honor retention + entitlements"
+          ],
+          "Evidence": "lib/library/runs.ts now uses pgQuery + DB row mappers to read library_runs/library_artifacts (workspace-scoped via LIBRARY_DEBUG_WORKSPACE_ID); stub fallback preserved on missing DB/ID/errors",
+          "StepID": "LIB-Phase4-LibraryRunsDbQueries",
+          "Blockers": "",
+          "Status": "✔",
+          "Owner": "Zach"
+        }
+      }
+    ]
   }
 ]
