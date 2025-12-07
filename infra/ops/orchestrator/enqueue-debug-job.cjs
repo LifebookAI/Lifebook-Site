@@ -1,4 +1,4 @@
-﻿'use strict';
+﻿"use strict";
 
 const { randomUUID } = require("node:crypto");
 const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
@@ -81,6 +81,7 @@ async function main() {
       TableName: jobsTable,
       Item: {
         pk: { S: jobId },
+        sk: { S: "job" },
         jobId: { S: jobId },
         workflowSlug: { S: workflowSlug },
         status: { S: "queued" },

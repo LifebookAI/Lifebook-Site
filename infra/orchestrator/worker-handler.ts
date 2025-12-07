@@ -16,6 +16,10 @@ if (!jobsTable) {
 
 const dynamo = new DynamoDBClient({ region });
 
+// Sort key used for the primary job record.
+// We mirror jobId in pk and use a constant sk so the table's pk/sk key schema is satisfied.
+const JOB_SORT_KEY = "job";
+
 async function updateJobStatus(
   jobId: string,
   status: JobStatus,
@@ -43,7 +47,10 @@ async function updateJobStatus(
   await dynamo.send(
     new UpdateItemCommand({
       TableName: jobsTable,
-      Key: { jobId: { S: jobId } },
+      Key: {
+        pk: { S: jobId },
+        sk: { S: JOB_SORT_KEY },
+      },
       UpdateExpression: updateExpr,
       ExpressionAttributeNames: exprNames,
       ExpressionAttributeValues: exprValues,
