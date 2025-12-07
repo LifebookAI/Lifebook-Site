@@ -24,6 +24,8 @@ export type LibraryRun = {
   artifacts: LibraryArtifact[];
 };
 
+type LibraryRunSort = "newest" | "oldest";
+
 const STUB_BASE_TIME = "2025-01-01T00:00:00.000Z";
 
 /**
@@ -72,6 +74,7 @@ type LibraryArtifactRow = {
 
 type LibraryRunSearchOptions = {
   search?: string;
+  sort?: LibraryRunSort;
 };
 
 /**
@@ -224,6 +227,8 @@ export async function getLibraryRuns(
   }
 
   const search = options?.search?.trim();
+  const sort: LibraryRunSort =
+    options?.sort === "oldest" ? "oldest" : "newest";
 
   try {
     const params: unknown[] = [workspaceId];
@@ -233,6 +238,11 @@ export async function getLibraryRuns(
       params.push(`%${search}%`);
       whereClause += ` AND label ILIKE $${params.length}`;
     }
+
+    const orderClause =
+      sort === "oldest"
+        ? "ORDER BY started_at ASC"
+        : "ORDER BY started_at DESC";
 
     const { rows: runRows } = await pgQuery<LibraryRunRow>(
       `
@@ -249,7 +259,7 @@ export async function getLibraryRuns(
           source_kind
         FROM library_runs
         ${whereClause}
-        ORDER BY started_at DESC
+        ${orderClause}
         LIMIT 50
       `,
       params,

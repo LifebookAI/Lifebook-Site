@@ -10,9 +10,12 @@ function formatTimestamp(value?: string) {
   }
 }
 
+type SortOption = "newest" | "oldest";
+
 type LibraryRunsPageProps = {
   searchParams?: {
     q?: string;
+    sort?: string;
   };
 };
 
@@ -24,9 +27,25 @@ export default async function LibraryRunsPage({
   const searchQuery = rawQuery.trim();
   const hasSearch = searchQuery.length > 0;
 
+  const rawSort =
+    typeof searchParams?.sort === "string" ? searchParams.sort : "newest";
+  const sort: SortOption = rawSort === "oldest" ? "oldest" : "newest";
+
   const runs = await getLibraryRuns({
     search: hasSearch ? searchQuery : undefined,
+    sort,
   });
+
+  const sortSelect = (
+    <select
+      name="sort"
+      defaultValue={sort}
+      className="rounded-md border bg-background px-2 py-1 text-xs shadow-sm"
+    >
+      <option value="newest">Newest first</option>
+      <option value="oldest">Oldest first</option>
+    </select>
+  );
 
   if (runs.length === 0) {
     return (
@@ -54,6 +73,7 @@ export default async function LibraryRunsPage({
               className="w-full rounded-md border bg-background px-2 py-1 text-sm shadow-sm"
             />
             <div className="flex items-center gap-2">
+              {sortSelect}
               <button
                 type="submit"
                 className="rounded-md border px-3 py-1 text-xs font-medium"
@@ -118,6 +138,7 @@ export default async function LibraryRunsPage({
             className="w-full rounded-md border bg-background px-2 py-1 text-sm shadow-sm"
           />
           <div className="flex items-center gap-2">
+            {sortSelect}
             <button
               type="submit"
               className="rounded-md border px-3 py-1 text-xs font-medium"
