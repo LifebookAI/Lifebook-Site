@@ -1548,5 +1548,38 @@
         }
       }
     ]
+  },
+  {
+    "Phase": "Phase 0 — Infra",
+    "StepID": "LIB-Phase4-LibraryRunDetailPage",
+    "StepTitle": "",
+    "Status": "✔",
+    "Evidence": "Added app/(dashboard)/library/runs/[id]/page.tsx that loads a Library run via getLibraryRun(runId) and displays label/status/timestamps and artifacts.",
+    "Decisions": "",
+    "Blockers": "",
+    "Next": [
+      "Surface orchestrator run logs and richer artifact metadata on the Library run detail view."
+    ],
+    "Owner": "Zach",
+    "Target": "",
+    "History": [
+      {
+        "at": "2025-12-07T03:05:51Z",
+        "patch": {
+          "Target": "",
+          "StepTitle": null,
+          "Decisions": "",
+          "Phase": null,
+          "Next": [
+            "Surface orchestrator run logs and richer artifact metadata on the Library run detail view."
+          ],
+          "Evidence": "Added app/(dashboard)/library/runs/[id]/page.tsx that loads a Library run via getLibraryRun(runId) and displays label/status/timestamps and artifacts.",
+          "StepID": "LIB-Phase4-LibraryRunDetailPage",
+          "Blockers": "",
+          "Status": "✔",
+          "Owner": "Zach"
+        }
+      }
+    ]
   }
 ]
