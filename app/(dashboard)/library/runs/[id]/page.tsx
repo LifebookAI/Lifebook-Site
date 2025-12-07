@@ -23,6 +23,11 @@ export default async function LibraryRunPage({ params }: LibraryRunPageProps) {
   const run = await getLibraryRun(runId);
 
   const lastUpdated = run.completedAt ?? run.startedAt;
+  const orchestratorJobId = run.id;
+  const orchestratorDebugUrl =
+    process.env.NODE_ENV !== "production"
+      ? `/dev/jobs/run?jobId=${encodeURIComponent(orchestratorJobId)}`
+      : null;
 
   let logs: RunLog[] = [];
   try {
@@ -59,12 +64,22 @@ export default async function LibraryRunPage({ params }: LibraryRunPageProps) {
             </p>
           </div>
 
-          <Link
-            href="/library/runs"
-            className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-4"
-          >
-            ← Back to runs
-          </Link>
+          <div className="flex flex-col items-end gap-1 text-right">
+            <Link
+              href="/library/runs"
+              className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-4"
+            >
+              ← Back to runs
+            </Link>
+            {orchestratorDebugUrl ? (
+              <Link
+                href={orchestratorDebugUrl}
+                className="text-[10px] text-muted-foreground hover:text-foreground underline underline-offset-4"
+              >
+                View orchestrator job (dev)
+              </Link>
+            ) : null}
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-3 text-xs">
