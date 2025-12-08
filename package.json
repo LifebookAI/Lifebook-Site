@@ -10,7 +10,7 @@
     "@aws-sdk/lib-dynamodb": "^3.946.0",
     "@aws-sdk/s3-request-presigner": "^3.937.0",
     "dotenv": "^17.2.3",
-    "next": "15.4.7",
+    "next": "15.4.8",
     "pg": "^8.16.3",
     "react": "19.2.0",
     "react-dom": "19.2.0",
