@@ -23,7 +23,7 @@ jobs:
       PRESIGN_HMAC_SECRET: ${{ secrets.PRESIGN_HMAC_SECRET }}
       CF_BASE_URL:       ${{ secrets.CF_BASE_URL }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Configure AWS creds via OIDC
         if: ${{ env.AWS_OIDC_ROLE_ARN != '' }}
         uses: aws-actions/configure-aws-credentials@v4
