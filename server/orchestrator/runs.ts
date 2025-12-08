@@ -17,19 +17,29 @@ export interface RunDetail extends RunSummary {
   errorMessage: string | null;
 }
 
-/**
- * Orchestrator runs facade
- *
- * NOTE: These are stub implementations so the Library UI can render.
- * Wire these to the real orchestrator storage (e.g., Postgres/SQS-backed runs table)
- * in the next slice.
- */
+// Temporary in-memory demo data so the Library UI is navigable.
+// TODO: replace with real orchestrator runs storage.
+const DEMO_RUNS: RunDetail[] = [
+  {
+    id: "demo-run-1",
+    label: "Demo transcription run",
+    status: "succeeded",
+    workflowSlug: "demo-transcription",
+    inputSummary: "Demo audio uploaded via dashboard.",
+    outputSummary: "Transcript and chapters generated successfully.",
+    errorMessage: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+];
+
 export async function listRuns(): Promise<RunSummary[]> {
-  // TODO: Replace with real data source.
-  return [];
+  // Strip detail-only fields so the index stays light.
+  return DEMO_RUNS.map(
+    ({ workflowSlug, inputSummary, outputSummary, errorMessage, ...summary }) => summary,
+  );
 }
 
 export async function getRunDetail(id: string): Promise<RunDetail | null> {
-  // TODO: Replace with real data source.
-  return null;
+  return DEMO_RUNS.find((run) => run.id === id) ?? null;
 }
