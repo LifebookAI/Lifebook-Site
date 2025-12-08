@@ -1,191 +1,167 @@
-﻿import Link from "next/link";
-import { getLibraryRuns } from "@/lib/library/runs";
+"use client";
 
-function formatTimestamp(value?: string) {
-  if (!value) return "—";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+
+type RunSummary = {
+  jobId: string;
+  workflowSlug: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  lastError?: string | null;
+};
+
+type RunsListResponse = {
+  items: RunSummary[];
+  error?: string;
+};
+
+function formatTs(ts: string) {
   try {
-    return new Date(value).toLocaleString();
+    return new Date(ts).toLocaleString();
   } catch {
-    return value;
+    return ts;
   }
 }
 
-type SortOption = "newest" | "oldest";
+export default function RunsIndexPage() {
+  const [items, setItems] = useState<RunSummary[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-type LibraryRunsPageProps = {
-  searchParams?: {
-    q?: string;
-    sort?: string;
-  };
-};
+  useEffect(() => {
+    let cancelled = false;
 
-export default async function LibraryRunsPage({
-  searchParams,
-}: LibraryRunsPageProps) {
-  const rawQuery =
-    typeof searchParams?.q === "string" ? searchParams.q : "";
-  const searchQuery = rawQuery.trim();
-  const hasSearch = searchQuery.length > 0;
+    async function load() {
+      setLoading(true);
+      setError(null);
 
-  const rawSort =
-    typeof searchParams?.sort === "string" ? searchParams.sort : "newest";
-  const sort: SortOption = rawSort === "oldest" ? "oldest" : "newest";
+      try {
+        const res = await fetch("/api/orchestrator/runs", {
+          cache: "no-store",
+        });
 
-  const runs = await getLibraryRuns({
-    search: hasSearch ? searchQuery : undefined,
-    sort,
-  });
+        const body = (await res.json().catch(() => null)) as RunsListResponse | null;
 
-  const sortSelect = (
-    <select
-      name="sort"
-      defaultValue={sort}
-      className="rounded-md border bg-background px-2 py-1 text-xs shadow-sm"
-    >
-      <option value="newest">Newest first</option>
-      <option value="oldest">Oldest first</option>
-    </select>
-  );
+        if (!res.ok) {
+          const msg =
+            body && typeof body.error === "string" && body.error
+              ? body.error
+              : `HTTP ${res.status}`;
+          throw new Error(msg);
+        }
 
-  if (runs.length === 0) {
+        if (!cancelled) {
+          setItems((body?.items ?? []) as RunSummary[]);
+        }
+      } catch (err: any) {
+        if (!cancelled) {
+          setError(err?.message ?? "Failed to load runs");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (loading) {
     return (
-      <main className="space-y-6">
-        <header className="space-y-4">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Personal Library runs
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Recent workflow runs stored in your Personal Library. When your
-              workflows or captures run, their outputs will show up here.
-            </p>
-          </div>
-
-          <form
-            className="flex flex-col gap-3 sm:flex-row sm:items-center"
-            method="GET"
-          >
-            <input
-              type="search"
-              name="q"
-              defaultValue={searchQuery}
-              placeholder="Search runs by label…"
-              className="w-full rounded-md border bg-background px-2 py-1 text-sm shadow-sm"
-            />
-            <div className="flex items-center gap-2">
-              {sortSelect}
-              <button
-                type="submit"
-                className="rounded-md border px-3 py-1 text-xs font-medium"
-              >
-                Search
-              </button>
-              {hasSearch ? (
-                <Link
-                  href="/library/runs"
-                  className="text-xs text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
-                >
-                  Clear
-                </Link>
-              ) : null}
-            </div>
-          </form>
-        </header>
-
+      <div className="p-6 space-y-2">
+        <h1 className="text-xl font-semibold">Workflow runs</h1>
         <p className="text-sm text-muted-foreground">
-          {hasSearch ? (
-            <>
-              No runs match "{searchQuery}". Try a different search or{" "}
-              <Link
-                href="/library/runs"
-                className="underline underline-offset-2"
-              >
-                clear the filter
-              </Link>
-              .
-            </>
-          ) : (
-            "No runs yet. Start by running a workflow or capture to create your first Library artifact."
-          )}
+          Loading recent runs…
         </p>
-      </main>
+      </div>
     );
   }
 
+  if (error) {
+    return (
+      <div className="p-6 space-y-2">
+        <h1 className="text-xl font-semibold">Workflow runs</h1>
+        <p className="text-sm text-red-500">Error: {error}</p>
+        <p className="text-xs text-muted-foreground">
+          Tried to load from <code>/api/orchestrator/runs</code>.
+        </p>
+      </div>
+    );
+  }
+
+  const rows = items ?? [];
+
   return (
-    <main className="space-y-6">
-      <header className="space-y-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Personal Library runs
-          </h1>
+    <div className="p-6 space-y-4">
+      <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-xl font-semibold">Workflow runs</h1>
           <p className="text-sm text-muted-foreground">
-            Recent workflow runs stored in your Personal Library. When configured
-            with a database, this view shows real runs for your workspace and
-            falls back to stub data in development.
+            Minimal runs index wired to <code>/library/runs/[runId]</code>. Backed
+            by live run-detail via <code>/api/orchestrator/runs</code>.
           </p>
         </div>
-
-        <form
-          className="flex flex-col gap-3 sm:flex-row sm:items-center"
-          method="GET"
-        >
-          <input
-            type="search"
-            name="q"
-            defaultValue={searchQuery}
-            placeholder="Search runs by label…"
-            className="w-full rounded-md border bg-background px-2 py-1 text-sm shadow-sm"
-          />
-          <div className="flex items-center gap-2">
-            {sortSelect}
-            <button
-              type="submit"
-              className="rounded-md border px-3 py-1 text-xs font-medium"
-            >
-              Search
-            </button>
-            {hasSearch ? (
-              <Link
-                href="/library/runs"
-                className="text-xs text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
-              >
-                Clear
-              </Link>
-            ) : null}
-          </div>
-        </form>
       </header>
 
-      <section className="rounded-xl border bg-card text-card-foreground shadow-sm">
-        <div className="grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] gap-3 border-b px-4 py-2 text-xs font-medium text-muted-foreground">
-          <div>Run</div>
-          <div>Status</div>
-          <div>Last updated</div>
-        </div>
-
-        <div>
-          {runs.map((run) => {
-            const lastUpdated = run.completedAt ?? run.startedAt;
-
-            return (
-              <Link
-                key={run.id}
-                href={`/library/runs/${run.id}`}
-                className="grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] items-center gap-3 px-4 py-3 text-sm hover:bg-accent hover:text-accent-foreground"
-              >
-                <div className="truncate">{run.label}</div>
-                <div className="uppercase text-xs tracking-wide">
-                  {run.status}
-                </div>
-                <div className="text-xs text-muted-foreground font-mono">
-                  {lastUpdated ? formatTimestamp(lastUpdated) : "—"}
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+      <section className="space-y-2">
+        {rows.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            No runs to show yet. Once the orchestrator starts writing run metadata,
+            this table can list recent runs.
+          </p>
+        ) : (
+          <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+            <table className="min-w-full text-left text-sm">
+              <thead className="border-b bg-slate-50 text-xs uppercase text-slate-500">
+                <tr>
+                  <th className="px-3 py-2 font-medium">Workflow</th>
+                  <th className="px-3 py-2 font-medium">Job ID</th>
+                  <th className="px-3 py-2 font-medium">Status</th>
+                  <th className="px-3 py-2 font-medium">Created</th>
+                  <th className="px-3 py-2 font-medium">Updated</th>
+                  <th className="px-3 py-2 font-medium text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((run) => (
+                  <tr key={run.jobId} className="border-b last:border-0">
+                    <td className="px-3 py-2 align-top text-xs text-slate-800">
+                      <span className="font-mono">{run.workflowSlug}</span>
+                    </td>
+                    <td className="px-3 py-2 align-top text-xs font-mono break-all text-slate-700">
+                      {run.jobId}
+                    </td>
+                    <td className="px-3 py-2 align-top text-xs text-slate-700">
+                      {run.status}
+                    </td>
+                    <td className="px-3 py-2 align-top text-xs font-mono text-slate-600">
+                      {formatTs(run.createdAt)}
+                    </td>
+                    <td className="px-3 py-2 align-top text-xs font-mono text-slate-600">
+                      {formatTs(run.updatedAt)}
+                    </td>
+                    <td className="px-3 py-2 align-top text-xs text-right">
+                      <Link
+                        href={`/library/runs/${encodeURIComponent(run.jobId)}`}
+                        className="inline-flex items-center rounded-md border border-slate-300 px-2 py-1 text-xs font-medium text-slate-800 hover:bg-slate-50"
+                      >
+                        View run
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </section>
-    </main>
+    </div>
   );
 }

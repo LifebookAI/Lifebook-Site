@@ -1,122 +1,231 @@
-﻿import Link from "next/link";
-import { getLibraryRun } from "@/lib/library/runs";
+"use client";
 
-function formatTimestamp(value?: string) {
-  if (!value) return "—";
+import React, { useEffect, useState } from "react";
+
+type RunLogEntry = {
+  jobId: string;
+  step: string;
+  message: string;
+  statusBefore?: string | null;
+  statusAfter?: string | null;
+  createdAt: string;
+};
+
+type RunDetailResponse = {
+  jobId: string;
+  workflowSlug: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  lastError?: string | null;
+  runLogs: RunLogEntry[];
+  error?: string;
+};
+
+function formatTs(ts: string) {
   try {
-    return new Date(value).toLocaleString();
+    return new Date(ts).toLocaleString();
   } catch {
-    return value;
+    return ts;
   }
 }
 
-export default async function LibraryRunDetailPage({
+export default function RunDetailPage({
   params,
 }: {
-  params: { runId: string };
+  params: Promise<{ runId: string }>;
 }) {
-  const { runId } = params;
-  const run = await getLibraryRun(runId);
+  const { runId } = React.use(params);
+
+  const [data, setData] = useState<RunDetailResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const res = await fetch(
+          `/api/orchestrator/run-detail/${encodeURIComponent(runId)}`,
+          {
+            cache: "no-store",
+          }
+        );
+
+        const body = await res.json().catch(() => null);
+
+        if (!res.ok) {
+          const msg =
+            body && typeof body.error === "string" && body.error
+              ? body.error
+              : `HTTP ${res.status}`;
+          throw new Error(msg);
+        }
+
+        if (!cancelled) {
+          setData(body as RunDetailResponse);
+        }
+      } catch (err: any) {
+        if (!cancelled) {
+          setError(err?.message ?? "Failed to load run detail");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [runId]);
+
+  if (loading) {
+    return (
+      <div className="p-6">
+        <h1 className="text-xl font-semibold mb-2">Run detail</h1>
+        <p className="text-sm text-muted-foreground">
+          Loading run <code className="text-xs">{runId}</code>…
+        </p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <h1 className="text-xl font-semibold mb-2">Run detail</h1>
+        <p className="text-sm text-red-500 mb-2">Error: {error}</p>
+        <p className="text-xs text-muted-foreground">
+          Tried to load <code>{runId}</code> from{" "}
+          <code>/api/orchestrator/run-detail/{runId}</code>.
+        </p>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="p-6">
+        <h1 className="text-xl font-semibold mb-2">Run detail</h1>
+        <p className="text-sm text-muted-foreground">
+          No data returned for run <code>{runId}</code>.
+        </p>
+      </div>
+    );
+  }
+
+  const statusColor =
+    data.status === "succeeded"
+      ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+      : data.status === "failed"
+      ? "bg-red-100 text-red-700 border-red-200"
+      : "bg-slate-100 text-slate-700 border-slate-200";
 
   return (
-    <main className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Run details
+    <div className="p-6 space-y-6">
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-xl font-semibold">
+            Run detail:{" "}
+            <span className="font-mono text-base">
+              {data.workflowSlug ?? "(unknown workflow)"}
+            </span>
           </h1>
           <p className="text-sm text-muted-foreground">
-            This view shows a single workflow run from your Personal Library.
-            When configured with a database, it pulls real jobs and artifacts
-            for your workspace and falls back to stub data in development.
+            Job ID:{" "}
+            <span className="font-mono text-xs break-all">{data.jobId}</span>
           </p>
         </div>
-
-        <Link
-          href="/library/runs"
-          className="text-sm text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
-        >
-          ← Back to runs
-        </Link>
-      </div>
-
-      {/* Summary card */}
-      <section className="rounded-xl border bg-card text-card-foreground shadow-sm p-4 space-y-3">
-        <div className="flex items-center justify-between gap-4">
-          <div className="space-y-1">
-            <h2 className="text-sm font-medium">Run summary</h2>
-            <p className="text-xs text-muted-foreground">
-              High-level status and timing for this run.
-            </p>
-          </div>
-          <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium uppercase tracking-wide">
-            {run.status}
+        <div className="flex flex-col items-start gap-2 sm:items-end">
+          <span
+            className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium ${statusColor}`}
+          >
+            Status: {data.status}
           </span>
+          <div className="text-xs text-muted-foreground space-y-0.5 text-right">
+            <div>
+              Created:{" "}
+              <span className="font-mono">{formatTs(data.createdAt)}</span>
+            </div>
+            <div>
+              Updated:{" "}
+              <span className="font-mono">{formatTs(data.updatedAt)}</span>
+            </div>
+          </div>
         </div>
+      </header>
 
-        <dl className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
-          <div className="space-y-0.5">
-            <dt className="text-xs uppercase text-muted-foreground">
-              Run ID
-            </dt>
-            <dd className="font-mono text-xs break-all">{run.id}</dd>
-          </div>
-          <div className="space-y-0.5">
-            <dt className="text-xs uppercase text-muted-foreground">
-              Started at
-            </dt>
-            <dd className="text-xs">
-              {formatTimestamp(run.startedAt)}
-            </dd>
-          </div>
-          <div className="space-y-0.5">
-            <dt className="text-xs uppercase text-muted-foreground">
-              Completed at
-            </dt>
-            <dd className="text-xs">
-              {formatTimestamp(run.completedAt)}
-            </dd>
-          </div>
-        </dl>
-      </section>
+      {data.lastError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          <div className="font-semibold mb-1">Last error</div>
+          <pre className="whitespace-pre-wrap text-xs font-mono">
+            {data.lastError}
+          </pre>
+        </div>
+      )}
 
-      {/* Artifacts list */}
       <section className="space-y-3">
-        <div className="space-y-1">
-          <h2 className="text-sm font-medium">Artifacts</h2>
-          <p className="text-xs text-muted-foreground">
-            Outputs created by this run (transcripts, summaries, exports, etc.).
-          </p>
-        </div>
+        <h2 className="text-sm font-semibold text-slate-800">
+          Run log timeline
+        </h2>
 
-        {run.artifacts.length === 0 ? (
+        {(!data.runLogs || data.runLogs.length === 0) && (
           <p className="text-sm text-muted-foreground">
-            No artifacts recorded for this run yet.
+            No run-log entries recorded for this run.
           </p>
-        ) : (
-          <div className="rounded-xl border bg-card text-card-foreground shadow-sm divide-y">
-            {run.artifacts.map((artifact) => (
-              <div
-                key={artifact.id}
-                className="flex items-center justify-between gap-4 px-4 py-3 text-sm"
-              >
-                <div className="space-y-0.5">
-                  <div className="font-medium">{artifact.label}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {artifact.type} • {formatTimestamp(artifact.createdAt)}
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  className="text-xs font-medium underline underline-offset-2 hover:text-primary"
-                >
-                  Open (stub)
-                </button>
-              </div>
-            ))}
+        )}
+
+        {data.runLogs && data.runLogs.length > 0 && (
+          <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+            <table className="min-w-full text-left text-sm">
+              <thead className="border-b bg-slate-50 text-xs uppercase text-slate-500">
+                <tr>
+                  <th className="px-3 py-2 font-medium">Time</th>
+                  <th className="px-3 py-2 font-medium">Step</th>
+                  <th className="px-3 py-2 font-medium">Status</th>
+                  <th className="px-3 py-2 font-medium">Message</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.runLogs.map((log) => {
+                  const statusSegment =
+                    log.statusBefore && log.statusAfter
+                      ? `${log.statusBefore} → ${log.statusAfter}`
+                      : log.statusAfter ?? "";
+
+                  return (
+                    <tr
+                      key={`${log.step}-${log.createdAt}-${log.jobId}`}
+                      className="border-b last:border-0"
+                    >
+                      <td className="px-3 py-2 align-top text-xs font-mono text-slate-600">
+                        {formatTs(log.createdAt)}
+                      </td>
+                      <td className="px-3 py-2 align-top text-xs font-mono text-slate-800">
+                        {log.step}
+                      </td>
+                      <td className="px-3 py-2 align-top text-xs text-slate-700">
+                        {statusSegment}
+                      </td>
+                      <td className="px-3 py-2 align-top text-xs text-slate-800">
+                        {log.message}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         )}
       </section>
-    </main>
+    </div>
   );
 }
