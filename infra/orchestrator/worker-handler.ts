@@ -8,10 +8,18 @@ import { appendRunLog } from "../../lib/jobs/run-logs-dynamo";
 import { upsertLibraryRunWithArtifacts } from "../../lib/library/write-run";
 
 const region = process.env.AWS_REGION ?? "us-east-1";
-const jobsTable = process.env.JOBS_TABLE_NAME;
+
+// Allow multiple env var names so we don't have to change Lambda config immediately.
+const jobsTable =
+  process.env.JOBS_TABLE_NAME ??
+  process.env.LF_ORCH_TABLE ??
+  process.env.JOBS_TABLE ??
+  process.env.LFLBK_ORCH_JOBS_TABLE;
 
 if (!jobsTable) {
-  throw new Error("JOBS_TABLE_NAME env var is required");
+  throw new Error(
+    "Jobs table env var is required (JOBS_TABLE_NAME / LF_ORCH_TABLE / JOBS_TABLE / LFLBK_ORCH_JOBS_TABLE).",
+  );
 }
 
 const dynamo = new DynamoDBClient({ region });

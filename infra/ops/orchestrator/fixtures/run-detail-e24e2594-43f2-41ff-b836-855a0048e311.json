@@ -1,0 +1,42 @@
+{
+  "JobId": "e24e2594-43f2-41ff-b836-855a0048e311",
+  "WorkflowSlug": "debug_hello_world",
+  "Status": "succeeded",
+  "CreatedAt": "2025-12-07T06:26:51.062Z",
+  "UpdatedAt": "2025-12-07T06:27:01.17Z",
+  "LastError": null,
+  "RunLogs": [
+    {
+      "JobId": "e24e2594-43f2-41ff-b836-855a0048e311",
+      "Step": "worker.start",
+      "Message": "Worker picked up job for workflow debug_hello_world",
+      "StatusBefore": "queued",
+      "StatusAfter": "running",
+      "CreatedAt": "2025-12-07T06:26:52.997Z"
+    },
+    {
+      "JobId": "e24e2594-43f2-41ff-b836-855a0048e311",
+      "Step": "worker.complete",
+      "Message": "Marked job as succeeded (no-op worker stub)",
+      "StatusBefore": "running",
+      "StatusAfter": "succeeded",
+      "CreatedAt": "2025-12-07T06:26:53.169Z"
+    },
+    {
+      "JobId": "e24e2594-43f2-41ff-b836-855a0048e311",
+      "Step": "worker.start",
+      "Message": "Worker picked up job for workflow debug_hello_world",
+      "StatusBefore": "queued",
+      "StatusAfter": "running",
+      "CreatedAt": "2025-12-07T06:27:01.109Z"
+    },
+    {
+      "JobId": "e24e2594-43f2-41ff-b836-855a0048e311",
+      "Step": "worker.complete",
+      "Message": "Marked job as succeeded (no-op worker stub)",
+      "StatusBefore": "running",
+      "StatusAfter": "succeeded",
+      "CreatedAt": "2025-12-07T06:27:01.15Z"
+    }
+  ]
+}
