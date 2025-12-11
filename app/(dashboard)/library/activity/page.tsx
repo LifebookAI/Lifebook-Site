@@ -53,7 +53,7 @@ export default function LibraryActivityPage() {
                     : created.toLocaleString();
 
                   return (
-                    <tr key={run.runId}>
+                    <tr key={run.id}>
                       <td className="px-3 py-2 align-top">
                         <Link
                           href={`/library/${run.slug}`}
@@ -73,10 +73,10 @@ export default function LibraryActivityPage() {
                       </td>
                       <td className="px-3 py-2 align-top font-mono text-[11px] text-slate-700">
                         <Link
-                          href={`/library/runs/${encodeURIComponent(run.runId)}`}
+                          href={`/library/runs/${encodeURIComponent(run.id)}`}
                           className="hover:underline"
                         >
-                          {run.runId}
+                          {run.id}
                         </Link>
                       </td>
                     </tr>
@@ -108,4 +108,5 @@ export default function LibraryActivityPage() {
     </main>
   );
 }
+
 

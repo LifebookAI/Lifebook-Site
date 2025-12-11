@@ -1,73 +1,80 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getLibraryItems } from "@/lib/library/catalog";
-import { startLibraryRunFromItem } from "@/lib/library/runs";
-import { enqueueLibraryRun } from "@/lib/orchestrator/library-runs";
+import type { NextRequest } from "next/server";
+import { getLibraryRun, startLibraryRunFromItem } from "@/lib/library/runs";
 
 /**
- * POST /api/library/[id]/run
- *
- * Minimal MVP endpoint to start a run from a Library item.
- * For now, we:
- * - Look up the Library item by slug (from the [id] segment).
- * - Delegate to startLibraryRunFromItem for workflow-template items.
- *
- * In a later step, this will call the real orchestrator pipeline and
- * persist runs in the database.
+ * Library run API for /api/library/[id]/run.
+ * typedRoutes expects params to be async, so ctx.params is a Promise.
  */
+type LibraryRunRouteContext = {
+  params: Promise<{ id: string }>;
+};
 
 export async function POST(
   _req: NextRequest,
-  context: { params: { id: string } },
+  ctx: LibraryRunRouteContext,
 ) {
-  const slug = context.params.id;
-
-  const item = getLibraryItems().find((entry) => entry.slug === slug);
-
-  if (!item) {
-    return NextResponse.json(
-      { ok: false, error: "Library item not found." },
-      { status: 404 },
-    );
-  }
-
   try {
-    const run = await startLibraryRunFromItem(item);
+    const { id } = await ctx.params;
 
-    await enqueueLibraryRun(run);
+    const run = await startLibraryRunFromItem(id);
 
-    return NextResponse.json(
+    return Response.json(
       {
         ok: true,
-        runId: run.runId,
-        libraryItemId: run.libraryItemId,
-        slug: run.slug,
-        status: run.status,
-        createdAt: run.createdAt,
+        run,
       },
       { status: 200 },
     );
   } catch (error) {
     const message =
-      error instanceof Error && error.message
-        ? error.message
-        : "Failed to start run from this Library item.";
+      error instanceof Error ? error.message : "Failed to start Library run";
 
-    return NextResponse.json(
+    return Response.json(
       {
         ok: false,
         error: message,
       },
-      { status: 400 },
+      { status: 500 },
     );
   }
 }
 
-export async function GET() {
-  return NextResponse.json(
-    {
-      ok: false,
-      error: "Use POST /api/library/[id]/run to start a run from a Library item.",
-    },
-    { status: 405 },
-  );
+export async function GET(
+  _req: NextRequest,
+  ctx: LibraryRunRouteContext,
+) {
+  try {
+    const { id } = await ctx.params;
+
+    const run = await getLibraryRun(id);
+
+    if (!run) {
+      return Response.json(
+        {
+          ok: false,
+          error: `No Library run found for id ${id}`,
+        },
+        { status: 404 },
+      );
+    }
+
+    return Response.json(
+      {
+        ok: true,
+        run,
+      },
+      { status: 200 },
+    );
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Failed to load Library run";
+
+    return Response.json(
+      {
+        ok: false,
+        error: message,
+      },
+      { status: 500 },
+    );
+  }
 }

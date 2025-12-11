@@ -60,10 +60,11 @@ export async function enqueueLibraryRun(run: LibraryRun): Promise<void> {
 
   // eslint-disable-next-line no-console
   console.log("[library-orchestrator] enqueueLibraryRun (MVP stub)", {
-    runId: run.runId,
+    runId: run.id,
     libraryItemId: run.libraryItemId,
     slug: run.slug,
     status: run.status,
     createdAt: run.createdAt,
   });
 }
+

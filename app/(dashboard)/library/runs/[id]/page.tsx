@@ -1,84 +1,97 @@
-import { notFound } from 'next/navigation';
-import Link from 'next/link';
-import { getRunDetail, type RunDetail } from '@/server/orchestrator/runs';
+import Link from "next/link";
+import { getRunDetail } from "@/server/orchestrator/runs";
 
-interface PageProps {
-  params: { id: string };
-}
+export const dynamic = "force-dynamic";
 
-export const dynamic = 'force-dynamic';
-
-export default async function LibraryRunDetailPage({ params }: PageProps) {
-  let run: RunDetail | null;
-
-  try {
-    run = await getRunDetail(params.id);
-  } catch (error) {
-    console.error('LibraryRunDetailPage getRunDetail failed', error);
-    throw error; // handled by app/library/runs/[id]/error.tsx
-  }
+export default async function LibraryRunDetailPage(
+  props: { params: Promise<{ id: string }> }
+) {
+  const { id } = await props.params;
+  const run = await getRunDetail(id);
 
   if (!run) {
-    return notFound();
+    return (
+      <div className="space-y-4">
+        <h1 className="text-xl font-semibold">Run not found</h1>
+        <p className="text-sm text-muted-foreground">
+          No run could be found for id{" "}
+          <code className="font-mono">{id}</code>.
+        </p>
+        <Link
+          href="/library/runs"
+          className="text-sm font-medium underline underline-offset-4"
+        >
+          Back to runs
+        </Link>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <p className="mb-1 text-xs text-muted-foreground">
-            <Link href="/library/runs" className="hover:underline">
-              ← Back to runs
-            </Link>
-          </p>
-          <h1 className="text-xl font-semibold">{run.label}</h1>
+    <div className="space-y-6">
+      <div className="space-y-1">
+        <Link
+          href="/library/runs"
+          className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
+        >
+          ← Back to runs
+        </Link>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {run.label}
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Status{" "}
+          <span className="font-mono rounded border px-1.5 py-0.5 text-xs">
+            {run.status}
+          </span>
+        </p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="space-y-2">
+          <h2 className="text-sm font-semibold">Timestamps</h2>
           <p className="text-xs text-muted-foreground">
-            Workflow:{' '}
-            <span className="font-mono">{run.workflowSlug}</span>
+            Created at: {new Date(run.createdAt).toLocaleString()}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Updated at: {new Date(run.updatedAt).toLocaleString()}
           </p>
         </div>
-        <span className="rounded-full border px-3 py-1 text-xs capitalize">
-          {run.status}
-        </span>
+
+        <div className="space-y-2">
+          <h2 className="text-sm font-semibold">Workflow</h2>
+          <p className="text-sm text-muted-foreground">
+            {run.workflowSlug}
+          </p>
+        </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="space-y-1 text-sm">
-          <div className="font-medium">Timestamps</div>
-          <div>
-            <span className="text-muted-foreground">Created: </span>
-            {new Date(run.createdAt).toLocaleString()}
-          </div>
-          <div>
-            <span className="text-muted-foreground">Updated: </span>
-            {new Date(run.updatedAt).toLocaleString()}
-          </div>
-        </div>
-
-        <div className="space-y-1 text-sm md:col-span-2">
-          <div className="font-medium">Input summary</div>
-          <p className="whitespace-pre-wrap text-muted-foreground">
-            {run.inputSummary ?? '—'}
+      {run.inputSummary && (
+        <div className="space-y-2">
+          <h2 className="text-sm font-semibold">Input</h2>
+          <p className="text-sm text-muted-foreground">
+            {run.inputSummary}
           </p>
         </div>
+      )}
 
-        <div className="space-y-1 text-sm md:col-span-2">
-          <div className="font-medium">Output summary</div>
-          <p className="whitespace-pre-wrap text-muted-foreground">
-            {run.outputSummary ?? '—'}
+      {run.outputSummary && (
+        <div className="space-y-2">
+          <h2 className="text-sm font-semibold">Output</h2>
+          <p className="text-sm text-muted-foreground">
+            {run.outputSummary}
           </p>
         </div>
+      )}
 
-        {run.errorMessage && (
-          <div className="space-y-1 text-sm md:col-span-3">
-            <div className="font-medium text-destructive">Error</div>
-            <pre className="overflow-x-auto rounded-lg border bg-destructive/5 p-3 text-xs">
-              {run.errorMessage}
-            </pre>
-          </div>
-        )}
-      </div>
+      {run.errorMessage && (
+        <div className="space-y-2">
+          <h2 className="text-sm font-semibold text-destructive">Error</h2>
+          <p className="text-sm text-destructive">
+            {run.errorMessage}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
-

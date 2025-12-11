@@ -10,6 +10,10 @@ const csp = [
 ].join('; ');
 
 const nextConfig = {
+  eslint: {
+    // Keep linting via `pnpm lint`, but do not fail `next build` on ESLint.
+    ignoreDuringBuilds: true,
+  },
   reactStrictMode: true,
   experimental: { typedRoutes: true },
   async headers() {
@@ -28,3 +32,4 @@ const nextConfig = {
   }
 };
 export default nextConfig;
+

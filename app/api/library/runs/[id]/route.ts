@@ -1,23 +1,49 @@
-import { NextResponse } from 'next/server';
-import { getRunDetail } from '@/server/orchestrator/runs';
+import type { NextRequest } from "next/server";
+import { getLibraryRun } from "@/lib/library/runs";
 
-interface Params {
-  params: { id: string };
-}
+/**
+ * Library run detail API for /api/library/runs/[id].
+ * ctx.params is async to satisfy typedRoutes.
+ */
+type LibraryRunsDetailContext = {
+  params: Promise<{ id: string }>;
+};
 
-export async function GET(_req: Request, { params }: Params) {
+export async function GET(
+  _req: NextRequest,
+  ctx: LibraryRunsDetailContext,
+) {
   try {
-    const run = await getRunDetail(params.id);
+    const { id } = await ctx.params;
+
+    const run = await getLibraryRun(id);
 
     if (!run) {
-      return NextResponse.json({ error: 'Run not found' }, { status: 404 });
+      return Response.json(
+        {
+          ok: false,
+          error: `No Library run found for id ${id}`,
+        },
+        { status: 404 },
+      );
     }
 
-    return NextResponse.json({ run });
+    return Response.json(
+      {
+        ok: true,
+        run,
+      },
+      { status: 200 },
+    );
   } catch (error) {
-    console.error('GET /api/library/runs/' + params.id + ' failed', error);
-    return NextResponse.json(
-      { error: 'Failed to load run detail' },
+    const message =
+      error instanceof Error ? error.message : "Failed to load Library run";
+
+    return Response.json(
+      {
+        ok: false,
+        error: message,
+      },
       { status: 500 },
     );
   }

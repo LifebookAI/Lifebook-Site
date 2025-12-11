@@ -1,68 +1,52 @@
-import { NextRequest, NextResponse } from "next/server";
-import path from "node:path";
-import fs from "node:fs/promises";
-// Use a RELATIVE import here to avoid any path-alias issues
-import { getRunDetail } from "../../../../../lib/orchestrator/runDetail";
+import type { NextRequest } from "next/server";
+import { getRunDetail } from "@/lib/orchestrator/runDetail";
 
-// Ensure this runs in the Node.js runtime (fs, aws-sdk ok)
-export const runtime = "nodejs";
-
-const USE_FIXTURE = process.env.ORCH_RUN_DETAIL_USE_FIXTURE === "true";
-
-async function tryLoadFixture(jobId: string) {
-  const fixturePath = path.join(
-    process.cwd(),
-    "infra",
-    "ops",
-    "orchestrator",
-    "fixtures",
-    `run-detail-${jobId}.json`
-  );
-
-  try {
-    const json = await fs.readFile(fixturePath, "utf8");
-    console.log("[RunDetailAPI] Loaded fixture:", fixturePath);
-    return JSON.parse(json);
-  } catch (err) {
-    console.warn("[RunDetailAPI] No fixture or failed to load:", fixturePath, err);
-    return null;
-  }
-}
+/**
+ * Orchestrator run detail API for /api/orchestrator/run-detail/[jobId].
+ * ctx.params is async to satisfy typedRoutes.
+ */
+type OrchestratorRunDetailContext = {
+  params: Promise<{ jobId: string }>;
+};
 
 export async function GET(
   _req: NextRequest,
-  ctx: { params: { jobId: string } }
+  ctx: OrchestratorRunDetailContext,
 ) {
-  const jobId = ctx.params?.jobId;
-
-  if (!jobId) {
-    return NextResponse.json({ error: "Missing jobId" }, { status: 400 });
-  }
-
-  console.log("[RunDetailAPI] Incoming GET for jobId:", jobId, "USE_FIXTURE:", USE_FIXTURE);
-
   try {
-    // 1) Dev helper: serve fixture if flag is on and file exists
-    if (USE_FIXTURE) {
-      const fixture = await tryLoadFixture(jobId);
-      if (fixture) {
-        return NextResponse.json(fixture, { status: 200 });
-      }
+    const { jobId } = await ctx.params;
+
+    const detail = await getRunDetail(jobId);
+
+    if (!detail) {
+      return Response.json(
+        {
+          ok: false,
+          error: `No orchestrator run found for jobId ${jobId}`,
+        },
+        { status: 404 },
+      );
     }
 
-    // 2) Live AWS path via DynamoDB
-    const runDetail = await getRunDetail(jobId);
+    return Response.json(
+      {
+        ok: true,
+        run: detail,
+      },
+      { status: 200 },
+    );
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Failed to load orchestrator run detail";
 
-    if (!runDetail) {
-      return NextResponse.json({ error: "Job not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(runDetail, { status: 200 });
-  } catch (err) {
-    console.error("[RunDetailAPI] Internal error for jobId", jobId, err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+    return Response.json(
+      {
+        ok: false,
+        error: message,
+      },
+      { status: 500 },
     );
   }
 }

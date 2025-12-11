@@ -1,4 +1,4 @@
-﻿import { pgQuery } from "@/lib/j1-db";
+import { pgQuery } from "@/lib/j1-db";
 
 export type LibraryArtifactType =
   | "transcript"
@@ -16,6 +16,9 @@ export type LibraryArtifact = {
 export type LibraryRunStatus = "success" | "failed" | "running";
 
 export type LibraryRun = {
+  createdAt?: string | Date | null;
+  slug?: string | null;
+  libraryItemId?: string | null;
   id: string;
   label: string;
   status: LibraryRunStatus;
@@ -394,3 +397,26 @@ export async function getLibraryRun(runId: string): Promise<LibraryRun> {
     return buildStubRun(runId);
   }
 }
+
+/**
+ * Start a Library run from a Library item.
+ *
+ * NOTE: Temporary stub so the API route can compile.
+ * In a later slice, wire this into the real orchestrator
+ * (e.g., enqueue a job and return its run metadata).
+ */
+export async function startLibraryRunFromItem(libraryItemId: string) {
+  const now = new Date().toISOString();
+
+  return {
+    runId: `demo-library-run-${libraryItemId}-${now}`,
+    libraryItemId,
+    slug: "demo-library-run",
+    status: "queued",
+    createdAt: now,
+  };
+}
+
+
+
+
