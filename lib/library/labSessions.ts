@@ -35,7 +35,7 @@ function toLibraryItem(session: LabSessionResult): LabSessionLibraryItem {
     jobId: session.jobId,
     artifactKind: 'lab-session',
     templateId: session.templateId,
-    journeyKey: session.journeyKey,
+    journeyKey: session.journeyKey ?? undefined,
     trackTitle: session.trackTitle,
     stepTitle: session.stepTitle,
     completedAt: session.completedAt,

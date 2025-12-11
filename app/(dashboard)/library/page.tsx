@@ -33,13 +33,14 @@ export const metadata = {
 };
 
 type LibraryPageProps = {
-  searchParams?: {
+  searchParams?: Promise<{
     q?: string;
-  };
+  }>;
 };
 
 export default async function LibraryPage({ searchParams }: LibraryPageProps) {
-  const rawQuery = (searchParams?.q ?? "").trim();
+  const resolvedSearchParams = searchParams ? await searchParams : ({} as { q?: string });
+  const rawQuery = (resolvedSearchParams.q ?? "").trim();
   const query = rawQuery.toLowerCase();
 
   const allItems = getLibraryItems().sort((a, b) =>
@@ -205,3 +206,5 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
     </main>
   );
 }
+
+
