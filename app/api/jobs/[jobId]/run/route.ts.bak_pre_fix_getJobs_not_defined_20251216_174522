@@ -18,7 +18,9 @@ export async function POST(_req: NextRequest, { params }: RouteContext) {
   const requestId = 'run_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2);
   try {
   const { jobId } = await params;
-  const job = getJob(jobId);
+  const jobs: Job[] = getJobs();
+  const job = jobs.find((j) => j.id === jobId);
+
   if (!job) {
     return NextResponse.json(
       { error: `Job ${jobId} not found.` },
@@ -43,6 +45,4 @@ export async function POST(_req: NextRequest, { params }: RouteContext) {
     console.error('[api/jobs/run]', { requestId, err });
     return NextResponse.json({ ok: false, requestId, error: message }, { status: 500 });
   }}
-
-
 

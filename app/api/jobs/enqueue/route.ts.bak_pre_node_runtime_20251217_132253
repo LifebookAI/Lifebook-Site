@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { enqueueJob } from "@/lib/jobs/store";
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
-
 
 type EnqueueBody = {
   trackId: string;

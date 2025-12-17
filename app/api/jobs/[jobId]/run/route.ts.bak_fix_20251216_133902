@@ -14,11 +14,10 @@ type RouteContext = {
 };
 
 export async function POST(_req: NextRequest, { params }: RouteContext) {
-  // lifebook:safe500
-  const requestId = 'run_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2);
-  try {
   const { jobId } = await params;
-  const job = getJob(jobId);
+  const jobs: Job[] = getJobs();
+  const job = jobs.find((j) => j.id === jobId);
+
   if (!job) {
     return NextResponse.json(
       { error: `Job ${jobId} not found.` },
@@ -29,20 +28,13 @@ export async function POST(_req: NextRequest, { params }: RouteContext) {
   const jobForSession: JobForSession = {
     id: job.id,
     templateId: job.templateId ?? 'unknown-template',
-    journeyKey: job.journeyKey,
-    metadata: job.metadata,
+    journeyKey: (job as any).journeyKey ?? (job as any).trackId ?? 'unknown-journey',
+    metadata: (job as any).metadata ?? { trackId: (job as any).trackId, stepId: (job as any).stepId },
   };
 
   const session = createOrUpdateLabSessionFromJob(jobForSession);
 
   return NextResponse.json({ job, session }, { status: 200 });
-
-  } catch (err) {
-    const isProd = process.env.NODE_ENV === 'production';
-    const message = isProd ? 'Internal Server Error' : (err instanceof Error ? err.message : String(err));
-    console.error('[api/jobs/run]', { requestId, err });
-    return NextResponse.json({ ok: false, requestId, error: message }, { status: 500 });
-  }}
-
+}
 
 

@@ -15,9 +15,8 @@ export interface Job {
 }
 
 // Simple in-memory store for dev. This resets when the dev server restarts.
-// lifebook:global-jobs
-const _g = globalThis as any;
-const jobs: Job[] = (_g.__lifebook_jobs ??= [] as Job[]);
+const jobs: Job[] = [];
+
 function generateJobId(): string {
   return `job_${Date.now()}_${Math.random().toString(16).slice(2)}`;
 }
@@ -63,15 +62,3 @@ export function updateJob(
   Object.assign(job, updates);
   return job;
 }
-
-// --- Added by fix: allow run route to lookup by id ---
-export function getJob(id: string) { return jobs.find((j: any) => j?.id === id) ?? null; }
-
-
-
-
-// lifebook:store-compat
-export function getJobs() {
-  return jobs;
-}
-
