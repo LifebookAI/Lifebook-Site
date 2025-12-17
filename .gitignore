@@ -98,3 +98,8 @@ logs/orchestrator/
 logs/orchestrator-*.txt
 job-*-result.md
 sample-result.md
+
+# lifebook:ignore-local-backups
+*.bak
+*.bak_*
+
