@@ -3189,7 +3189,7 @@
     ]
   },
   {
-    "ts_iso": "2025-12-18T14:23:02.5906760-05:00",
+    "ts_iso": "2025-12-18T14:23:02.590676-05:00",
     "repo": "LifebookAI/Lifebook-Site",
     "branch": "main",
     "step": "Phase4-18A",
@@ -3198,6 +3198,18 @@
       "Commit: b2eda9e",
       "Smoke: infra/ops/smoke/jobs.e2e.ps1",
       "Schema: db/migrations/18A_jobs_run_logs.sql (jobs, run_logs)"
+    ]
+  },
+  {
+    "ts_iso": "2025-12-18T15:06:12.9092486-05:00",
+    "repo": "LifebookAI/Lifebook-Site",
+    "branch": "main",
+    "step": "Phase4-18A",
+    "summary": "DB-backed jobs + run_logs (Postgres); enqueue/run/status restart-safe; PS7 E2E smoke verified.",
+    "evidence": [
+      "Commit: 110dadb",
+      "Smoke: infra/ops/smoke/jobs.e2e.ps1",
+      "Migration: db/migrations/20251218_150400_18A_jobs_run_logs.sql"
     ]
   }
 ]

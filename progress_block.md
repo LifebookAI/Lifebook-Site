@@ -4,3 +4,4 @@ Phase | Step ID | Step Title | Status (☐/⏳/✔/⛔) | Evidence (IDs/ARNs/lin
 
 ## Session evidence (auto)
 - 2025-12-18 18A: b2eda9e
+- 2025-12-18 18A (correct): Postgres jobs+run_logs; enqueue/run/status; smoke: 110dadb
