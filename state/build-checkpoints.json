@@ -3179,5 +3179,25 @@
     "Status": "pass",
     "Timestamp": "2025-11-21T19:54:14.4632765-05:00",
     "Evidence": "Orchestrator idempotency harness + tests + docs in repo; orchestrator-quality-gate and orchestrator-e2e nightly green as of 2025-11-21."
+  },
+  {
+    "ts_iso": "2025-12-18T14:22:18.7564012-05:00",
+    "step": "AWS-SSO-Login",
+    "summary": "AWS SSO login verified via sts:get-caller-identity.",
+    "evidence": [
+      "profile=lifebook-admin account=354630286254 region=us-east-1"
+    ]
+  },
+  {
+    "ts_iso": "2025-12-18T14:23:02.5906760-05:00",
+    "repo": "LifebookAI/Lifebook-Site",
+    "branch": "main",
+    "step": "Phase4-18A",
+    "summary": "DB-backed jobs + run_logs (Postgres); enqueue/run/status consistent across restarts; PS7 E2E smoke committed.",
+    "evidence": [
+      "Commit: b2eda9e",
+      "Smoke: infra/ops/smoke/jobs.e2e.ps1",
+      "Schema: db/migrations/18A_jobs_run_logs.sql (jobs, run_logs)"
+    ]
   }
 ]
