@@ -3211,5 +3211,18 @@
       "Smoke: infra/ops/smoke/jobs.e2e.ps1",
       "Migration: db/migrations/20251218_150400_18A_jobs_run_logs.sql"
     ]
+  },
+  {
+    "ts_iso": "2025-12-18T15:13:31.1180272-05:00",
+    "repo": "LifebookAI/Lifebook-Site",
+    "branch": "main",
+    "step": "Phase4-18A",
+    "summary": "Verified: 18A smoke is genuinely green against running dev server; DB connectivity confirmed.",
+    "evidence": [
+      "18A commit: 110dadb",
+      "Smoke: infra/ops/smoke/jobs.e2e.ps1",
+      "BaseUrl: http://localhost:3000",
+      "DATABASE_URL(masked): postgres://***@localhost:5432/lifebook_dev"
+    ]
   }
 ]
