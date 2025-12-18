@@ -3224,5 +3224,18 @@
       "BaseUrl: http://localhost:3000",
       "DATABASE_URL(masked): postgres://***@localhost:5432/lifebook_dev"
     ]
+  },
+  {
+    "ts_iso": "2025-12-18T15:28:30.8895724-05:00",
+    "repo": "LifebookAI/Lifebook-Site",
+    "branch": "main",
+    "step": "Phase4-18A",
+    "summary": "18A verification: SMOKE RED ❌. DB not reachable (DATABASE_URL points to non-running Postgres).",
+    "evidence": [
+      "Fix: store.pg.ts invalid 'throw;' rethrow patched",
+      "Smoke: infra/ops/smoke/jobs.e2e.ps1",
+      "BaseUrl: http://localhost:3000",
+      "DATABASE_URL(masked): postgres://***@localhost:5432/lifebook_dev"
+    ]
   }
 ]

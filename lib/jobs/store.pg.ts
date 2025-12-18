@@ -141,10 +141,10 @@ async function claimJobForRun(workspaceId: string, jobId: string): Promise<{ cla
 
     await client.query("COMMIT");
     return { claimed: true, job: updated };
-  } catch {
-    await client.query("ROLLBACK");
-    throw;
-  } finally {
+  } catch (e) {
+      await client.query("ROLLBACK");
+      throw e;
+    } finally {
     client.release();
   }
 }
