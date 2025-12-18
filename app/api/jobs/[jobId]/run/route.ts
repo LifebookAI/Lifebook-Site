@@ -1,48 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getJob } from '@/lib/jobs/store';
-import {
-  createOrUpdateLabSessionFromJob,
-  type JobForSession,
-} from '@/lib/labs/sessions';
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+import { runJob } from "@/lib/jobs/store.pg";
 
-type RouteContext = {
-  params: Promise<{
-    jobId: string;
-  }>;
-};
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-export async function POST(_req: NextRequest, { params }: RouteContext) {
-  // lifebook:safe500
-  const requestId = 'run_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2);
+function getWorkspaceId(req: Request): string {
+  return req.headers.get("x-workspace-id") ?? "local";
+}
+
+export async function POST(req: Request, ctx: { params: { jobId: string } }) {
+  const jobId = ctx?.params?.jobId;
+  if (!jobId) return Response.json({ error: "missing jobId" }, { status: 400 });
+
   try {
-  const { jobId } = await params;
-  const job = getJob(jobId);
-  if (!job) {
-    return NextResponse.json(
-      { error: `Job ${jobId} not found.` },
-      { status: 404 },
-    );
+    const job = await runJob(getWorkspaceId(req), jobId);
+    return Response.json({ jobId: job.id, job }, { status: 200 });
+  } catch (e: any) {
+    if (String(e?.message) === "JOB_NOT_FOUND") return Response.json({ error: "not_found", jobId }, { status: 404 });
+    return Response.json({ error: "run_failed", jobId }, { status: 500 });
   }
-
-  const jobForSession: JobForSession = {
-    id: job.id,
-    templateId: job.templateId ?? 'unknown-template',
-    journeyKey: job.journeyKey,
-    metadata: job.metadata,
-  };
-
-  const session = createOrUpdateLabSessionFromJob(jobForSession);
-
-  return NextResponse.json({ job, session }, { status: 200 });
-
-  } catch (err) {
-    const isProd = process.env.NODE_ENV === 'production';
-    const message = isProd ? 'Internal Server Error' : (err instanceof Error ? err.message : String(err));
-    console.error('[api/jobs/run]', { requestId, err });
-    return NextResponse.json({ ok: false, requestId, error: message }, { status: 500 });
-  }}
-
-
-
+}

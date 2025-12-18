@@ -1,46 +1,30 @@
-import { NextRequest, NextResponse } from "next/server";
-import { enqueueJob } from "@/lib/jobs/store";
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+import { enqueueJob } from "@/lib/jobs/store.pg";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-type EnqueueBody = {
-  trackId: string;
-  trackTitle: string;
-  stepId: string;
-  stepTitle: string;
-  templateId: string;
-};
-
-function isNonEmptyString(value: unknown): value is string {
-  return typeof value === "string" && value.trim().length > 0;
+function getWorkspaceId(req: Request): string {
+  // MVP-safe: wire to real auth/workspace claims next; allow override for tests.
+  return req.headers.get("x-workspace-id") ?? "local";
 }
 
-export async function POST(req: NextRequest) {
-  const data = (await req.json()) as Partial<EnqueueBody>;
+export async function POST(req: Request) {
+  const body = await req.json().catch(() => ({} as any));
+  const kind = typeof body?.kind === "string" && body.kind ? body.kind : "noop";
+  const payload = Object.prototype.hasOwnProperty.call(body ?? {}, "payload") ? body.payload : body;
 
-  const { trackId, trackTitle, stepId, stepTitle, templateId } = data;
+  const idempotencyKey =
+    req.headers.get("idempotency-key") ??
+    req.headers.get("x-idempotency-key") ??
+    (typeof body?.idempotencyKey === "string" ? body.idempotencyKey : null);
 
-  if (
-    !isNonEmptyString(trackId) ||
-    !isNonEmptyString(trackTitle) ||
-    !isNonEmptyString(stepId) ||
-    !isNonEmptyString(stepTitle) ||
-    !isNonEmptyString(templateId)
-  ) {
-    return NextResponse.json(
-      { error: "Missing or invalid fields in request body." },
-      { status: 400 },
-    );
-  }
-
-  const job = enqueueJob({
-    trackId,
-    trackTitle,
-    stepId,
-    stepTitle,
-    templateId,
+  const job = await enqueueJob({
+    workspaceId: getWorkspaceId(req),
+    kind,
+    payload,
+    triggerType: "manual",
+    idempotencyKey: idempotencyKey ?? null,
   });
 
-  return NextResponse.json(job, { status: 201 });
+  return Response.json({ jobId: job.id, job }, { status: 201 });
 }
