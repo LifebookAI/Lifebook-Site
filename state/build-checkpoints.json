@@ -3237,5 +3237,18 @@
       "BaseUrl: http://localhost:3000",
       "DATABASE_URL(masked): postgres://***@localhost:5432/lifebook_dev"
     ]
+  },
+  {
+    "ts_iso": "2025-12-18T15:33:46.2551423-05:00",
+    "repo": "LifebookAI/Lifebook-Site",
+    "branch": "main",
+    "step": "Phase4-18A",
+    "summary": "18A smoke GREEN: enqueue→run→status against Postgres (local).",
+    "evidence": [
+      "Smoke: infra/ops/smoke/jobs.e2e.ps1",
+      "BaseUrl: http://localhost:3000",
+      "DATABASE_URL(masked): postgres://***@localhost:5432/lifebook_dev",
+      "Commit(head): a48b406"
+    ]
   }
 ]
