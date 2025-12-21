@@ -3281,5 +3281,21 @@
       "KMS: arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
       "Commit(head): f6e853b"
     ]
+  },
+  {
+    "ts_iso": "2025-12-21T16:13:46.6850714-05:00",
+    "repo": "LifebookAI/Lifebook-Site",
+    "branch": "main",
+    "step": "AWS-E2E-S3-CloudFront",
+    "summary": "E2E rerun (fixed PS $Host collision): PASS ✅. HTTP=200",
+    "evidence": [
+      "Bucket: lifebook.ai",
+      "Key: synthetic/aws-e2e/20251221_161342.txt",
+      "CloudFrontHost: files.uselifebook.ai",
+      "CloudFrontUri: https://files.uselifebook.ai/synthetic/aws-e2e/20251221_161342.txt",
+      "Result: HTTP=200",
+      "KMS: arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
+      "Commit(head): 48fe23f"
+    ]
   }
 ]
