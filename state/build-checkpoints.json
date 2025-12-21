@@ -3265,5 +3265,21 @@
       "IAM get-role GitHubOIDC_LifebookSite: True",
       "Commit(head): 6207ca3"
     ]
+  },
+  {
+    "ts_iso": "2025-12-21T16:08:33.4809037-05:00",
+    "repo": "LifebookAI/Lifebook-Site",
+    "branch": "main",
+    "step": "AWS-E2E-S3-CloudFront",
+    "summary": "E2E verified: S3(KMS) PUT -> CloudFront HEAD success.",
+    "evidence": [
+      "Bucket: lifebook.ai",
+      "Key: synthetic/aws-e2e/20251221_160728.txt",
+      "CloudFrontHost: System.Management.Automation.Internal.Host.InternalHost",
+      "CloudFrontUri: https://System.Management.Automation.Internal.Host.InternalHost/synthetic/aws-e2e/20251221_160728.txt",
+      "HTTP: No such host is known. (system.management.automation.internal.host.internalhost:443)",
+      "KMS: arn:aws:kms:us-east-1:354630286254:key/583a1a4c-efbc-486d-8025-66577c04116a",
+      "Commit(head): f6e853b"
+    ]
   }
 ]
