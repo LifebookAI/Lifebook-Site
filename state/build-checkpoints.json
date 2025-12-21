@@ -3250,5 +3250,20 @@
       "DATABASE_URL(masked): postgres://***@localhost:5432/lifebook_dev",
       "Commit(head): a48b406"
     ]
+  },
+  {
+    "ts_iso": "2025-12-21T16:02:38.3126089-05:00",
+    "repo": "LifebookAI/Lifebook-Site",
+    "branch": "main",
+    "step": "AWS-SSO",
+    "summary": "Re-authenticated AWS SSO and verified read-only access to core resources.",
+    "evidence": [
+      "STS: Account=354630286254",
+      "STS Arn: arn:aws:sts::354630286254:assumed-role/AWSReservedSSO_AdministratorAccess_218fc3a66a7afc34/Founder",
+      "S3 head-bucket lifebook.ai: True",
+      "CloudFront get-distribution E2D7FJLA6YQUNP: True",
+      "IAM get-role GitHubOIDC_LifebookSite: True",
+      "Commit(head): 6207ca3"
+    ]
   }
 ]
