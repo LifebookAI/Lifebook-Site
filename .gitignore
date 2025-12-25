@@ -103,3 +103,6 @@ sample-result.md
 *.bak
 *.bak_*
 
+.env.local
+.tmp/
+.tmp
