@@ -117,7 +117,7 @@ $pw = $u.UserInfo.Split(':',2)[1]
 $owners = @(docker ps --format '{{.Names}} {{.Ports}}' | Where-Object { $_ -match "(:$Port->|0\.0\.0\.0:$Port->|\[::\]:$Port->)" })
 if ($owners.Count -gt 0) {
   $ourOwns = $false
-  foreach ($l in $owners) { if ($l -match "^\Q$Container\E\s") { $ourOwns = $true } }
+  foreach ($l in $owners) { if ($l -like "$Container *") { $ourOwns = $true } }
   if (-not $ourOwns) {
     Write-Host "Host port $Port is already bound by another container. Resolve and rerun." -ForegroundColor Red
     $owners | ForEach-Object { Write-Host "  $_" -ForegroundColor DarkGray }
@@ -206,3 +206,51 @@ if (-not $applied) {
 if (-not $applied) { throw "No migration method found (no scripts, no Prisma schema, no db/migrations/*.sql)." }
 Write-Host "OK: schema/migrations applied." -ForegroundColor Green
 
+# ---- Introspect (non-system schemas) ----
+Write-Host "Introspecting schema via psql (no Node deps)..." -ForegroundColor DarkGray
+
+$sqlTables = @'
+select table_schema, table_name
+from information_schema.tables
+where table_type=''BASE TABLE''
+  and table_schema not in (''pg_catalog'',''information_schema'')
+order by table_schema, table_name;
+'@
+
+$rows = & docker exec -i -e ("PGPASSWORD=$pw") $Container psql -U $DbUser -d $DbName -At -F '|' -c $sqlTables 2>&1
+if ($LASTEXITCODE -ne 0) { $rows | Out-Host; throw "Introspection query failed (tables)." }
+
+$tables = @()
+foreach ($r in @($rows)) {
+  if (-not $r) { continue }
+  $t = $r.Trim()
+  if (-not $t) { continue }
+  $p = $t.Split('|',2)
+  if ($p.Count -ne 2) { continue }
+  $tables += [pscustomobject]@{ schema = $p[0]; table = $p[1] }
+}
+
+$total = $tables.Count
+$re = [regex]'(run|job|workflow|task|artifact|scan|orchestrator)'
+$candidates = @($tables | Where-Object { $re.IsMatch($_.table) })
+
+Write-Host ("Tables(total, non-system schemas): {0}" -f $total) -ForegroundColor Cyan
+Write-Host "Candidate tables (runs/jobs/workflows):" -ForegroundColor Cyan
+
+foreach ($t in $candidates) {
+  $schemaQ = $t.schema.Replace("'", "''")
+  $tableQ  = $t.table.Replace("'", "''")
+  $sqlCols = @"
+select column_name || ':' || data_type
+from information_schema.columns
+where table_schema = '$schemaQ' and table_name = '$tableQ'
+order by ordinal_position;
+"@
+  $colRows = & docker exec -i -e ("PGPASSWORD=$pw") $Container psql -U $DbUser -d $DbName -At -c $sqlCols 2>&1
+  if ($LASTEXITCODE -ne 0) { $colRows | Out-Host; throw "Introspection query failed (columns) for $($t.schema).$($t.table)" }
+  $cols = (@($colRows) | Where-Object { $_ -and $_.Trim() }) -join ", "
+  Write-Host ("- {0}.{1} :: {2}" -f $t.schema, $t.table, $cols) -ForegroundColor DarkGray
+}
+
+Write-Host ""
+Write-Host "NEXT: paste the candidate table lines above (especially the canonical Run table)." -ForegroundColor Yellow
