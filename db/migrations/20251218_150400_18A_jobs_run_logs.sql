@@ -25,7 +25,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS jobs_ws_idem_uniq
 
 CREATE TABLE IF NOT EXISTS run_logs (
   id           BIGSERIAL PRIMARY KEY,
-  job_id       TEXT NOT NULL REFERENCES jobs(id) ON DELETE CASCADE,
+  job_id uuid NOT NULL REFERENCES jobs(id) ON DELETE CASCADE,
   ts           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   level        TEXT NOT NULL,
   msg          TEXT NOT NULL,
