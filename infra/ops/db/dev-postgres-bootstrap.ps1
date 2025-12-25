@@ -4,8 +4,7 @@ param(
   [string]$DbUser    = 'lifebook',
   [int]   $Port      = 5432,
   [string]$Volume    = 'lifebook_site_pgdata',
-  [switch]$ResetData,
-  [switch]$NoCommit
+  [switch]$ResetData
 )
 
 $ErrorActionPreference = 'Stop'
@@ -58,12 +57,26 @@ function Get-PkgManager([string]$RepoRoot) {
   if (Test-Path -LiteralPath (Join-Path $RepoRoot 'yarn.lock')) { return 'yarn' }
   return 'npm'
 }
+function Invoke-PkgScript([string]$Pm, [psobject]$Scripts, [string]$Name) {
+  if (-not $Scripts) { return $false }
+  $props = $Scripts.PSObject.Properties.Name
+  if ($props -notcontains $Name) { return $false }
 
-$Repo = (Get-Location).Path
+  Write-Host "Running package script: $Name" -ForegroundColor Yellow
+  if ($Pm -eq 'pnpm')      { & pnpm -s $Name | Out-Host }
+  elseif ($Pm -eq 'yarn')  { & yarn $Name | Out-Host }
+  else                     { & npm run -s $Name | Out-Host }
+
+  if ($LASTEXITCODE -ne 0) { throw "Script failed: $Name" }
+  return $true
+}
+
+# Resolve repo root from script location
+$Repo = Resolve-Path (Join-Path $PSScriptRoot '..\..\..') | Select-Object -ExpandProperty Path
 $EnvLocal = Join-Path $Repo '.env.local'
 
 # Guard: ensure .env.local is ignored
-& git check-ignore -q -- '.env.local'
+& git -C $Repo check-ignore -q -- '.env.local'
 if ($LASTEXITCODE -ne 0) { throw ".env.local is NOT ignored by git. Add it to .gitignore before continuing." }
 
 # Docker sanity
@@ -71,40 +84,60 @@ if (-not (Get-Command docker -ErrorAction SilentlyContinue)) { throw "docker CLI
 & docker info *> $null
 if ($LASTEXITCODE -ne 0) { throw "Docker engine not reachable. Start Docker Desktop, then rerun." }
 
-# Load env
+# Load env (non-destructive)
 Import-DotEnvFile $EnvLocal
 Import-DotEnvFile (Join-Path $Repo '.env')
 
-# Ensure DATABASE_URL exists (create deterministic dev URL if missing)
+# Ensure DATABASE_URL exists (dev only; secret never printed)
 if (-not $env:DATABASE_URL) {
   $bytes = New-Object byte[] 24
   [System.Security.Cryptography.RandomNumberGenerator]::Fill($bytes)
-  $pw = (($bytes | ForEach-Object { $_.ToString('x2') }) -join '')
-  $env:DATABASE_URL = ('postgres://{0}:{1}@127.0.0.1:{2}/{3}' -f $DbUser, $pw, $Port, $DbName)
+  $pwGen = (($bytes | ForEach-Object { $_.ToString('x2') }) -join '')
+  $env:DATABASE_URL = ('postgres://{0}:{1}@127.0.0.1:{2}/{3}' -f $DbUser, $pwGen, $Port, $DbName)
   Upsert-EnvLine -Path $EnvLocal -Key 'DATABASE_URL' -Value $env:DATABASE_URL
 }
 
+# Normalize localhost -> 127.0.0.1
+try {
+  $u0 = [Uri]$env:DATABASE_URL
+  if ($u0.Host -eq 'localhost') {
+    $env:DATABASE_URL = ($env:DATABASE_URL -replace '://([^@]+)@localhost:', '://$1@127.0.0.1:')
+    Upsert-EnvLine -Path $EnvLocal -Key 'DATABASE_URL' -Value $env:DATABASE_URL
+  }
+} catch {}
+
 Write-Host ("DATABASE_URL(masked): " + (Mask-PgUrl $env:DATABASE_URL)) -ForegroundColor DarkGray
 
-# Parse pw from DATABASE_URL (never print)
+# Parse pw from DATABASE_URL
 $u = [Uri]$env:DATABASE_URL
 if (-not $u.UserInfo -or -not $u.UserInfo.Contains(':')) { throw "DATABASE_URL must include user:password@... (dev only)" }
 $pw = $u.UserInfo.Split(':',2)[1]
 
-# Optional reset (data wipe)
+# Safety: if another container owns host port, fail
+$owners = @(docker ps --format '{{.Names}} {{.Ports}}' | Where-Object { $_ -match "(:$Port->|0\.0\.0\.0:$Port->|\[::\]:$Port->)" })
+if ($owners.Count -gt 0) {
+  $ourOwns = $false
+  foreach ($l in $owners) { if ($l -match "^\Q$Container\E\s") { $ourOwns = $true } }
+  if (-not $ourOwns) {
+    Write-Host "Host port $Port is already bound by another container. Resolve and rerun." -ForegroundColor Red
+    $owners | ForEach-Object { Write-Host "  $_" -ForegroundColor DarkGray }
+    throw "Port conflict"
+  }
+}
+
+# Optional reset
 if ($ResetData) {
   if (@(docker ps -a --format '{{.Names}}') -contains $Container) { docker rm -f $Container | Out-Null }
   if (@(docker volume ls --format '{{.Name}}') -contains $Volume) { docker volume rm $Volume | Out-Null }
 }
 
-# Start container if missing/not running
+# Start container
 $running = @(docker ps --format '{{.Names}}') -contains $Container
 $exists  = @(docker ps -a --format '{{.Names}}') -contains $Container
 
 if ($exists -and -not $running) {
   docker start $Container | Out-Null
 } elseif (-not $exists) {
-  # IMPORTANT: avoid "$Volume:" parsing bug by formatting the string
   docker run -d --name $Container `
     -e ("POSTGRES_DB=$DbName") `
     -e ("POSTGRES_USER=$DbUser") `
@@ -119,54 +152,39 @@ $ready = Wait-Until -MaxSeconds 60 -Test {
   return ($LASTEXITCODE -eq 0)
 }
 if (-not $ready) { throw "Postgres did not become ready. Check: docker logs $Container" }
-
 Write-Host "OK: Postgres container is ready." -ForegroundColor Green
 
 # ---- Apply migrations / schema ----
 $pm = Get-PkgManager $Repo
-if ($pm -ne 'pnpm') {
-  Write-Host "NOTE: lockfile suggests $pm, but this repo has been using pnpm in practice. Proceeding with $pm." -ForegroundColor DarkGray
-}
+if ($pm -eq 'pnpm' -and -not (Get-Command pnpm -ErrorAction SilentlyContinue)) { throw "pnpm-lock.yaml found but pnpm is not installed." }
+if ($pm -eq 'yarn' -and -not (Get-Command yarn -ErrorAction SilentlyContinue)) { throw "yarn.lock found but yarn is not installed." }
+if ($pm -eq 'npm'  -and -not (Get-Command npm  -ErrorAction SilentlyContinue)) { throw "npm not found." }
 
 $pkgJsonPath = Join-Path $Repo 'package.json'
 if (-not (Test-Path -LiteralPath $pkgJsonPath)) { throw "package.json not found at repo root." }
 $pkg = Get-Content -LiteralPath $pkgJsonPath -Raw | ConvertFrom-Json
 $scripts = $pkg.scripts
 
-function Invoke-PackageScript([string]$Name) {
-  if (-not $scripts) { return $false }
-  $props = $scripts.PSObject.Properties.Name
-  if ($props -notcontains $Name) { return $false }
-
-  Write-Host "Running package script: $Name" -ForegroundColor Yellow
-  if ($pm -eq 'pnpm') { & pnpm -s $Name | Out-Host }
-  elseif ($pm -eq 'yarn') { & yarn $Name | Out-Host }
-  else { & npm run -s $Name | Out-Host }
-
-  if ($LASTEXITCODE -ne 0) { throw "Script failed: $Name" }
-  return $true
+$applied = $false
+$preferred = @('db:migrate','migrate','db:deploy','db:push','drizzle:migrate','db:setup')
+foreach ($n in $preferred) {
+  if (Invoke-PkgScript -Pm $pm -Scripts $scripts -Name $n) { $applied = $true; break }
 }
 
-$applied = $false
-
-# Preferred: repo-provided migration script(s)
-$applied = (Invoke-PackageScript 'db:migrate')
-if (-not $applied) { $applied = (Invoke-PackageScript 'migrate') }
-
-# Prisma fallback (non-interactive)
+# Prisma fallback
 if (-not $applied -and (Test-Path -LiteralPath (Join-Path $Repo 'prisma\schema.prisma'))) {
   Write-Host "Detected Prisma. Applying migrations..." -ForegroundColor Yellow
   $mDir = Join-Path $Repo 'prisma\migrations'
   if (Test-Path -LiteralPath $mDir -and @(Get-ChildItem -LiteralPath $mDir -Directory -ErrorAction SilentlyContinue).Count -gt 0) {
-    if ($pm -eq 'pnpm') { & pnpm -s prisma migrate deploy | Out-Host } else { & npx prisma migrate deploy | Out-Host }
+    if ($pm -eq 'pnpm') { & pnpm exec prisma migrate deploy | Out-Host } else { & npx prisma migrate deploy | Out-Host }
   } else {
-    if ($pm -eq 'pnpm') { & pnpm -s prisma db push | Out-Host } else { & npx prisma db push | Out-Host }
+    if ($pm -eq 'pnpm') { & pnpm exec prisma db push | Out-Host } else { & npx prisma db push | Out-Host }
   }
   if ($LASTEXITCODE -ne 0) { throw "Prisma migration/push failed." }
   $applied = $true
 }
 
-# Raw SQL fallback (db/migrations/*.sql)
+# Raw SQL fallback
 if (-not $applied) {
   $sqlDir = Join-Path $Repo 'db\migrations'
   if (Test-Path -LiteralPath $sqlDir) {
@@ -177,7 +195,6 @@ if (-not $applied) {
     foreach ($f in $sqlFiles) {
       Write-Host ("- {0}" -f $f.Name) -ForegroundColor DarkGray
       $raw = Get-Content -LiteralPath $f.FullName -Raw
-      # feed SQL to psql stdin; PGPASSWORD supplied as env var (not printed)
       $raw | docker exec -i -e ("PGPASSWORD=$pw") $Container `
         psql -v ON_ERROR_STOP=1 -U $DbUser -d $DbName -f - | Out-Host
       if ($LASTEXITCODE -ne 0) { throw "SQL migration failed: $($f.Name)" }
@@ -186,58 +203,66 @@ if (-not $applied) {
   }
 }
 
-if (-not $applied) {
-  throw "No migration method found. Add a db:migrate script, Prisma schema, or db/migrations/*.sql."
-}
-
+if (-not $applied) { throw "No migration method found (no scripts, no Prisma schema, no db/migrations/*.sql)." }
 Write-Host "OK: schema/migrations applied." -ForegroundColor Green
 
-# ---- Introspect (all non-system schemas) ----
+# ---- Introspect (non-system schemas) ----
 $tmpDir = Join-Path $Repo '.tmp'
 if (-not (Test-Path -LiteralPath $tmpDir)) { New-Item -ItemType Directory -Force -Path $tmpDir | Out-Null }
 $jsPath = Join-Path $tmpDir 'lifebook_db_introspect_all_schemas.cjs'
 
-$js = @'
-const {Pool}=require('pg');
-const pool=new Pool({
-  connectionString: process.env.DATABASE_URL,
-  connectionTimeoutMillis: 3000,
-  statement_timeout: 5000,
-  query_timeout: 5000
-});
+$js = @(
+"const {Pool}=require('pg');",
+"const pool=new Pool({",
+"  connectionString: process.env.DATABASE_URL,",
+"  connectionTimeoutMillis: 3000,",
+"  statement_timeout: 5000,",
+"  query_timeout: 5000",
+"});",
+"",
+"(async()=>{",
+"  await pool.query('select 1');",
+"  const all = await pool.query(`",
+"    select table_schema, table_name",
+"    from information_schema.tables",
+"    where table_type='BASE TABLE'",
+"      and table_schema not in ('pg_catalog','information_schema')",
+"    order by table_schema, table_name",
+"  `);",
+"  const tables = all.rows;",
+"  const re = /(run|job|workflow|task|artifact|scan|orchestrator)/i;",
+"  const candidates = tables.filter(r=>re.test(r.table_name));",
+"  const out = [];",
+"  for (const r of candidates) {",
+"    const c = await pool.query(`",
+"      select column_name, data_type",
+"      from information_schema.columns",
+"      where table_schema=$1 and table_name=$2",
+"      order by ordinal_position",
+"    `,[r.table_schema, r.table_name]);",
+"    out.push({ schema: r.table_schema, table: r.table_name, columns: c.rows });",
+"  }",
+"  console.log(JSON.stringify({ tables_total: tables.length, candidates: out }, null, 2));",
+"  await pool.end();",
+"})().catch(async(e)=>{",
+"  console.error(String(e && e.stack ? e.stack : e));",
+"  try{ await pool.end(); } catch {}",
+"  process.exit(2);",
+"});"
+) -join "`n"
 
-(async()=>{
-  await pool.query('select 1');
+Set-Content -LiteralPath $jsPath -Value $js -Encoding utf8
+& node -e "require.resolve('pg'); console.log('pg-ok')" | Out-Null
 
-  const all = await pool.query(
-    `select table_schema, table_name
-     from information_schema.tables
-     where table_type='BASE TABLE'
-       and table_schema not in ('pg_catalog','information_schema')
-     order by table_schema, table_name`
-  );
+$json = & node $jsPath 2>&1
+if ($LASTEXITCODE -ne 0) { $json | ForEach-Object { $_ }; throw "Introspection failed." }
 
-  const tables = all.rows;
-
-  const re = /(run|job|workflow|task|artifact|scan|orchestrator)/i;
-  const candidates = tables.filter(r=>re.test(r.table_name));
-
-  const out = [];
-  for (const r of candidates) {
-    const c = await pool.query(
-      `select column_name, data_type
-       from information_schema.columns
-       where table_schema=$1 and table_name=$2
-       order by ordinal_position`,
-      [r.table_schema, r.table_name]
-    );
-    out.push({ schema: r.table_schema, table: r.table_name, columns: c.rows });
-  }
-
-  console.log(JSON.stringify({ tables_total: tables.length, candidates: out }, null, 2));
-  await pool.end();
-})().catch(async(e)=>{
-  console.error(String(e && e.stack ? e.stack : e));
-  try{ await pool.end(); } catch {}
-  process.exit(2);
-});
+$data = $json | ConvertFrom-Json
+Write-Host ("Tables(total, non-system schemas): {0}" -f $data.tables_total) -ForegroundColor Cyan
+Write-Host "Candidate tables (runs/jobs/workflows):" -ForegroundColor Cyan
+foreach ($t in @($data.candidates)) {
+  $cols = ($t.columns | ForEach-Object { "$($_.column_name):$($_.data_type)" }) -join ', '
+  Write-Host ("- {0}.{1} :: {2}" -f $t.schema, $t.table, $cols) -ForegroundColor DarkGray
+}
+Write-Host ""
+Write-Host "NEXT: paste the candidate table lines above (especially the canonical Run table)." -ForegroundColor Yellow
