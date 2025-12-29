@@ -19,7 +19,7 @@ jobs:
       LAMBDA_DIR: lambda/presign
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Configure AWS creds via OIDC
         uses: aws-actions/configure-aws-credentials@v4
