@@ -11,6 +11,10 @@ This repository contains application, infrastructure, and operations-related wor
 - Supported storage, content delivery, access control, observability, alerting, and validation workflows
 - Organized infrastructure policies, operational artifacts, and technical documentation into a cleaner engineering structure
 
+## Architecture Diagram
+
+![Lifebook AI Architecture](docs/architecture-diagram.png)
+
 ## Project Overview
 
 Lifebook AI is being built to help process and manage long-form content through cloud-based workflows. The project combines application development with infrastructure, monitoring, storage, and operational tooling.
