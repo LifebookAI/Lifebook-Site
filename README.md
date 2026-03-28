@@ -13,7 +13,8 @@ This repository contains application, infrastructure, and operations-related wor
 
 ## Architecture Diagram
 
-![Lifebook AI Architecture](docs/architecture-diagram.png)
+<img width="1800" height="1100" alt="lifebook-architecture-diagram-v3" src="https://github.com/user-attachments/assets/26758052-40ab-4982-b4e6-790bd105de0b" />
+
 
 ## Project Overview
 
