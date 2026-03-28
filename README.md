@@ -1,38 +1,67 @@
-[![Upload smoke](https://github.com/LifebookAI/Lifebook-Site/actions/workflows/upload-smoke.yml/badge.svg)](https://github.com/LifebookAI/Lifebook-Site/actions/workflows/upload-smoke.yml)
+# Lifebook AI
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Lifebook AI is an AWS-based content processing platform designed for transcription, storage, organization, and media workflow automation.
 
-## Getting Started
+This repository contains application, infrastructure, and operations-related work used to support platform development, deployment, reliability, and cloud operations.
 
-First, run the development server:
+## Project Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Lifebook AI is being built to help process and manage long-form content through cloud-based workflows. The project combines application development with infrastructure, monitoring, storage, and operational tooling.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## My Focus
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+My work on Lifebook included hands-on exposure to cloud infrastructure, operational tooling, and platform reliability, including:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- AWS storage and delivery workflows using S3 and CloudFront
+- IAM, encryption, and access-control related configuration
+- Monitoring, alerting, and operational verification workflows
+- Event-driven components using services such as SNS, SQS, Lambda, and EventBridge
+- Storage lifecycle, environment validation, and reliability-focused scripting
+- PowerShell and AWS CLI-based operational automation
 
-## Learn More
+## Technologies and Services
 
-To learn more about Next.js, take a look at the following resources:
+### Cloud / Infrastructure
+- AWS S3
+- AWS CloudFront
+- AWS IAM
+- AWS CloudWatch
+- AWS Lambda
+- AWS SNS
+- AWS SQS
+- AWS EventBridge
+- AWS KMS
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Application / Tooling
+- Next.js
+- TypeScript
+- PowerShell
+- GitHub Actions
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Repository Areas
 
-## Deploy on Vercel
+This repository includes a mix of application and operational work, including:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `app/` – core application code
+- `infra/` – infrastructure-related definitions and supporting files
+- `ops/` – operational scripts, checks, and support workflows
+- `docs/` – project and technical documentation
+- `scripts/` – automation and helper scripts
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Operational Focus
+
+A major goal of this project has been building with production-minded practices in mind, including:
+
+- secure access patterns
+- encryption-aware storage handling
+- monitoring and alerting
+- deployment and verification workflows
+- reliability and operational visibility
+
+## Notes
+
+This public repository is intended to show project structure, technical scope, and cloud/infrastructure exposure. Sensitive values, secrets, and internal-only configuration should not be committed or exposed.
+
+## Status
+
+Active project in development.
