@@ -20,7 +20,7 @@
     "@aws-sdk/client-s3": "^3.676.0",
     "@aws-sdk/client-sqs": "^3.676.0",
     "@aws-sdk/lib-dynamodb": "^3.676.0",
-    "undici": "^6.19.8"
+    "undici": "^6.23.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.30",
